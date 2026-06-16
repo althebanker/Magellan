@@ -34,6 +34,8 @@ CONFIG = dict(
     SCORE_MIN      = 5,        # keep composite score >= this (your ">4")
     TOP_N          = 10,       # show at most this many per side
     SCORE_FALLBACK = 4,        # if a side has < TOP_N at SCORE_MIN, top up from this score
+    ENRICH_MAX     = 45,       # only pull fundamentals for the N most-liquid movers per side
+                               #   (we only show TOP_N; this keeps Yahoo from rate-limiting)
     # ---- universe ----
     UNIVERSE_FILE  = "",       # path to a CSV/txt of tickers (one per line/first col). "" = auto-fetch.
     MAX_UNIVERSE   = 0,        # 0 = no cap; else cap universe size (handy for quick test runs)
@@ -41,7 +43,7 @@ CONFIG = dict(
     OUT_HTML       = "dashboard.html",
     # ---- network politeness ----
     DL_CHUNK       = 250,      # tickers per yf.download batch
-    FUND_SLEEP     = 0.0,      # seconds to sleep between per-ticker fundamental pulls
+    FUND_SLEEP     = 0.4,      # seconds to sleep between per-ticker fundamental pulls
 )
 
 # ----------------------------------------------------------------------------- universe
@@ -61,7 +63,8 @@ def load_universe(cfg):
         s = s.strip().upper()
         if not s or any(c in s for c in " $/^"):
             continue
-        if len(s) > 5:                      # most odd suffixes (warrants/units) are longer
+        s = s.replace(".", "-")             # Yahoo uses BRK-B, not BRK.B
+        if len(s) > 6:                      # most odd suffixes (warrants/units) are longer
             continue
         out.append(s)
     out = sorted(set(out))
@@ -156,7 +159,7 @@ def _series(row):
             out.append(None)
     return out
 
-def fundamentals(sym, base, cfg, sector_pool=None):
+def fundamentals(sym, base, cfg, sector_pool=None, with_peers=False):
     import yfinance as yf
     t = yf.Ticker(sym)
     info = {}
@@ -258,14 +261,15 @@ def fundamentals(sym, base, cfg, sector_pool=None):
                                  values=_series(row_q)))
 
     peers = []
-    try:
-        plist = get_peers(sym, sector_pool or [])
-        peers = [peer_multiples(p) for p in plist]
-    except Exception as e:
-        print(f"      peers failed for {sym}: {e}")
+    if with_peers:
+        try:
+            plist = get_peers(sym, sector_pool or [])
+            peers = [peer_multiples(p) for p in plist]
+        except Exception as e:
+            print(f"      peers failed for {sym}: {e}")
 
     return dict(
-        sym=sym, name=name, sector=sector, **base,
+        name=name, sector=sector, **base,
         mcap=mcap, mcapmn=(mcap/1e6 if mcap else None), pe=pe, eps=eps, roe=roe,
         cash=cash, ltdebt=ltdebt, shares=shares, ni=ni, fcfps=fcfps,
         netcash=netcash, swc=swc, newpe=newpe, fv=fv, updown=updown,
@@ -353,11 +357,12 @@ def main():
     def enrich_and_rank(cands):
         scored = []
         cands = sorted(cands, key=lambda r: -r["flowmn"])     # most liquid first
+        cands = cands[: cfg["ENRICH_MAX"]]                    # only score the most liquid N (avoids rate limits)
         pool = [c["sym"] for c in cands]
         for i, base in enumerate(cands, 1):
             print(f"    fundamentals {i}/{len(cands)}: {base['sym']}")
             try:
-                rec = fundamentals(base["sym"], base, cfg, sector_pool=pool)
+                rec = fundamentals(base["sym"], base, cfg, sector_pool=pool, with_peers=False)
                 scored.append(rec)
             except Exception as e:
                 print(f"      ! {base['sym']}: {e}")
@@ -367,6 +372,11 @@ def main():
             extra = [r for r in scored if cfg["SCORE_FALLBACK"] <= r["score"] < cfg["SCORE_MIN"]]
             keep += sorted(extra, key=lambda r: (-r["score"], -r["flowmn"]))
         keep = sorted(keep, key=lambda r: (-r["score"], -r["flowmn"]))[: cfg["TOP_N"]]
+        for r in keep:                                        # peers only for the final picks
+            try:
+                r["peers"] = [peer_multiples(p) for p in get_peers(r["sym"], pool)]
+            except Exception as e:
+                print(f"      peers failed for {r['sym']}: {e}")
         return keep
 
     print("Enriching UP side...");   up_final   = enrich_and_rank(ups)
