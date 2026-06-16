@@ -400,7 +400,7 @@ def compute_derived(d, cfg):
 # ----------------------------------------------------------------------------- TradingView screen (one fast request)
 def screen_tradingview(cfg):
     from tradingview_screener import Query, Column as C
-    core  = ["name","description","close","change","volume","relative_volume_10d_calc",
+    core  = ["name","description","type","close","change","volume","relative_volume_10d_calc",
              "market_cap_basic","price_earnings_ttm","sector","earnings_per_share_diluted_ttm",
              "return_on_equity"]
     extra = ["revenue_growth_fy_yoy","earnings_per_share_diluted_yoy_growth_ttm",
@@ -430,6 +430,9 @@ def screen_tradingview(cfg):
             g = lambda k: (row[k] if k in df.columns and row[k]==row[k] else None)  # NaN->None
             sym = (g("name") or "").upper()
             if not sym: continue
+            typ = (g("type") or "").lower()
+            if typ in ("fund","etf","etn","structured","right","warrant","spc","bond"):
+                continue                                  # ETFs/funds have no fundamentals — skip
             price = g("close"); vol = g("volume")
             shares = g("total_shares_outstanding_fundamental")
             fcfps = g("free_cash_flow_per_share_ttm")
@@ -489,11 +492,8 @@ def main():
         ups, downs = screen_tradingview(cfg)
 
         def rank_and_detail(cands):
-            keep = [r for r in cands if r["score"] >= cfg["SCORE_MIN"]]
-            if len(keep) < cfg["TOP_N"]:
-                extra = [r for r in cands if cfg["SCORE_FALLBACK"] <= r["score"] < cfg["SCORE_MIN"]]
-                keep += sorted(extra, key=lambda r: (-r["score"], -(r["flowmn"] or 0)))
-            keep = sorted(keep, key=lambda r: (-r["score"], -(r["flowmn"] or 0)))[: cfg["TOP_N"]]
+            # show the TOP_N best-scoring real companies (slider on the page filters by score)
+            keep = sorted(cands, key=lambda r: (-r["score"], -(r["flowmn"] or 0)))[: cfg["TOP_N"]]
             pool = [c["sym"] for c in cands]
             for r in keep:                                  # Yahoo only for the few finalists
                 try: r["trends"] = yahoo_trends(r["sym"])
@@ -681,8 +681,8 @@ _TEMPLATE = r"""<!DOCTYPE html>
   <span class="meta" id="meta"></span>
   <span class="demo-flag" id="demoflag" style="display:none">PREVIEW · seeded from your file</span>
   <div class="controls" id="controls">
-    <div class="ctl">min score <input type="range" id="thresh" min="0" max="7" value="5">
-      <span class="num" id="threshv">5</span></div>
+    <div class="ctl">min score <input type="range" id="thresh" min="0" max="7" value="0">
+      <span class="num" id="threshv">0</span></div>
     <div class="ctl"><input type="search" id="search" placeholder="filter…"></div>
     <div class="ctl"><kbd>j</kbd><kbd>k</kbd> move <kbd>↹</kbd> side</div>
   </div>
@@ -697,7 +697,7 @@ _TEMPLATE = r"""<!DOCTYPE html>
 <script>
 const DATA = /*__DATA__*/;
 const $ = s => document.querySelector(s);
-let thresh = 5, side = 'up', sel = 0, mode = {};
+let thresh = 0, side = 'up', sel = 0, mode = {};
 
 document.getElementById('meta').textContent =
   'generated ' + DATA.generated + ' · ' + (DATA.up.length+DATA.down.length) + ' names';
