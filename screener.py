@@ -41,10 +41,16 @@ CONFIG = dict(
     REL_VOL_MIN    = 1.3,      # relative volume > 1.3
     # ---- ranking / deck size ----
     SCORE_MIN      = 5,        # keep composite score >= this (your ">4")
-    TOP_N          = 10,       # show at most this many per side
+    TOP_N          = 10,       # (yahoo path only) cap per side
     SCORE_FALLBACK = 4,        # if a side has < TOP_N at SCORE_MIN, top up from this score
     ENRICH_MAX     = 45,       # only pull fundamentals for the N most-liquid movers per side
-                               #   (we only show TOP_N; this keeps Yahoo from rate-limiting)
+                               #   (yahoo path; this keeps Yahoo from rate-limiting)
+    # ---- full-market deck ----
+    # The LISTS show EVERY name that passes the filters (the page's score slider does the
+    # filtering). Heavy Yahoo detail (1Y chart, 5y/5q statement bars, peers) is only pulled
+    # for the DETAIL_N best-scoring names per side, to stay under Yahoo's rate limits.
+    DETAIL_N       = 40,       # how many names per side get full Yahoo detail (raise = slower run)
+    TV_LIMIT       = 2000,     # max names TradingView returns per side before scoring
     # ---- universe ----
     UNIVERSE_FILE  = "",       # path to a CSV/txt of tickers (one per line/first col). "" = auto-fetch.
     MAX_UNIVERSE   = 0,        # 0 = no cap; else cap universe size (handy for quick test runs)
@@ -411,7 +417,7 @@ def screen_tradingview(cfg):
                 C("relative_volume_10d_calc") > cfg["REL_VOL_MIN"]]
     def run(fields, change_flt, ascending):
         return Query().select(*fields).where(*(base_flt + [change_flt]))\
-                      .order_by("change", ascending=ascending).limit(300).get_scanner_data()
+                      .order_by("change", ascending=ascending).limit(cfg["TV_LIMIT"]).get_scanner_data()
     def fetch(fields):
         _, up   = run(fields, C("change") >  cfg["CHG_ABS_MIN"], False)
         _, down = run(fields, C("change") < -cfg["CHG_ABS_MIN"], True)
@@ -466,18 +472,43 @@ def yahoo_trends(sym):
         return dict(label=label, annual=dict(dates=_dates(ad), values=_series(ra)),
                     quarter=dict(dates=_dates(qd), values=_series(rq)))
     return dict(
-        revenue=trend(_pick(inc_a,"Total Revenue","Revenue"), _pick(inc_q,"Total Revenue","Revenue"), "Revenue","inc"),
-        ebit   =trend(_pick(inc_a,"EBIT","Operating Income"), _pick(inc_q,"EBIT","Operating Income"), "EBIT","inc"),
-        cfo    =trend(_pick(cf_a,"Operating Cash Flow","Total Cash From Operating Activities"),
-                      _pick(cf_q,"Operating Cash Flow","Total Cash From Operating Activities"), "CFO","cf"),
-        cfi    =trend(_pick(cf_a,"Investing Cash Flow","Total Cashflows From Investing Activities"),
-                      _pick(cf_q,"Investing Cash Flow","Total Cashflows From Investing Activities"), "CFI","cf"),
-        cff    =trend(_pick(cf_a,"Financing Cash Flow","Total Cash From Financing Activities"),
-                      _pick(cf_q,"Financing Cash Flow","Total Cash From Financing Activities"), "CFF","cf"),
-        fcf    =trend(_pick(cf_a,"Free Cash Flow"), _pick(cf_q,"Free Cash Flow"), "FCF","cf"),
-        cash   =trend(_pick(bs_a,"Cash And Cash Equivalents","Cash"), _pick(bs_q,"Cash And Cash Equivalents","Cash"), "Cash & equiv.","bs"),
-        ltdebt =trend(_pick(bs_a,"Long Term Debt"), _pick(bs_q,"Long Term Debt"), "Long-term debt","bs"),
+        revenue   =trend(_pick(inc_a,"Total Revenue","Revenue"), _pick(inc_q,"Total Revenue","Revenue"), "Revenue","inc"),
+        ebit      =trend(_pick(inc_a,"EBIT","Operating Income"), _pick(inc_q,"EBIT","Operating Income"), "EBIT","inc"),
+        ni        =trend(_pick(inc_a,"Net Income","Net Income Common Stockholders"),
+                         _pick(inc_q,"Net Income","Net Income Common Stockholders"), "Net income","inc"),
+        eps       =trend(_pick(inc_a,"Diluted EPS","Basic EPS"), _pick(inc_q,"Diluted EPS","Basic EPS"), "EPS","inc"),
+        cfo       =trend(_pick(cf_a,"Operating Cash Flow","Total Cash From Operating Activities"),
+                         _pick(cf_q,"Operating Cash Flow","Total Cash From Operating Activities"), "Cash from operating","cf"),
+        cfi       =trend(_pick(cf_a,"Investing Cash Flow","Total Cashflows From Investing Activities"),
+                         _pick(cf_q,"Investing Cash Flow","Total Cashflows From Investing Activities"), "Cash from investing","cf"),
+        fcf       =trend(_pick(cf_a,"Free Cash Flow"), _pick(cf_q,"Free Cash Flow"), "Free cash flow","cf"),
+        cash      =trend(_pick(bs_a,"Cash And Cash Equivalents","Cash Cash Equivalents And Short Term Investments","Cash"),
+                         _pick(bs_q,"Cash And Cash Equivalents","Cash Cash Equivalents And Short Term Investments","Cash"),
+                         "Cash & cash equivalents","bs"),
+        recv      =trend(_pick(bs_a,"Accounts Receivable","Receivables","Net Receivables"),
+                         _pick(bs_q,"Accounts Receivable","Receivables","Net Receivables"), "Receivables","bs"),
+        pay       =trend(_pick(bs_a,"Accounts Payable","Payables","Payables And Accrued Expenses"),
+                         _pick(bs_q,"Accounts Payable","Payables","Payables And Accrued Expenses"), "Payables","bs"),
+        assets    =trend(_pick(bs_a,"Total Assets"), _pick(bs_q,"Total Assets"), "Total assets","bs"),
+        liab      =trend(_pick(bs_a,"Total Liabilities Net Minority Interest","Total Liabilities","Total Liab"),
+                         _pick(bs_q,"Total Liabilities Net Minority Interest","Total Liabilities","Total Liab"),
+                         "Total liabilities","bs"),
+        ltdebt    =trend(_pick(bs_a,"Long Term Debt"), _pick(bs_q,"Long Term Debt"), "Long-term debt","bs"),
     )
+
+def yahoo_history(sym, points=64):
+    """Last ~1 year of daily closes, downsampled to `points` for a compact embedded sparkline."""
+    import yfinance as yf
+    try:
+        hist = yf.Ticker(sym).history(period="1y", interval="1d")
+        closes = [float(x) for x in hist["Close"].tolist() if x == x]
+        if len(closes) > points:
+            step = len(closes) / points
+            closes = [closes[min(len(closes)-1, int(i*step))] for i in range(points)]
+        return [round(x, 4) for x in closes]
+    except Exception as e:
+        print(f"      history failed {sym}: {e}")
+        return []
 
 # ----------------------------------------------------------------------------- main
 def main():
@@ -492,16 +523,20 @@ def main():
         ups, downs = screen_tradingview(cfg)
 
         def rank_and_detail(cands):
-            # show the TOP_N best-scoring real companies (slider on the page filters by score)
-            keep = sorted(cands, key=lambda r: (-r["score"], -(r["flowmn"] or 0)))[: cfg["TOP_N"]]
-            pool = [c["sym"] for c in cands]
-            for r in keep:                                  # Yahoo only for the few finalists
+            # Rank every passing name; the page's score slider does the filtering.
+            ranked = sorted(cands, key=lambda r: (-r["score"], -(r["flowmn"] or 0)))
+            pool = [c["sym"] for c in ranked]
+            detail_set = ranked[: cfg["DETAIL_N"]]            # heavy Yahoo pull only for the best names
+            for i, r in enumerate(detail_set, 1):
+                print(f"      detail {i}/{len(detail_set)}: {r['sym']}")
                 try: r["trends"] = yahoo_trends(r["sym"])
                 except Exception as e: print(f"      trends failed {r['sym']}: {e}"); r["trends"] = {}
+                try: r["hist"] = yahoo_history(r["sym"])
+                except Exception as e: print(f"      history failed {r['sym']}: {e}"); r["hist"] = []
                 try: r["peers"] = [peer_multiples(p) for p in get_peers(r["sym"], pool)]
                 except Exception as e: print(f"      peers failed {r['sym']}: {e}")
                 if cfg["FUND_SLEEP"]: time.sleep(cfg["FUND_SLEEP"])
-            return keep
+            return ranked                                     # return EVERY name, not just the detailed ones
 
         print("Building UP detail...");   up_final   = rank_and_detail(ups)
         print("Building DOWN detail..."); down_final = rank_and_detail(downs)
@@ -525,17 +560,13 @@ def main():
                 except Exception as e:
                     print(f"      ! {base['sym']}: {e}")
                 if cfg["FUND_SLEEP"]: time.sleep(cfg["FUND_SLEEP"])
-            keep = [r for r in scored if r["score"] >= cfg["SCORE_MIN"]]
-            if len(keep) < cfg["TOP_N"]:
-                extra = [r for r in scored if cfg["SCORE_FALLBACK"] <= r["score"] < cfg["SCORE_MIN"]]
-                keep += sorted(extra, key=lambda r: (-r["score"], -r["flowmn"]))
-            keep = sorted(keep, key=lambda r: (-r["score"], -r["flowmn"]))[: cfg["TOP_N"]]
-            for r in keep:                                        # peers only for the final picks
-                try:
-                    r["peers"] = [peer_multiples(p) for p in get_peers(r["sym"], pool)]
-                except Exception as e:
-                    print(f"      peers failed for {r['sym']}: {e}")
-            return keep
+            ranked = sorted(scored, key=lambda r: (-r["score"], -(r["flowmn"] or 0)))
+            for r in ranked[: cfg["DETAIL_N"]]:                   # peers + 1Y history for the best names
+                try: r["peers"] = [peer_multiples(p) for p in get_peers(r["sym"], pool)]
+                except Exception as e: print(f"      peers failed for {r['sym']}: {e}")
+                try: r["hist"] = yahoo_history(r["sym"])
+                except Exception as e: print(f"      history failed {r['sym']}: {e}"); r["hist"] = []
+            return ranked                                         # return EVERY scored name
 
         print("Enriching UP side...");   up_final   = enrich_and_rank(ups)
         print("Enriching DOWN side..."); down_final = enrich_and_rank(downs)
@@ -562,7 +593,7 @@ def build_dashboard(payload, out_path="dashboard.html"):
 _TEMPLATE = r"""<!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MarketScreen · daily deck</title>
+<title>Market Screen by Magellan</title>
 <style>
   :root{
     --bg:#0e1116; --panel:#151a22; --panel2:#1b222c; --line:#262f3b;
@@ -673,13 +704,77 @@ _TEMPLATE = r"""<!DOCTYPE html>
   .seg button.on{background:var(--panel);color:var(--ink)}
   svg text{font-family:var(--mono);fill:var(--dim);font-size:9px}
   .tvlink{display:inline-block;margin-top:4px;font-size:12px}
+
+  /* header tabs */
+  .tabs{display:flex;gap:4px;margin-left:20px}
+  .tabs button{background:none;border:1px solid var(--line);color:var(--mut);font-family:var(--sans);
+       font-size:12px;padding:5px 13px;border-radius:99px;cursor:pointer}
+  .tabs button.on{background:var(--panel);color:var(--ink);border-color:var(--accent)}
+  body.view-portfolio #controls{display:none}
+
+  /* 1Y price chart */
+  .pxchart{margin:2px 0 4px}
+  .pxchart .cap{display:flex;justify-content:space-between;color:var(--dim);font-size:10.5px;margin-bottom:3px}
+
+  /* DCF / multiples calculators */
+  .calc-tabs{display:inline-flex;gap:2px;background:var(--panel2);border-radius:6px;padding:2px;margin-bottom:12px}
+  .calc-tabs button{background:none;border:0;color:var(--mut);font-family:var(--mono);font-size:11px;
+       padding:3px 12px;border-radius:4px;cursor:pointer}
+  .calc-tabs button.on{background:var(--panel);color:var(--ink)}
+  .calc-pane{display:none}.calc-pane.on{display:block}
+  .levers{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+  .levers.two{grid-template-columns:repeat(2,1fr)}
+  .lever label{display:block;color:var(--dim);font-size:10px;text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px}
+  .lever input{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:6px;
+       color:#9fc0ff;font-family:var(--mono);font-size:13px;font-weight:600;padding:6px 8px}
+  .lever input:focus{outline:none;border-color:var(--accent)}
+  .baseline{display:flex;flex-wrap:wrap;gap:7px 18px;background:var(--panel);border:1px solid var(--line);
+       border-radius:8px;padding:9px 12px;margin:11px 0;font-size:11px;color:var(--dim)}
+  .baseline b{color:var(--ink);font-family:var(--mono)}
+  .scen{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+  .scen .box{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:11px}
+  .scen .box.worst{border-color:#3a1419}.scen .box.opt{border-color:#103a2e}
+  .scen .lab{font-size:10px;letter-spacing:.6px;text-transform:uppercase;color:var(--dim)}
+  .scen .val{font-family:var(--mono);font-size:20px;font-weight:650;margin:5px 0 2px}
+  .scen .ud{font-family:var(--mono);font-size:11px}
+
+  /* portfolio */
+  .portfolio{overflow-y:auto;height:calc(100vh - 53px)}
+  .pf-wrap{max-width:900px;margin:0 auto;padding:26px 22px 60px}
+  .pf-wrap h2{font-size:16px;font-weight:650;margin:0 0 6px}
+  .pf-note{color:var(--mut);font-size:12.5px;line-height:1.6;max-width:620px;margin:0 0 18px}
+  .pf-add{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end;
+       background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:8px}
+  .pf-add label{display:block;color:var(--dim);font-size:10.5px;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px}
+  .pf-add input{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:7px;
+       color:#9fc0ff;font-family:var(--mono);font-size:13px;font-weight:600;padding:8px 10px}
+  .pf-add input:focus{outline:none;border-color:var(--accent)}
+  .pf-add button{background:var(--accent);border:0;color:#08122b;font-weight:700;border-radius:7px;padding:9px 16px;cursor:pointer}
+  .pf-status{color:var(--dim);font-size:11.5px;min-height:16px;margin:0 2px 10px}
+  table.pf{width:100%;border-collapse:collapse;font-size:13px}
+  table.pf th{color:var(--dim);text-align:right;padding:8px 10px;border-bottom:1px solid var(--line);
+       font-size:10px;text-transform:uppercase;letter-spacing:.4px;font-weight:600}
+  table.pf th:first-child{text-align:left}
+  table.pf td{padding:8px 10px;text-align:right;font-family:var(--mono);border-bottom:1px solid var(--panel2)}
+  table.pf td:first-child{text-align:left;font-weight:650}
+  table.pf input.cur{width:84px;text-align:right;background:var(--bg);border:1px solid var(--line);
+       border-radius:6px;color:var(--ink);font-family:var(--mono);font-size:12px;padding:3px 6px}
+  table.pf tr.tot td{font-weight:700;border-top:1px solid var(--accent);border-bottom:0}
+  .pf-rm{background:none;border:0;color:var(--down);cursor:pointer;font-size:14px}
+  .pf-empty{color:var(--dim);text-align:center;padding:30px;border:1px dashed var(--line);border-radius:10px}
+  .tag{font-size:9.5px;color:var(--dim);border:1px solid var(--line);border-radius:5px;padding:0 5px;margin-left:6px}
+  .pos{color:var(--up)} .neg{color:var(--down)}
   @media (max-width:1100px){.layout{grid-template-columns:1fr}.col,.detail{height:auto}}
 </style></head>
 <body>
 <header>
-  <h1>Market<b>Screen</b></h1>
+  <h1>Market Screen <b>by Magellan</b></h1>
   <span class="meta" id="meta"></span>
   <span class="demo-flag" id="demoflag" style="display:none">PREVIEW · seeded from your file</span>
+  <div class="tabs" id="tabs">
+    <button class="on" data-view="screen">Screen</button>
+    <button data-view="portfolio">Magellan — Portfolio</button>
+  </div>
   <div class="controls" id="controls">
     <div class="ctl">min score <input type="range" id="thresh" min="0" max="7" value="0">
       <span class="num" id="threshv">0</span></div>
@@ -694,6 +789,23 @@ _TEMPLATE = r"""<!DOCTYPE html>
   <div class="detail" id="detail"><div class="empty">Select a company<br><span style="color:var(--dim)">click a row or press <kbd>j</kbd>/<kbd>k</kbd></span></div></div>
 </div>
 
+<div class="portfolio" id="portfolio" style="display:none">
+  <div class="pf-wrap">
+    <h2>Magellan portfolio</h2>
+    <p class="pf-note">Add a ticker with your buy price and number of shares. The live price is fetched
+      automatically (or taken from today's screen), and your return is computed from it. Holdings are
+      saved in this browser.</p>
+    <div class="pf-add">
+      <div><label>Ticker</label><input id="pf-tkr" placeholder="e.g. ABNB" style="text-transform:uppercase"></div>
+      <div><label>Buy price</label><input id="pf-buy" type="number" step="any" placeholder="0.00"></div>
+      <div><label>Shares</label><input id="pf-sh" type="number" step="any" placeholder="0"></div>
+      <button id="pf-add">Add holding</button>
+    </div>
+    <div class="pf-status" id="pf-status"></div>
+    <div id="pf-body"></div>
+  </div>
+</div>
+
 <script>
 const DATA = /*__DATA__*/;
 const $ = s => document.querySelector(s);
@@ -702,6 +814,9 @@ let thresh = 0, side = 'up', sel = 0, mode = {};
 document.getElementById('meta').textContent =
   'generated ' + DATA.generated + ' · ' + (DATA.up.length+DATA.down.length) + ' names';
 if(DATA.demo){ $('#demoflag').style.display='inline-block'; $('#controls').classList.add('has-flag'); }
+
+// price lookup from today's screen (used by the portfolio for instant pricing)
+const PXMAP={}; [...DATA.up, ...DATA.down].forEach(s=>{ if(s.sym) PXMAP[s.sym.toUpperCase()]=s.price; });
 
 // ---------- formatting ----------
 const fmtNum = (v,d=2)=> (v==null||isNaN(v))?'–':Number(v).toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:d});
@@ -749,8 +864,8 @@ function sync(){
 
 // ---------- charts ----------
 function bars(series,kind){
-  const dates=(series.dates||[]).slice(0,kind==='annual'?5:8).reverse();
-  const vals =(series.values||[]).slice(0,kind==='annual'?5:8).reverse();
+  const dates=(series.dates||[]).slice(0,5).reverse();
+  const vals =(series.values||[]).slice(0,5).reverse();
   if(!vals.length||vals.every(v=>v==null)) return '<svg viewBox="0 0 320 70"><text x="0" y="38">no data</text></svg>';
   const W=320,H=70,pad=14,n=vals.length,bw=(W-pad)/n*0.62,gap=(W-pad)/n;
   const mx=Math.max(0,...vals.filter(v=>v!=null)), mn=Math.min(0,...vals.filter(v=>v!=null));
@@ -796,13 +911,128 @@ function peersTable(r){
   return h;
 }
 
+// ---------- 1Y price chart ----------
+function pxSpark(hist){
+  if(!hist||hist.length<2) return '<div style="color:var(--dim);font-size:12px">No price history in this build.</div>';
+  const W=560,H=120,pad=6,n=hist.length,mn=Math.min(...hist),mx=Math.max(...hist),r=(mx-mn)||1;
+  const col=hist[n-1]>=hist[0]?'var(--up)':'var(--down)';
+  const path=hist.map((y,i)=>{const X=pad+i*(W-2*pad)/(n-1),Y=H-pad-((y-mn)/r)*(H-2*pad);
+    return (i?'L':'M')+X.toFixed(1)+' '+Y.toFixed(1);}).join(' ');
+  return `<div class="cap"><span>1Y high $${mx.toFixed(2)}</span><span>low $${mn.toFixed(2)}</span></div>
+    <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" preserveAspectRatio="none">
+      <path d="${path}" fill="none" stroke="${col}" stroke-width="1.8"/></svg>`;
+}
+function pxChartSect(r){
+  return `<div class="sect"><h3>Price — last 12 months</h3><div class="pxchart">${pxSpark(r.hist)}</div></div>`;
+}
+
+// ---------- DCF / multiples ----------
+function dcfBaseline(r){
+  const rev0 = (r.rev!=null && r.rev>0) ? r.rev/1e6
+             : (r.ni!=null ? Math.max(50, Math.abs(r.ni)/0.10/1e6) : 500);  // fallback if revenue missing
+  const netDebt = ((r.ltdebt||0)-(r.cash||0))/1e6;
+  const shares  = r.shares ? r.shares/1e6 : 100;
+  return {rev0, netDebt, shares, wacc:9, tax:21, tg:2.5, years:5};
+}
+function dcfEV(p){
+  let rev=p.rev0, ev=0;
+  for(let i=1;i<=p.years;i++){ const prev=rev; rev*=1+p.g/100;
+    const ebit=rev*p.ebitM/100, nopat=ebit*(1-p.tax/100), da=rev*p.daPct/100,
+      capex=rev*p.capexPct/100, dnwc=(rev-prev)*p.nwcPct/100;
+    ev += (nopat+da-capex-dnwc)/Math.pow(1+p.wacc/100,i); }
+  const lr=p.rev0*Math.pow(1+p.g/100,p.years), eb=lr*p.ebitM/100, np=eb*(1-p.tax/100),
+    da=lr*p.daPct/100, cx=lr*p.capexPct/100, dn=lr*(p.g/100/(1+p.g/100))*p.nwcPct/100,
+    fcffN=np+da-cx-dn, tv=fcffN*(1+p.tg/100)/((p.wacc-p.tg)/100);
+  ev += tv/Math.pow(1+p.wacc/100,p.years);
+  return ev;
+}
+function scenBoxes(out, price){
+  const box=(c,l,v)=>{ const ud=(v!=null&&price)?(v-price)/price*100:null;
+    return `<div class="box ${c}"><div class="lab">${l}</div>
+      <div class="val">${v==null?'–':'$'+fmtNum(v)}</div>
+      <div class="ud ${ud>=0?'pos':'neg'}">${ud==null?'':(ud>=0?'+':'')+ud.toFixed(0)+'% vs price'}</div></div>`; };
+  return box('worst','Worst case',out.worst)+box('base','Base case',out.base)+box('opt','Optimistic',out.opt);
+}
+function lever(id,label,val){ return `<div class="lever"><label>${label}</label>
+  <input id="${id}" type="number" step="any" value="${val}"></div>`; }
+function gvN(id){ const e=document.getElementById(id); return e?parseFloat(e.value)||0:0; }
+
+function valuationLabSect(r){
+  const b=dcfBaseline(r);
+  const g  = (r.revg!=null && isFinite(r.revg)) ? Math.round(r.revg) : 8;
+  const em = (r.ebitMargin!=null && isFinite(r.ebitMargin)) ? Math.round(r.ebitMargin) : 15;
+  return `<div class="sect"><h3>Valuation lab — DCF &amp; multiples</h3>
+    <div class="calc-tabs">
+      <button class="on" data-calc="dcf">DCF</button>
+      <button data-calc="mult">Multiples</button></div>
+    <div class="calc-pane on" id="paneDcf">
+      <div class="levers">
+        ${lever('lv_g','Rev YoY growth %',g)}
+        ${lever('lv_em','EBIT % of rev',em)}
+        ${lever('lv_cx','CapEx % of rev',5)}
+        ${lever('lv_da','D&amp;A % of rev',4)}
+        ${lever('lv_wc','Working cap % of rev',2)}
+      </div>
+      <div class="baseline">
+        <span>From data — <b>Revenue</b> $${fmtNum(b.rev0,0)}mn</span>
+        <span><b>Net debt</b> $${fmtNum(b.netDebt,0)}mn</span>
+        <span><b>Shares</b> ${fmtNum(b.shares,0)}mn</span>
+        <span><b>WACC</b> ${b.wacc}%</span><span><b>Tax</b> ${b.tax}%</span><span><b>Terminal g</b> ${b.tg}%</span>
+      </div>
+      <div class="scen" id="dcfScen"></div>
+    </div>
+    <div class="calc-pane" id="paneMult">
+      <div class="levers two">
+        ${lever('lv_pe','Target P/E',Math.round(r.pe||15))}
+        ${lever('lv_evebit','Target EV/EBIT',12)}
+      </div>
+      <div class="baseline"><span>From data — <b>EPS</b> $${fmtNum(r.eps)}</span>
+        <span><b>EBIT margin</b> ${r.ebitMargin==null?'–':fmtNum(r.ebitMargin,0)+'%'}</span>
+        <span><b>Net debt</b> $${fmtNum(b.netDebt,0)}mn</span><span><b>Shares</b> ${fmtNum(b.shares,0)}mn</span></div>
+      <div class="scen" id="multScen"></div>
+    </div></div>`;
+}
+function computeDCF(r){
+  const b=dcfBaseline(r);
+  const lv={g:gvN('lv_g'),ebitM:gvN('lv_em'),capexPct:gvN('lv_cx'),daPct:gvN('lv_da'),nwcPct:gvN('lv_wc')};
+  const fix={rev0:b.rev0,wacc:b.wacc,tax:b.tax,tg:b.tg,years:b.years};
+  const cases={
+    worst:{...lv,...fix,g:lv.g-4,ebitM:lv.ebitM-3,capexPct:lv.capexPct+2,daPct:Math.max(0,lv.daPct-1),nwcPct:lv.nwcPct+2},
+    base :{...lv,...fix},
+    opt  :{...lv,...fix,g:lv.g+4,ebitM:lv.ebitM+3,capexPct:Math.max(0,lv.capexPct-2),daPct:lv.daPct+1,nwcPct:Math.max(0,lv.nwcPct-2)}};
+  const out={}; for(const k in cases){ const ev=dcfEV(cases[k]); out[k]=b.shares>0?(ev-b.netDebt)/b.shares:null; }
+  const el=document.getElementById('dcfScen'); if(el) el.innerHTML=scenBoxes(out,r.price);
+}
+function computeMult(r){
+  const b=dcfBaseline(r);
+  const pe=gvN('lv_pe'), evx=gvN('lv_evebit'), eps=r.eps||0;
+  const peVal = eps*pe;
+  // EV/EBIT path: EBIT ttm ($mn) from margin*revenue, else eps*shares*1.4
+  const ebitMn = (r.ebitMargin!=null && r.rev) ? (r.ebitMargin/100)*(r.rev/1e6)
+               : (eps*b.shares*1.4);
+  const evVal = b.shares>0 ? (evx*ebitMn - b.netDebt)/b.shares : null;
+  const base = (evVal!=null) ? (peVal+evVal)/2 : peVal;
+  const out={worst:base*0.8, base:base, opt:base*1.2};
+  const el=document.getElementById('multScen'); if(el) el.innerHTML=scenBoxes(out,r.price);
+}
+function wireCalc(r){
+  document.querySelectorAll('.calc-tabs button').forEach(btn=>btn.onclick=()=>{
+    document.querySelectorAll('.calc-tabs button').forEach(x=>x.classList.remove('on')); btn.classList.add('on');
+    document.getElementById('paneDcf').classList.toggle('on', btn.dataset.calc==='dcf');
+    document.getElementById('paneMult').classList.toggle('on', btn.dataset.calc==='mult');
+  });
+  ['lv_g','lv_em','lv_cx','lv_da','lv_wc'].forEach(id=>{const e=document.getElementById(id); if(e)e.oninput=()=>computeDCF(r);});
+  ['lv_pe','lv_evebit'].forEach(id=>{const e=document.getElementById(id); if(e)e.oninput=()=>computeMult(r);});
+  computeDCF(r); computeMult(r);
+}
+
 // ---------- detail ----------
 function detail(r){
   const cls=r.chg>=0?'pos':'neg';
   const T=r.tests||[];
   const testHtml=T.map(t=>`<div class="test ${t.ok?'ok':''}"><span class="mk">${t.ok?'✓':'·'}</span>${t.label}</div>`).join('');
   const tr=r.trends||{};
-  const order=['revenue','ebit','cfo','cfi','cff','fcf','cash','ltdebt'];
+  const order=['revenue','ebit','ni','eps','cfo','cfi','fcf','cash','recv','pay','assets','liab','ltdebt'];
   const charts=order.filter(k=>tr[k]).map(k=>{
     if(!(k in mode)) mode[k]='annual';
     return `<div data-k="${k}">
@@ -818,6 +1048,8 @@ function detail(r){
       <div class="name">${r.name||''} <span>· ${r.sector||''}</span></div>
       <a class="tvlink" href="https://www.tradingview.com/symbols/${r.sym}/" target="_blank">open on TradingView →</a>
     </div>
+    ${pxChartSect(r)}
+    ${valuationLabSect(r)}
     <div class="sect"><h3>Why it scored — ${r.score}/7</h3><div class="tests">${testHtml}</div></div>
     <div class="sect"><h3>Snapshot</h3><div class="grid">
       ${cell('Mkt cap', fmtBig(r.mcap||r.mcapmn*1e6))}
@@ -860,7 +1092,8 @@ function detail(r){
       ${cell('Cash/share', '$'+fmtNum(r.cashps))}
       ${cell('CapEx/share', '$'+fmtNum(r.capexps))}
     </div></div>
-    <div class="sect"><h3>Financial trends</h3>${charts||'<div style="color:var(--dim);font-size:12px">No statement data.</div>'}</div>`;
+    <div class="sect"><h3>Financial trends</h3>${charts||'<div style="color:var(--dim);font-size:12px">No statement data (this name is outside today\'s detail set).</div>'}</div>`;
+  wireCalc(r);
 }
 window.setMode=(k,m)=>{ mode[k]=m; const cur=(side==='up'?vUp:vDown); detail(cur[sel]); };
 
@@ -874,6 +1107,65 @@ document.addEventListener('keydown',e=>{
   if(e.key==='k'||e.key==='ArrowUp'){ sel=Math.max(sel-1,0); sync(); e.preventDefault(); }
   if(e.key==='Tab'){ side=side==='up'?'down':'up'; sel=0; sync(); e.preventDefault(); }
 });
+// ---------- tabs: screen vs portfolio ----------
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#tabs button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+  const pf=b.dataset.view==='portfolio';
+  document.querySelector('.layout').style.display = pf?'none':'grid';
+  $('#portfolio').style.display = pf?'block':'none';
+  document.body.classList.toggle('view-portfolio', pf);
+  if(pf) renderPf();
+});
+
+// ---------- portfolio ----------
+const LS='magellan_portfolio_v1';
+let PORT=(()=>{ try{return JSON.parse(localStorage.getItem(LS))||[]}catch(e){return []} })();
+function savePf(){ try{localStorage.setItem(LS,JSON.stringify(PORT))}catch(e){} }
+async function livePrice(t){
+  const url='https://stooq.com/q/l/?s='+encodeURIComponent(t.toLowerCase())+'.us&f=sd2t2ohlcv&h&e=csv';
+  const txt=await (await fetch(url)).text();
+  const line=(txt.trim().split('\n')[1]||'').split(',');
+  const close=parseFloat(line[6]);
+  if(!isFinite(close)||/N\/D/i.test(txt)) throw new Error('not found');
+  return close;
+}
+async function addHolding(){
+  const t=$('#pf-tkr').value.trim().toUpperCase();
+  const b=parseFloat($('#pf-buy').value), sh=parseFloat($('#pf-sh').value);
+  const st=$('#pf-status');
+  if(!t||!(b>0)||!(sh>0)){ st.textContent='Enter a ticker, buy price and number of shares.'; return; }
+  st.textContent='Fetching live price for '+t+'…';
+  let cur, live=false;
+  try{ cur=await livePrice(t); live=true; st.textContent=''; }
+  catch(e){ cur=(PXMAP[t]!=null?PXMAP[t]:b);
+    st.textContent='Could not fetch '+t+' live — using '+(PXMAP[t]!=null?'today\'s screen price':'your buy price')+'. Edit it in the Current column.'; }
+  PORT.push({t,b,sh,cur,live}); savePf();
+  $('#pf-tkr').value=''; $('#pf-buy').value=''; $('#pf-sh').value=''; renderPf();
+}
+function renderPf(){
+  const body=$('#pf-body');
+  if(!PORT.length){ body.innerHTML='<div class="pf-empty">No holdings yet. Add a ticker, buy price and shares above — the live price is fetched automatically.</div>'; return; }
+  let cost=0,val=0;
+  const rows=PORT.map((h,i)=>{ const c=h.cur, hv=c*h.sh, hc=h.b*h.sh, pl=hv-hc, plp=hc?pl/hc*100:0;
+    cost+=hc; val+=hv;
+    return `<tr><td>${h.t}<span class="tag">${h.live?'live':'manual'}</span></td>
+      <td>$${fmtNum(h.b)}</td><td>${fmtNum(h.sh,0)}</td>
+      <td><input class="cur" type="number" step="any" value="${c}" data-i="${i}"></td>
+      <td>$${fmtNum(hv)}</td><td class="${pl>=0?'pos':'neg'}">${pl>=0?'+':''}$${fmtNum(pl)}</td>
+      <td class="${pl>=0?'pos':'neg'}">${fmtPct(plp)}</td>
+      <td><button class="pf-rm" data-rm="${i}">×</button></td></tr>`; }).join('');
+  const tpl=val-cost, tplp=cost?tpl/cost*100:0;
+  body.innerHTML=`<table class="pf"><thead><tr><th>Ticker</th><th>Buy</th><th>Shares</th><th>Current</th>
+    <th>Value</th><th>P/L</th><th>Return</th><th></th></tr></thead><tbody>${rows}
+    <tr class="tot"><td>Portfolio</td><td></td><td></td><td></td><td>$${fmtNum(val)}</td>
+      <td class="${tpl>=0?'pos':'neg'}">${tpl>=0?'+':''}$${fmtNum(tpl)}</td>
+      <td class="${tpl>=0?'pos':'neg'}">${fmtPct(tplp)}</td><td></td></tr></tbody></table>`;
+  body.querySelectorAll('input.cur').forEach(inp=>inp.oninput=()=>{ PORT[+inp.dataset.i].cur=parseFloat(inp.value)||0; savePf(); renderPf(); });
+  body.querySelectorAll('button[data-rm]').forEach(btn=>btn.onclick=()=>{ PORT.splice(+btn.dataset.rm,1); savePf(); renderPf(); });
+}
+$('#pf-add').onclick=addHolding;
+$('#pf-tkr').addEventListener('keydown',e=>{ if(e.key==='Enter') addHolding(); });
+
 // ---------- auto-refresh: reload an open tab when a new build lands ----------
 async function checkFresh(){
   try{
