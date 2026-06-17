@@ -678,10 +678,39 @@ th{color:var(--muted);font-weight:600;font-size:11px;letter-spacing:.6px;text-tr
 .badge{font-size:10px;color:var(--dim);border:1px solid var(--line);border-radius:6px;padding:1px 6px}
 svg .ax{stroke:var(--line);stroke-width:1}
 .status{font-size:11px;color:var(--dim);margin-left:6px}
+.compass{cursor:pointer;transition:transform .6s ease}
+.compass:hover{transform:rotate(20deg)}
+.compass.spin{animation:cspin 1s linear}
+@keyframes cspin{to{transform:rotate(360deg)}}
+.disc{position:fixed;inset:0;background:rgba(4,8,16,.86);backdrop-filter:blur(4px);
+display:none;align-items:center;justify-content:center;padding:24px;z-index:100}
+.disc.open{display:flex}
+.disc .box{max-width:540px;background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:26px 28px}
+.disc h2{margin:0 0 4px;font-size:18px;display:flex;align-items:center;gap:9px}
+.disc h2 .ic{color:var(--gold)}
+.disc .sub2{color:var(--muted);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px}
+.disc p{color:var(--muted);font-size:12.5px;line-height:1.65;margin:0 0 14px}
+.disc .ok{background:var(--accent);border:none;color:#08122b;font-weight:700;border-radius:9px;
+padding:11px 20px;cursor:pointer;font-size:13px;width:100%}
+.disc .ok:hover{filter:brightness(1.08)}
 </style></head><body>
+<div class="disc" id="disc"><div class="box">
+<h2><span class="ic">&#9888;</span> Important notice</h2>
+<div class="sub2">Educational &amp; research tool only</div>
+<p>Magellan Market Screen is an automated, educational research tool provided
+&ldquo;as is&rdquo; and &ldquo;as available,&rdquo; without warranty of any kind, express or implied.
+Nothing displayed here is investment, financial, legal, or tax advice, nor a recommendation,
+solicitation, or offer to buy or sell any security.</p>
+<p>All data may be delayed, incomplete, or inaccurate. Scores and valuations are illustrative
+estimates only. You are solely responsible for your own investment decisions and bear all
+associated risk. To the fullest extent permitted by law, Magellan and its authors accept no
+liability for any loss or damage arising from use of this tool. Consult a licensed financial
+advisor before investing.</p>
+<button class="ok" id="discOk">I understand and accept</button>
+</div></div>
 <div class="wrap">
 <header>
-<svg class="compass" viewBox="0 0 100 100" fill="none">
+<svg class="compass" id="compass" viewBox="0 0 100 100" fill="none" title="Reload latest data">
 <circle cx="50" cy="50" r="44" stroke="#2a3a5c" stroke-width="3"/>
 <circle cx="50" cy="50" r="3" fill="#e8c170"/>
 <polygon points="50,12 57,50 50,46 43,50" fill="#ff5d6c"/>
@@ -726,6 +755,35 @@ svg .ax{stroke:var(--line);stroke-width:1}
 <script>
 const DATA = /*__DATA__*/;
 const PXMAP={};[...DATA.up,...DATA.down].forEach(s=>{if(s.sym)PXMAP[s.sym.toUpperCase()]=s.price;});
+
+/* ---- disclaimer: shows on entry, auto-closes after 10s, closable anytime, once per session ---- */
+(function(){
+ const disc=document.getElementById('disc'),ok=document.getElementById('discOk');
+ if(sessionStorage.getItem('magellan_disc_ack')){return;}
+ disc.classList.add('open');
+ let left=10,timer;
+ const close=()=>{disc.classList.remove('open');sessionStorage.setItem('magellan_disc_ack','1');clearInterval(timer);};
+ ok.textContent='I understand and accept ('+left+')';
+ timer=setInterval(()=>{left--;ok.textContent=left>0?'I understand and accept ('+left+')':'I understand and accept';
+  if(left<=0){close();}},1000);
+ ok.onclick=close;
+})();
+
+/* ---- compass: click to pull in the latest generated snapshot ---- */
+(function(){
+ const c=document.getElementById('compass');
+ if(!c)return;
+ c.onclick=async()=>{
+  c.classList.add('spin');
+  // re-fetch this page from disk/server; if the generated stamp changed, reload to show new data
+  try{
+   const txt=await (await fetch(location.href,{cache:'no-store'})).text();
+   const m=txt.match(/const DATA = (\{[\s\S]*?\});\n/);
+   if(m){const g=JSON.parse(m[1]).generated; if(g&&g!==DATA.generated){location.reload();return;}}
+  }catch(e){}
+  setTimeout(()=>c.classList.remove('spin'),1000);
+ };
+})();
 const fmt=(n,d=2)=>(n==null||isNaN(n))?'\u2013':Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
 const pct=n=>(n==null||isNaN(n))?'\u2013':(n>=0?'+':'')+Number(n).toFixed(1)+'%';
 const fmtCap=m=>{ if(m==null||isNaN(m)) return '\u2013';
