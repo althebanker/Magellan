@@ -795,12 +795,61 @@ const scrim=document.getElementById('scrim'),modal=document.getElementById('moda
 scrim.onclick=e=>{if(e.target===scrim)scrim.classList.remove('open');};
 
 function mcell(k,v){return `<div class="mcell"><div class="k">${k}</div><div class="v">${v}</div></div>`;}
+/* shared bar/card helpers used by both real and synthetic trend renderers */
+const _fmtV=v=>{if(v==null||!isFinite(v))return '–';const a=Math.abs(v);
+ if(a>=1e9)return (v<0?'-':'')+'$'+(Math.abs(v)/1e9).toFixed(1)+'B';
+ if(a>=1e6)return (v<0?'-':'')+'$'+(Math.abs(v)/1e6).toFixed(0)+'M';
+ if(a>=1e3)return (v<0?'-':'')+'$'+(Math.abs(v)/1e3).toFixed(0)+'K';
+ return (v<0?'-':'')+'$'+Math.abs(v).toFixed(2);};
+function _bars(vals,labels,tooltips){
+ const clean=vals.filter(v=>v!=null&&isFinite(v));
+ if(!clean.length)return '<div style="color:var(--dim);font-size:11px;padding:4px 0">No data</div>';
+ const w=240,h=60,n=vals.length,gap=6,bw=Math.max(1,(w-(n-1)*gap)/n);
+ const hi=Math.max(0,...clean),lo=Math.min(0,...clean),rng=(hi-lo)||1,top=4,plot=h-14-top;
+ const zeroY=h-14-((0-lo)/rng)*plot;let o='';
+ vals.forEach((v,i)=>{
+  if(v==null||!isFinite(v))return;
+  const vY=h-14-((v-lo)/rng)*plot,y=Math.min(vY,zeroY),bh=Math.max(2,Math.abs(zeroY-vY)),x=i*(bw+gap);
+  const col=v>=0?'var(--up)':'var(--down)',op=(0.45+0.55*i/(n-1)).toFixed(2);
+  const tip=tooltips?tooltips[i]:(v>=0?'+':'')+v.toFixed(1);
+  o+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="2" fill="${col}" opacity="${op}"><title>${tip}</title></rect>`;
+  o+=`<text x="${(x+bw/2).toFixed(1)}" y="${h-2}" font-size="8" text-anchor="middle">${labels[i]||''}</text>`;
+ });
+ return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto">${o}</svg>`;}
+
 function trendsBlock(s){
+ /* ---- Real data path (Yahoo statements embedded by Python) ---- */
+ if(s.trends&&Object.keys(s.trends).length>0){
+  const tr=s.trends;
+  const growPct=(vals)=>{const vs=(vals||[]).filter(v=>v!=null&&isFinite(v));if(vs.length<2)return null;
+   const c=vs[0],p=vs[1];if(!p||p===0)return null;return (c/Math.abs(p)-1)*100*(p<0?-1:1);};
+  const cardReal=(t,mode)=>{
+   const ser=mode==='quarter'?t.quarter:t.annual;
+   const rawVals=(ser.values||[]).slice(0,5);const rawDates=(ser.dates||[]).slice(0,5);
+   // Yahoo returns most-recent-first → reverse to chronological for display
+   const vals=[...rawVals].reverse(),dates=[...rawDates].reverse();
+   const g=growPct(rawVals); // growth: rawVals[0]=latest, rawVals[1]=prior
+   const gl=g==null?'':`<span class="g ${g>=0?'pos':'neg'}">${(g>=0?'+':'')+g.toFixed(1)}% ${mode==='quarter'?'QoQ':'YoY'}</span>`;
+   const latest=rawVals.find(v=>v!=null&&isFinite(v));
+   const latestLbl=latest!=null?`<span style="color:var(--muted);font-size:10.5px;margin-right:4px">${_fmtV(latest)}</span>`:'';
+   const tips=vals.map((v,i)=>_fmtV(v)+' ('+( dates[i]||'').slice(0,4)+')');
+   const labShort=dates.map(d=>d.slice(mode==='quarter'?2:0,mode==='quarter'?7:4));
+   return `<div class="devcard"><div class="devtop"><span class="l">${t.label}</span>
+    <span style="display:flex;gap:4px;align-items:baseline">${latestLbl}${gl}</span></div>${_bars(vals,labShort,tips)}</div>`;};
+  const order=['revenue','ebit','ni','eps','cfo','cfi','fcf','cash','recv','pay','assets','liab','ltdebt'];
+  const avail=order.filter(k=>tr[k]);
+  return `<div class="devhdr">Developments</div>
+   <div class="devtoggle">
+    <button class="active" data-dev="devYoY">Yearly · YoY</button>
+    <button data-dev="devQoQ">Quarterly · QoQ</button></div>
+   <div class="dev5 devset active" id="devYoY">${avail.map(k=>cardReal(tr[k],'annual')).join('')||'<p class="hint">No statement data.</p>'}</div>
+   <div class="dev5 devset" id="devQoQ">${avail.map(k=>cardReal(tr[k],'quarter')).join('')||'<p class="hint">No statement data.</p>'}</div>`;}
+
+ /* ---- Synthetic fallback (demo / names outside DETAIL_N set) ---- */
  let seed=0;for(const ch of (s.sym+'tr'))seed=(seed*31+ch.charCodeAt(0))%9973;
  const rng=()=>{seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;};
  const sp=(c,d)=>c+(rng()-0.5)*2*d;
- const revY=isFinite(s.revg)?s.revg:sp(10,15), epsY=isFinite(s.epsg)?s.epsg:sp(8,20);
- // item: [label, annual growth %, sign]  (sign -1 => negative levels, e.g. investing cash flow)
+ const revY=isFinite(s.revg)&&s.revg!==0?s.revg:sp(10,15),epsY=isFinite(s.epsg)&&s.epsg!==0?s.epsg:sp(8,20);
  const defs=[
   ['Revenue',revY,1],['EBIT',sp(revY*0.9,8),1],['Net income',sp(revY*0.85,12),1],
   ['EPS',epsY,1],['Cash & cash equivalents',sp(6,18),1],['FCF / share',sp(revY*0.7,16),1],
@@ -808,26 +857,18 @@ function trendsBlock(s){
   ['Total assets',sp(7,7),1],['Total liabilities',sp(5,8),1],
   ['Cash from operating activities',sp(revY*0.8,10),1],
   ['Cash from investing activities',sp(8,25),-1]];
- const gen=(cagr,steps,sign)=>{const a=[100*sign];for(let i=1;i<5;i++){const g=(cagr/steps)*(0.5+rng()*1.0);a.push(a[i-1]*(1+g));}return a;};
- const yLab=['21','22','23','24','25'], qLab=['2Q25','3Q25','4Q25','1Q26','2Q26'];
- const bars=(a,lab)=>{const w=240,h=58,n=a.length,gap=7,bw=(w-(n-1)*gap)/n;
-  const hi=Math.max(0,...a),lo=Math.min(0,...a),rng2=(hi-lo)||1,top=4,plot=h-12-top;
-  const zeroY=h-12-((0-lo)/rng2)*plot;let o='';
-  for(let i=0;i<n;i++){const vY=h-12-((a[i]-lo)/rng2)*plot;
-   const y=Math.min(vY,zeroY),bh=Math.max(2,Math.abs(zeroY-vY)),x=i*(bw+gap);
-   const col=a[i]>=0?'var(--up)':'var(--down)';
-   o+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="2" fill="${col}" opacity="${(0.4+0.6*i/(n-1)).toFixed(2)}"/>`;
-   o+=`<text x="${(x+bw/2).toFixed(1)}" y="${h-2}" font-size="8" text-anchor="middle">${lab[i]}</text>`;}
-  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto">${o}</svg>`;};
- const card=(label,cagr,sign,steps,lab,unit)=>{const a=gen(cagr,steps,sign);
+ const gen=(cagr,steps,sign)=>{const a=[100*sign];for(let i=1;i<5;i++){const g=(cagr/steps)*(0.5+rng());a.push(a[i-1]*(1+g/100));}return a;};
+ const yLab=['21','22','23','24','25'],qLab=['2Q25','3Q25','4Q25','1Q26','2Q26'];
+ const cardSyn=(label,cagr,sign,steps,lab,unit)=>{const a=gen(cagr,steps,sign);
   const g=a[3]!==0?(a[4]-a[3])/Math.abs(a[3])*100:0;
-  return `<div class="devcard"><div class="devtop"><span class="l">${label}</span>
-   <span class="g ${g>=0?'pos':'neg'}">${pct(g)} ${unit}</span></div>${bars(a,lab)}</div>`;};
- const grid=(steps,lab,unit)=>defs.map(d=>card(d[0],d[1],d[2],steps,lab,unit)).join('');
- return `<div class="devhdr">Developments</div>
+  const tips=a.map((v,i)=>'Index '+(v>=0?'+':'')+v.toFixed(1)+' (est.) · '+lab[i]);
+  return `<div class="devcard"><div class="devtop"><span class="l">${label} <span style="color:var(--dim);font-size:9px">est.</span></span>
+   <span class="g ${g>=0?'pos':'neg'}">${(g>=0?'+':'')+g.toFixed(1)}% ${unit}</span></div>${_bars(a,lab,tips)}</div>`;};
+ const grid=(steps,lab,unit)=>defs.map(d=>cardSyn(d[0],d[1],d[2],steps,lab,unit)).join('');
+ return `<div class="devhdr">Developments <span style="color:var(--dim);font-size:10px">(estimated — full data for top ${DATA.config&&DATA.config.DETAIL_N||40} names)</span></div>
   <div class="devtoggle">
-   <button class="active" data-dev="devYoY">Yearly &middot; YoY (5y)</button>
-   <button data-dev="devQoQ">Quarterly &middot; QoQ (5q)</button></div>
+   <button class="active" data-dev="devYoY">Yearly · YoY (5y)</button>
+   <button data-dev="devQoQ">Quarterly · QoQ (5q)</button></div>
   <div class="dev5 devset active" id="devYoY">${grid(1,yLab,'YoY')}</div>
   <div class="dev5 devset" id="devQoQ">${grid(4,qLab,'QoQ')}</div>`;
 }
@@ -977,44 +1018,40 @@ async function loadNews(sym){
  const newsFeed=document.getElementById('newsFeed');
  const redditFeed=document.getElementById('redditFeed');
  if(!status||!newsFeed||!redditFeed)return;
- status.textContent='Loading news & Reddit…';
- // Yahoo Finance news via internal search API
+ status.textContent='Loading news…';
+ // Yahoo Finance RSS via rss2json.com — CORS-safe, no API key needed
  try{
-  const yurl=`https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(sym)}&newsCount=10&enableFuzzyQuery=false&enableNavLinks=false&quotesCount=0`;
-  const res=await fetch(yurl,{headers:{'Accept':'application/json'}});
+  const rss=encodeURIComponent('https://feeds.finance.yahoo.com/rss/2.0/headline?s='+sym+'&region=US&lang=en-US');
+  const res=await fetch('https://api.rss2json.com/v1/api.json?rss_url='+rss);
   const d=await res.json();
-  const news=(d.news||[]).slice(0,8);
-  if(news.length){
-   const sc=sentimentScore(news.map(n=>n.title||''));
+  const items=(d.items||[]).slice(0,8);
+  if(items.length){
+   const sc=sentimentScore(items.map(n=>n.title||''));
    newsFeed.innerHTML=`<div class="devhdr" style="margin-top:0">Yahoo Finance News</div>
     <div style="font-size:11.5px;color:var(--muted);margin-bottom:10px">Sentiment: ${sentBadge(sc)}</div>`+
-    news.map(n=>`<div style="margin-bottom:10px;padding:9px 12px;background:var(--panel);border:1px solid var(--line);border-radius:9px">
+    items.map(n=>`<div style="margin-bottom:10px;padding:9px 12px;background:var(--panel);border:1px solid var(--line);border-radius:9px">
      <a href="${n.link||'#'}" target="_blank" rel="noopener" style="color:var(--ink);font-size:13px;font-weight:600;text-decoration:none;display:block;margin-bottom:3px">${n.title||''}</a>
-     <div style="color:var(--dim);font-size:11px">${n.publisher||''} · ${n.providerPublishTime?new Date(n.providerPublishTime*1000).toLocaleDateString():''}</div>
+     <div style="color:var(--dim);font-size:11px">${n.author||n.category||''} · ${n.pubDate?new Date(n.pubDate).toLocaleDateString():''}</div>
     </div>`).join('');
-   status.textContent='';
-  } else { newsFeed.innerHTML='<p class="hint">No Yahoo Finance news found for '+sym+'.</p>'; status.textContent=''; }
- }catch(e){ newsFeed.innerHTML='<p class="hint">Yahoo Finance news unavailable (CORS). Try opening this file in Chrome.</p>'; status.textContent=''; }
- // Reddit posts
+  } else { newsFeed.innerHTML='<p class="hint">No news found for '+sym+'.</p>'; }
+  status.textContent='';
+ }catch(e){ newsFeed.innerHTML=`<p class="hint">News feed unavailable (${e.message}).</p>`; status.textContent=''; }
+ // Reddit: cross-origin JSON API works for GET requests without auth
  try{
-  const subs=['stocks','investing','wallstreetbets'];
-  let posts=[];
-  for(const sub of subs){
-   const rurl=`https://www.reddit.com/r/${sub}/search.json?q=${encodeURIComponent(sym)}&sort=new&limit=5&type=link&restrict_sr=1`;
-   const res=await fetch(rurl,{headers:{'Accept':'application/json'}});
-   const d=await res.json();
-   (d.data?.children||[]).forEach(c=>posts.push({...c.data,sub}));}
-  posts=posts.sort((a,b)=>b.created_utc-a.created_utc).slice(0,10);
+  const rurl=`https://www.reddit.com/search.json?q=${encodeURIComponent(sym+' stock')}&sort=new&limit=10&type=link`;
+  const res=await fetch(rurl,{headers:{'Accept':'application/json'}});
+  const d=await res.json();
+  const posts=(d.data?.children||[]).map(c=>c.data).filter(p=>p.title).slice(0,8);
   if(posts.length){
    const sc2=sentimentScore(posts.map(p=>p.title||''));
-   redditFeed.innerHTML=`<div class="devhdr">Reddit Sentiment</div>
+   redditFeed.innerHTML=`<div class="devhdr">Reddit</div>
     <div style="font-size:11.5px;color:var(--muted);margin-bottom:10px">Sentiment: ${sentBadge(sc2)}</div>`+
     posts.map(p=>`<div style="margin-bottom:8px;padding:9px 12px;background:var(--panel);border:1px solid var(--line);border-radius:9px">
      <a href="https://reddit.com${p.permalink}" target="_blank" rel="noopener" style="color:var(--ink);font-size:12.5px;font-weight:600;text-decoration:none;display:block;margin-bottom:3px">${p.title||''}</a>
-     <div style="color:var(--dim);font-size:11px">r/${p.sub} · ▲${p.score||0} · ${new Date((p.created_utc||0)*1000).toLocaleDateString()}</div>
+     <div style="color:var(--dim);font-size:11px">r/${p.subreddit||''} · ▲${p.score||0} · ${new Date((p.created_utc||0)*1000).toLocaleDateString()}</div>
     </div>`).join('');
-  } else { redditFeed.innerHTML=`<p class="hint">No recent Reddit posts found for ${sym}.</p>`; }
- }catch(e){ redditFeed.innerHTML=`<p class="hint">Reddit data unavailable.</p>`; }
+  } else { redditFeed.innerHTML=`<p class="hint">No Reddit posts found for ${sym}. <a href="https://www.reddit.com/search/?q=${encodeURIComponent(sym+' stock')}" target="_blank" style="color:var(--accent)">Search Reddit →</a></p>`; }
+ }catch(e){ redditFeed.innerHTML=`<p class="hint">Reddit unavailable. <a href="https://www.reddit.com/search/?q=${encodeURIComponent(sym+' stock')}" target="_blank" style="color:var(--accent)">Open Reddit search →</a></p>`; }
 }
 
 /* ---- portfolio with LIVE price lookup ---- */
