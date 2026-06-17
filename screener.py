@@ -732,7 +732,7 @@ const fmtCap=m=>{ if(m==null||isNaN(m)) return '\u2013';
   if(m>=1e9) return '$'+fmt(m/1e9,1)+'B';
   if(m>=1e7) return '$'+fmt(m/1e6,0)+'M';
   return '$'+fmt(m/1e6,1)+'M'; };
-document.getElementById('asof').textContent='Demo seed \u00b7 '+new Date().toLocaleDateString();
+document.getElementById('asof').textContent=(DATA.demo?'Demo seed \u00b7 ':'Live \u00b7 ')+DATA.generated;
 
 document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>{
  document.querySelectorAll('nav.tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');
@@ -761,20 +761,22 @@ function emptyMsg(){return '<div class="empty">No names at this score. Lower the
 function findStock(sym){return [...DATA.up,...DATA.down].find(s=>s.sym===sym);}
 renderScreen();
 
-/* ---- synthetic 1Y (demo); real run embeds true history ---- */
-function series(sym,last){let s=0;for(const ch of sym)s=(s*31+ch.charCodeAt(0))%9973;
+/* ---- 1Y price chart: uses real Yahoo history (s.hist) when available ---- */
+function synthSeries(sym,last){let s=0;for(const ch of sym)s=(s*31+ch.charCodeAt(0))%9973;
  const rnd=()=>{s=(s*1103515245+12345)&0x7fffffff;return s/0x7fffffff;};
  const n=252;let v=last*(0.6+rnd()*0.5);const a=[];for(let i=0;i<n;i++){v*=1+(rnd()-0.48)*0.03;a.push(v);}
  const k=last/a[n-1];return a.map(x=>x*k);}
 function sparkPath(a,w,h,p=6){const mn=Math.min(...a),mx=Math.max(...a),r=(mx-mn)||1;
  return a.map((y,i)=>{const X=p+i*(w-2*p)/(a.length-1),Y=h-p-((y-mn)/r)*(h-2*p);
  return (i?'L':'M')+X.toFixed(1)+' '+Y.toFixed(1);}).join(' ');}
-function chartSVG(sym,last){const a=series(sym,last),w=720,h=170;
- const c=a[a.length-1]>=a[0]?'var(--up)':'var(--down)';
+function chartSVG(s){
+ const a=(s.hist&&s.hist.length>1)?s.hist:synthSeries(s.sym,s.price);
+ const w=720,h=170;const c=a[a.length-1]>=a[0]?'var(--up)':'var(--down)';
+ const label=s.hist&&s.hist.length>1?'1Y (live)':'1Y (est.)';
  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto">
  <line class="ax" x1="0" y1="${h-1}" x2="${w}" y2="${h-1}"/>
  <path d="${sparkPath(a,w,h)}" fill="none" stroke="${c}" stroke-width="2"/>
- <text x="6" y="14" fill="var(--dim)" font-size="11">1Y high $${Math.max(...a).toFixed(2)}</text>
+ <text x="6" y="14" fill="var(--dim)" font-size="11">${label} high $${Math.max(...a).toFixed(2)}</text>
  <text x="6" y="${h-6}" fill="var(--dim)" font-size="11">low $${Math.min(...a).toFixed(2)}</text></svg>`;}
 
 /* ---- DCF (5 levers only; rest from data) ---- */
@@ -846,19 +848,20 @@ function openDetail(sym){
  // baseline from data (real where workbook has it; revenue is a labelled proxy for the demo)
  const sharesM=s.shares?s.shares/1e6:100;
  const netDebtM=((s.ltdebt||0)-(s.cash||0))/1e6;
- const revProxy=s.ni?Math.max(50,(s.ni/0.10)/1e6):500; // demo only -> live: real revenue
- const FIX={tax:21,wacc:9,tg:2.5,years:5,rev0:revProxy,netDebt:netDebtM,shares:sharesM};
+ const revMn=s.rev?s.rev/1e6:(s.ni?Math.max(50,(s.ni/0.10)/1e6):500);
+ const FIX={tax:21,wacc:9,tg:2.5,years:5,rev0:revMn,netDebt:netDebtM,shares:sharesM};
  window._FIX=FIX;
  modal.innerHTML=`<div class="mhead"><span class="sym" style="font-size:18px">${s.sym}</span>
  <span class="nm">${s.name||''}</span><span class="badge">${s.sector||''}</span>
  <a class="tvlink" href="https://www.tradingview.com/symbols/${s.sym}/" target="_blank" rel="noopener">TradingView &#8599;</a>
  <button class="x" id="mx">&times;</button></div>
- <div style="margin-top:14px">${chartSVG(s.sym,s.price)}</div>
+ <div style="margin-top:14px">${chartSVG(s)}</div>
  <div class="subtabs">
   <button class="active" data-pane="scorePane">Magellan Score</button>
   <button data-pane="dcfPane">DCF</button>
   <button data-pane="multPane">Multiples</button>
-  <button data-pane="peerPane">Peers</button></div>
+  <button data-pane="peerPane">Peers</button>
+  <button data-pane="newsPane" data-sym="${s.sym}">News</button></div>
 
  <div class="pane active" id="scorePane">
   <div class="bigscore"><span class="n">${s.score}</span><span class="of">Composite score / 7</span></div>
@@ -914,13 +917,15 @@ function openDetail(sym){
    <span><b>EBIT/share</b> $${fmt((s.eps||0)*1.4)}</span></div>
   <div class="scen" id="multScen"></div></div>
 
- <div class="pane" id="peerPane">${peersBlock(s)}</div>`;
+ <div class="pane" id="peerPane">${peersBlock(s)}</div>
+ <div class="pane" id="newsPane"><p class="hint" id="newsStatus">Loading news…</p><div id="newsFeed"></div><div id="redditFeed"></div></div>`;
  scrim.classList.add('open');
  document.getElementById('mx').onclick=()=>scrim.classList.remove('open');
  modal.querySelectorAll('.subtabs button').forEach(b=>b.onclick=()=>{
   modal.querySelectorAll('.subtabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');
   modal.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
-  document.getElementById(b.dataset.pane).classList.add('active');});
+  document.getElementById(b.dataset.pane).classList.add('active');
+  if(b.dataset.pane==='newsPane') loadNews(b.dataset.sym||s.sym);});
  modal.querySelectorAll('input.f').forEach(i=>i.oninput=()=>{recalcDCF(s);recalcMult(s);});
  modal.querySelectorAll('.devtoggle button').forEach(b=>b.onclick=()=>{
   modal.querySelectorAll('.devtoggle button').forEach(x=>x.classList.remove('active'));b.classList.add('active');
@@ -955,12 +960,78 @@ function scenHTML(out,price){
   <div class="ud ${ud>=0?'pos':'neg'}">${ud==null?'':(ud>=0?'+':'')+ud.toFixed(0)+'% vs price'}</div></div>`;};
  return box('worst','Worst case',out.worst)+box('base','Base case',out.base)+box('opt','Optimistic',out.opt);}
 
-/* ---- portfolio with LIVE price lookup (Stooq, works in-browser) ---- */
+/* ---- news + Reddit sentiment ---- */
+const SENT_POS=['beat','surge','jump','rally','rise','gain','up','profit','record','strong','growth','buy','upgrade','bullish','exceed'];
+const SENT_NEG=['miss','fall','drop','loss','down','decline','warning','cut','downgrade','bearish','weak','risk','concern','lawsuit','fraud'];
+function sentimentScore(titles){
+ let p=0,n=0;
+ titles.forEach(t=>{const low=t.toLowerCase();SENT_POS.forEach(w=>{if(low.includes(w))p++;});SENT_NEG.forEach(w=>{if(low.includes(w))n++;});});
+ return {p,n,total:titles.length};}
+function sentBadge(sc){
+ const net=sc.p-sc.n;const pct=sc.total?Math.round(((sc.p)/(sc.p+sc.n||1))*100):50;
+ const col=net>2?'var(--up)':net<-2?'var(--down)':'var(--gold)';
+ const label=net>2?'Positive':net<-2?'Negative':'Mixed';
+ return `<span style="color:${col};font-weight:700">${label}</span> (${pct}% positive across ${sc.total} items)`;}
+async function loadNews(sym){
+ const status=document.getElementById('newsStatus');
+ const newsFeed=document.getElementById('newsFeed');
+ const redditFeed=document.getElementById('redditFeed');
+ if(!status||!newsFeed||!redditFeed)return;
+ status.textContent='Loading news & Reddit…';
+ // Yahoo Finance news via internal search API
+ try{
+  const yurl=`https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(sym)}&newsCount=10&enableFuzzyQuery=false&enableNavLinks=false&quotesCount=0`;
+  const res=await fetch(yurl,{headers:{'Accept':'application/json'}});
+  const d=await res.json();
+  const news=(d.news||[]).slice(0,8);
+  if(news.length){
+   const sc=sentimentScore(news.map(n=>n.title||''));
+   newsFeed.innerHTML=`<div class="devhdr" style="margin-top:0">Yahoo Finance News</div>
+    <div style="font-size:11.5px;color:var(--muted);margin-bottom:10px">Sentiment: ${sentBadge(sc)}</div>`+
+    news.map(n=>`<div style="margin-bottom:10px;padding:9px 12px;background:var(--panel);border:1px solid var(--line);border-radius:9px">
+     <a href="${n.link||'#'}" target="_blank" rel="noopener" style="color:var(--ink);font-size:13px;font-weight:600;text-decoration:none;display:block;margin-bottom:3px">${n.title||''}</a>
+     <div style="color:var(--dim);font-size:11px">${n.publisher||''} · ${n.providerPublishTime?new Date(n.providerPublishTime*1000).toLocaleDateString():''}</div>
+    </div>`).join('');
+   status.textContent='';
+  } else { newsFeed.innerHTML='<p class="hint">No Yahoo Finance news found for '+sym+'.</p>'; status.textContent=''; }
+ }catch(e){ newsFeed.innerHTML='<p class="hint">Yahoo Finance news unavailable (CORS). Try opening this file in Chrome.</p>'; status.textContent=''; }
+ // Reddit posts
+ try{
+  const subs=['stocks','investing','wallstreetbets'];
+  let posts=[];
+  for(const sub of subs){
+   const rurl=`https://www.reddit.com/r/${sub}/search.json?q=${encodeURIComponent(sym)}&sort=new&limit=5&type=link&restrict_sr=1`;
+   const res=await fetch(rurl,{headers:{'Accept':'application/json'}});
+   const d=await res.json();
+   (d.data?.children||[]).forEach(c=>posts.push({...c.data,sub}));}
+  posts=posts.sort((a,b)=>b.created_utc-a.created_utc).slice(0,10);
+  if(posts.length){
+   const sc2=sentimentScore(posts.map(p=>p.title||''));
+   redditFeed.innerHTML=`<div class="devhdr">Reddit Sentiment</div>
+    <div style="font-size:11.5px;color:var(--muted);margin-bottom:10px">Sentiment: ${sentBadge(sc2)}</div>`+
+    posts.map(p=>`<div style="margin-bottom:8px;padding:9px 12px;background:var(--panel);border:1px solid var(--line);border-radius:9px">
+     <a href="https://reddit.com${p.permalink}" target="_blank" rel="noopener" style="color:var(--ink);font-size:12.5px;font-weight:600;text-decoration:none;display:block;margin-bottom:3px">${p.title||''}</a>
+     <div style="color:var(--dim);font-size:11px">r/${p.sub} · ▲${p.score||0} · ${new Date((p.created_utc||0)*1000).toLocaleDateString()}</div>
+    </div>`).join('');
+  } else { redditFeed.innerHTML=`<p class="hint">No recent Reddit posts found for ${sym}.</p>`; }
+ }catch(e){ redditFeed.innerHTML=`<p class="hint">Reddit data unavailable.</p>`; }
+}
+
+/* ---- portfolio with LIVE price lookup ---- */
 const LS='magellan_portfolio_v1';
 function loadP(){try{return JSON.parse(localStorage.getItem(LS))||[]}catch(e){return []}}
 function saveP(p){try{localStorage.setItem(LS,JSON.stringify(p))}catch(e){}}
 let PORT=loadP();
 async function livePrice(t){
+ // Try Yahoo Finance chart API first (most reliable, no key needed)
+ try{
+  const yurl=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(t)}?range=1d&interval=1d&corsDomain=finance.yahoo.com`;
+  const res=await fetch(yurl,{headers:{'Accept':'application/json'}});
+  const d=await res.json();
+  const px=d?.chart?.result?.[0]?.meta?.regularMarketPrice;
+  if(px&&isFinite(px))return px;
+ }catch(e){}
+ // Fallback: Stooq
  const url='https://stooq.com/q/l/?s='+encodeURIComponent(t.toLowerCase())+'.us&f=sd2t2ohlcv&h&e=csv';
  const r=await fetch(url);const txt=await r.text();
  const line=(txt.trim().split('\n')[1]||'').split(',');
