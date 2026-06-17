@@ -41,6 +41,8 @@ CONFIG = dict(
     UNIVERSE_FILE  = "",
     MAX_UNIVERSE   = 0,
     OUT_HTML       = "dashboard.html",
+    HISTORY_FILE   = "history.json",  # accumulating daily archive of score>=HISTORY_SCORE picks
+    HISTORY_SCORE  = 6,               # min score a name needs to be saved to the history archive
     DL_CHUNK       = 250,
     FUND_SLEEP     = 0.4,
 )
@@ -546,8 +548,10 @@ def main():
 
     print("Fetching S&P 500 benchmark history...")
     bench = dict(sym="SPY", name="S&P 500 (SPY)", hist=yahoo_history("SPY"))
+    history = update_history_archive(up_final, down_final, cfg)
     payload = dict(generated=dt.datetime.now().strftime("%Y-%m-%d %H:%M"),
-                   config=cfg, up=up_final, down=down_final, bench=bench, demo=False)
+                   config=cfg, up=up_final, down=down_final, bench=bench,
+                   history=history, demo=False)
     build_dashboard(payload, cfg["OUT_HTML"])
     print(f"Done -> {cfg['OUT_HTML']}  ({len(up_final)} up, {len(down_final)} down)")
     if "--no-open" not in sys.argv:
@@ -556,6 +560,51 @@ def main():
             webbrowser.open("file://" + os.path.abspath(cfg["OUT_HTML"]))
         except Exception:
             pass
+
+# ===================== daily history archive =====================
+def update_history_archive(up_final, down_final, cfg):
+    """Append today's score>=HISTORY_SCORE picks to a rolling JSON archive on disk,
+    then return the full archive (list of {date, picks:[{sym,score,price,side}]}).
+    Re-running on the same day overwrites that day's entry, so it's idempotent."""
+    path = cfg.get("HISTORY_FILE", "history.json")
+    min_score = cfg.get("HISTORY_SCORE", 6)
+    today = dt.date.today().isoformat()
+
+    archive = []
+    if os.path.exists(path):
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                archive = json.load(f)
+            if not isinstance(archive, list):
+                archive = []
+        except Exception as e:
+            print(f"  ! could not read {path} ({e}); starting fresh")
+            archive = []
+
+    picks = []
+    for side, recs in (("up", up_final), ("down", down_final)):
+        for r in recs:
+            if (r.get("score") or 0) >= min_score and r.get("sym"):
+                picks.append(dict(sym=r["sym"], score=r.get("score"),
+                                  price=r.get("price"), side=side))
+    # de-dupe by symbol, keep the higher score
+    seen = {}
+    for p in picks:
+        if p["sym"] not in seen or (p["score"] or 0) > (seen[p["sym"]]["score"] or 0):
+            seen[p["sym"]] = p
+    picks = sorted(seen.values(), key=lambda p: (-(p["score"] or 0), p["sym"]))
+
+    archive = [d for d in archive if d.get("date") != today]  # replace today if re-run
+    archive.append(dict(date=today, picks=picks))
+    archive.sort(key=lambda d: d.get("date", ""))
+
+    try:
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(archive, f, indent=1, default=str)
+        print(f"  history archive: {len(archive)} days, {len(picks)} picks today -> {path}")
+    except Exception as e:
+        print(f"  ! could not write {path}: {e}")
+    return archive
 
 # ===================== inlined dashboard renderer =====================
 def build_dashboard(payload, out_path="dashboard.html"):
@@ -680,6 +729,16 @@ th{color:var(--muted);font-weight:600;font-size:11px;letter-spacing:.6px;text-tr
 .badge{font-size:10px;color:var(--dim);border:1px solid var(--line);border-radius:6px;padding:1px 6px}
 svg .ax{stroke:var(--line);stroke-width:1}
 .status{font-size:11px;color:var(--dim);margin-left:6px}
+.seg{display:inline-flex;gap:2px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:3px}
+.seg button{background:none;border:0;color:var(--muted);font-size:12px;padding:6px 13px;border-radius:6px;cursor:pointer}
+.seg button.on{background:var(--panel);color:var(--ink)}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid var(--line);
+border-radius:99px;padding:4px 6px 4px 11px;margin:0 6px 6px 0;font-size:12px;font-weight:600}
+.chip .x{cursor:pointer;color:var(--down);font-size:14px;line-height:1;border:none;background:none;padding:0}
+.chip.bench{border-color:var(--accent);color:var(--blue)}
+.note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);
+border-radius:8px;padding:12px 14px;font-size:12.5px;color:var(--muted);line-height:1.6;margin:14px 0}
+.daybadge{font-size:10px;color:var(--gold);border:1px solid var(--line);border-radius:6px;padding:1px 7px;margin-left:8px}
 .compass{cursor:pointer;transition:transform .6s ease}
 .compass:hover{transform:rotate(20deg)}
 .compass.spin{animation:cspin 1s linear}
@@ -726,6 +785,7 @@ advisor before investing.</p>
 <button class="active" data-tab="screen">Screen</button>
 <button data-tab="magellan">Magellan &mdash; Portfolio</button>
 <button data-tab="backtest">Backtest</button>
+<button data-tab="history">History</button>
 </nav>
 
 <section class="view active" id="screen">
@@ -754,12 +814,36 @@ advisor before investing.</p>
 
 <section class="view" id="backtest">
 <div class="scorebar">
-<span class="lab">Min score to include</span>
+<span class="lab">Portfolio source</span>
+<div class="seg" id="srcSeg">
+<button class="on" data-src="screen">Today's screen</button>
+<button data-src="portfolio">My portfolio</button>
+<button data-src="history">From history</button>
+</div>
+<span class="lab" id="srcExtra" style="margin-left:auto"></span>
+</div>
+<div class="scorebar" id="screenCtl">
+<span class="lab">Min score</span>
 <input type="range" id="btSlider" min="4" max="6" step="1" value="6"/>
 <span class="lab">&ge; <b id="btScoreVal" class="cnt">6</b></span>
 <span class="lab" style="margin-left:auto"><b class="cnt" id="btN">0</b> names &middot; equal weight</span>
 </div>
+<div class="addbar" style="display:flex;gap:10px;align-items:end;flex-wrap:wrap">
+<div><label class="f">Add ticker manually</label><input class="f" id="btTicker" placeholder="e.g. MSFT" style="text-transform:uppercase;width:130px"/></div>
+<button class="btn" id="btAdd">Add to backtest</button>
+<button class="btn" id="btReset" style="background:transparent;color:var(--muted);border:1px solid var(--line)">Reset to source</button>
+<span class="lab" id="btAddStatus" style="align-self:center;color:var(--dim)"></span>
+</div>
+<div id="btChips" style="margin-bottom:6px"></div>
 <div id="btBody"></div>
+</section>
+
+<section class="view" id="history">
+<div class="note" id="histNote">Each time you run <b>Update Magellan</b> after the close, that day's score-&ge;6 names are
+appended to <b>history.json</b> on disk (with their close). This archive powers the
+<b>&ldquo;From history&rdquo;</b> backtest &mdash; each name enters on the date it first appeared, tracked forward against the S&amp;P 500.</div>
+<div class="subt" style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:18px 2px 8px">Saved daily screens</div>
+<div id="histBody"></div>
 </section>
 </div>
 
@@ -809,7 +893,8 @@ document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>{
  document.querySelectorAll('nav.tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');
  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
  document.getElementById(b.dataset.tab).classList.add('active');
- if(b.dataset.tab==='backtest') renderBacktest();});
+ if(b.dataset.tab==='backtest') renderBacktest();
+ if(b.dataset.tab==='history') renderHistory();});
 
 /* ---- screen + score slider ---- */
 const slider=document.getElementById('scoreSlider');
@@ -1185,57 +1270,148 @@ function renderP(){
 }
 renderP();
 
-/* ---- backtest: equal-weight score>=N portfolio vs S&P 500 over the embedded 1Y window ---- */
+/* ================= BACKTEST + HISTORY ================= */
+let BT_SRC='screen';        // screen | portfolio | history
+let BT_MANUAL=[];           // [{sym,closes,dates}] manually added tickers
+const HISTCACHE={};         // sym -> {closes,dates} live-fetch cache
 const btSlider=document.getElementById('btSlider');
 if(btSlider) btSlider.oninput=renderBacktest;
-function normSeries(h){ // rebase a price series to start at 100
- if(!h||h.length<2)return null;const base=h[0];if(!base)return null;return h.map(x=>x/base*100);}
-function renderBacktest(){
- const min=+btSlider.value;document.getElementById('btScoreVal').textContent=min;
+function normSeries(h){ if(!h||h.length<2)return null;const base=h[0];if(!base)return null;return h.map(x=>x/base*100);}
+
+// live 1Y daily history via Yahoo chart API -> {closes,dates} downsampled to ~64 pts
+async function fetchHist1y(sym){
+ sym=sym.toUpperCase();
+ if(HISTCACHE[sym])return HISTCACHE[sym];
+ const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=1y&interval=1d&corsDomain=finance.yahoo.com`;
+ const res=await fetch(url,{headers:{'Accept':'application/json'}});
+ const d=await res.json();
+ const r=d?.chart?.result?.[0]; if(!r)throw new Error('no data');
+ const ts=r.timestamp||[], cl=(r.indicators?.quote?.[0]?.close)||[];
+ let pts=ts.map((t,i)=>({t,c:cl[i]})).filter(p=>p.c!=null&&isFinite(p.c));
+ if(pts.length>64){const step=pts.length/64;pts=Array.from({length:64},(_,i)=>pts[Math.min(pts.length-1,Math.floor(i*step))]);}
+ const out={closes:pts.map(p=>+p.c.toFixed(4)),dates:pts.map(p=>new Date(p.t*1000).toISOString().slice(0,10))};
+ HISTCACHE[sym]=out; return out;
+}
+
+document.querySelectorAll('#srcSeg button').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('#srcSeg button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+ BT_SRC=b.dataset.src;
+ document.getElementById('screenCtl').style.display = BT_SRC==='screen'?'flex':'none';
+ renderBacktest();});
+document.getElementById('btAdd').onclick=async()=>{
+ const t=document.getElementById('btTicker').value.trim().toUpperCase();
+ const st=document.getElementById('btAddStatus');
+ if(!t){st.textContent='Type a ticker first.';return;}
+ if(BT_MANUAL.find(m=>m.sym===t)){st.textContent=t+' already added.';return;}
+ st.textContent='Fetching 1Y history for '+t+'…';
+ try{const h=await fetchHist1y(t);BT_MANUAL.push({sym:t,closes:h.closes,dates:h.dates});
+  document.getElementById('btTicker').value='';st.textContent=t+' added.';renderBacktest();}
+ catch(e){st.textContent='Could not fetch '+t+' ('+e.message+').';}
+};
+document.getElementById('btReset').onclick=()=>{BT_MANUAL=[];document.getElementById('btAddStatus').textContent='';renderBacktest();};
+
+// resolve the holdings (with closes/dates) for the chosen source; returns a promise
+async function btHoldings(){
+ let holds=[];
+ if(BT_SRC==='screen'){
+  const min=+btSlider.value;
+  holds=[...DATA.up,...DATA.down].filter(s=>s.score>=min&&s.hist&&s.hist.length>1)
+        .map(s=>({sym:s.sym,closes:s.hist}));         // embedded, no dates needed for window mode
+ } else if(BT_SRC==='portfolio'){
+  for(const p of PORT){
+   try{const h=await fetchHist1y(p.t);holds.push({sym:p.t,closes:h.closes,dates:h.dates});}catch(e){}
+  }
+ } else { // history: each unique archived name, entering on its first-seen date
+  const seen={};(DATA.history||[]).forEach(d=>d.picks.forEach(p=>{if(!seen[p.sym])seen[p.sym]={sym:p.sym,first:d.date};}));
+  for(const o of Object.values(seen)){
+   try{const h=await fetchHist1y(o.sym);holds.push({sym:o.sym,closes:h.closes,dates:h.dates,first:o.first});}catch(e){}
+  }
+ }
+ BT_MANUAL.forEach(m=>{if(!holds.find(h=>h.sym===m.sym))holds.push({sym:m.sym,closes:m.closes,dates:m.dates,manual:true});});
+ return holds.filter(h=>h.closes&&h.closes.length>1);
+}
+
+async function renderBacktest(){
+ if(btSlider)document.getElementById('btScoreVal').textContent=+btSlider.value;
+ document.getElementById('btN').textContent=[...DATA.up,...DATA.down].filter(s=>s.score>=(btSlider?+btSlider.value:6)&&s.hist&&s.hist.length>1).length;
  const body=document.getElementById('btBody');
- // candidates: any screened name with score>=min that has real embedded history
- const names=[...DATA.up,...DATA.down].filter(s=>s.score>=min && s.hist && s.hist.length>1);
- document.getElementById('btN').textContent=names.length;
- const bench=DATA.bench&&DATA.bench.hist&&DATA.bench.hist.length>1?DATA.bench:null;
- if(!names.length){
-  body.innerHTML='<div class="empty">No score &ge;'+min+' names have embedded price history yet. Lower the threshold, or run an update after the close (full history is pulled for the top '+((DATA.config&&DATA.config.DETAIL_N)||40)+' names per side).</div>';
+ const srcExtra=document.getElementById('srcExtra');
+ srcExtra.textContent = BT_SRC==='portfolio'?'using your '+PORT.length+' holding(s)'
+   : BT_SRC==='history'?'forward-tracked from '+((DATA.history||[]).length)+' saved day(s)' : '';
+ if(BT_SRC!=='screen') body.innerHTML='<div class="empty">Loading live history…</div>';
+
+ const holds=await btHoldings();
+ // chips
+ const chipsEl=document.getElementById('btChips');
+ chipsEl.innerHTML='<span class="chip bench">SPY · benchmark</span>'+
+  holds.map(h=>`<span class="chip">${h.sym}${h.manual?' <span style="color:var(--gold)">＋</span>':''}${h.first?' <span style="color:var(--dim);font-weight:400">since '+h.first.slice(5)+'</span>':''}${h.manual?` <button class="x" data-rm="${h.sym}">×</button>`:''}</span>`).join('');
+ chipsEl.querySelectorAll('button[data-rm]').forEach(btn=>btn.onclick=()=>{BT_MANUAL=BT_MANUAL.filter(m=>m.sym!==btn.dataset.rm);renderBacktest();});
+
+ if(!holds.length){
+  body.innerHTML='<div class="empty">'+(BT_SRC==='portfolio'?'No holdings in your portfolio yet — add some in the Portfolio tab, or add a ticker manually above.':BT_SRC==='history'?'No history saved yet. Run an update after the close to start the archive.':'No score names with price history. Lower the score or add a ticker manually.')+'</div>';
   return;}
- // align all series to the shortest length so the index lines up
- const L=Math.min(...names.map(s=>s.hist.length), bench?bench.hist.length:Infinity);
- const port=[];
- for(let i=0;i<L;i++){let sum=0,k=0;
-  names.forEach(s=>{const n=normSeries(s.hist.slice(0,L));if(n){sum+=n[i];k++;}});
-  port.push(k?sum/k:100);}
- const spy=bench?normSeries(bench.hist.slice(0,L)):null;
- const portRet=port[L-1]-100, spyRet=spy?spy[L-1]-100:null;
- const alpha=spy?portRet-spyRet:null;
- // chart
- const w=900,h=320,pad=34;
+
+ // benchmark series (live for history mode so we have dates; embedded otherwise)
+ let benchCloses,benchDates=null;
+ if(BT_SRC==='history'){try{const b=await fetchHist1y('SPY');benchCloses=b.closes;benchDates=b.dates;}catch(e){benchCloses=DATA.bench&&DATA.bench.hist;}}
+ else benchCloses=DATA.bench&&DATA.bench.hist;
+ const haveBench=benchCloses&&benchCloses.length>1;
+ const L=Math.min(haveBench?benchCloses.length:Infinity,...holds.map(h=>h.closes.length));
+
+ let port=[],spy=null,startIdx=0,label;
+ if(BT_SRC==='history'){
+  // forward-tracked: each name enters at its first-seen date; portfolio = avg of held, rebased at each entry
+  const dates=benchDates||holds[0].dates;
+  const entryIdx=h=>{const fi=(h.first||dates[0]);let e=dates.findIndex(d=>d>=fi);return e<0?0:e;};
+  holds.forEach(h=>h._e=entryIdx(h));
+  startIdx=Math.min(...holds.map(h=>h._e));
+  for(let i=startIdx;i<L;i++){let sum=0,k=0;
+   holds.forEach(h=>{if(i>=h._e){const base=h.closes[h._e];if(base){sum+=h.closes[i]/base*100;k++;}}});
+   port.push(k?sum/k:100);}
+  if(haveBench){const base=benchCloses[startIdx];spy=[];for(let i=startIdx;i<L;i++)spy.push(benchCloses[i]/base*100);}
+  label='Magellan picks (forward-tracked)';
+ } else {
+  for(let i=0;i<L;i++){let sum=0,k=0;holds.forEach(h=>{const n=normSeries(h.closes.slice(0,L));if(n){sum+=n[i];k++;}});port.push(k?sum/k:100);}
+  if(haveBench)spy=normSeries(benchCloses.slice(0,L));
+  label=BT_SRC==='portfolio'?'My portfolio (equal wt.)':'Magellan ≥'+(+btSlider.value)+' (equal wt.)';
+ }
+ const PL=port.length;
+ const portRet=port[PL-1]-100, spyRet=spy?spy[spy.length-1]-100:null, alpha=spy?portRet-spyRet:null;
+ const w=900,h=320,pad=36;
  const allV=[...port,...(spy||[])];const mn=Math.min(...allV),mx=Math.max(...allV),r=(mx-mn)||1;
- const xy=(arr)=>arr.map((y,i)=>{const X=pad+i*(w-2*pad)/(L-1),Y=h-pad-((y-mn)/r)*(h-2*pad);
-  return (i?'L':'M')+X.toFixed(1)+' '+Y.toFixed(1);}).join(' ');
+ const xy=arr=>arr.map((y,i)=>{const X=pad+i*(w-2*pad)/(arr.length-1),Y=h-pad-((y-mn)/r)*(h-2*pad);return (i?'L':'M')+X.toFixed(1)+' '+Y.toFixed(1);}).join(' ');
  const y100=h-pad-((100-mn)/r)*(h-2*pad);
- const stat=(l,v,suf)=>`<div class="mcell"><div class="k">${l}</div><div class="v ${v>=0?'pos':'neg'}">${v==null?'–':(v>=0?'+':'')+v.toFixed(1)+(suf||'%')}</div></div>`;
+ const stat=(l,v)=>`<div class="mcell"><div class="k">${l}</div><div class="v ${v>=0?'pos':'neg'}">${v==null?'–':(v>=0?'+':'')+v.toFixed(1)+'%'}</div></div>`;
+ const note = BT_SRC==='screen'?'Uses <i>today’s</i> top-rated names on past prices → carries selection &amp; survivorship bias.'
+   : BT_SRC==='history'?'Each name enters on the date it first appeared in the screen → no survivorship bias. Live prices are fetched per name.'
+   : 'Your actual holdings, equal-weighted, vs the market over the same window.';
  body.innerHTML=`
   <div class="mgrid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px">
-   ${stat('Magellan score ≥'+min, portRet)}
-   ${stat('S&P 500 (SPY)', spyRet)}
-   ${stat('Outperformance', alpha)}
+   ${stat(label, portRet)}${stat('S&P 500 (SPY)', spyRet)}${stat('Outperformance', alpha)}
   </div>
   <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px">
    <line class="ax" x1="${pad}" y1="${y100.toFixed(1)}" x2="${w-pad}" y2="${y100.toFixed(1)}" stroke="var(--dim)" stroke-dasharray="3 3"/>
    <text x="${pad}" y="${(y100-4).toFixed(1)}" font-size="9" fill="var(--dim)">100 (start)</text>
    ${spy?`<path d="${xy(spy)}" fill="none" stroke="var(--muted)" stroke-width="2"/>`:''}
    <path d="${xy(port)}" fill="none" stroke="var(--gold)" stroke-width="2.5"/>
-   <text x="${w-pad}" y="14" text-anchor="end" font-size="11" fill="var(--gold)">● Magellan ≥${min} (equal wt.)</text>
+   <text x="${w-pad}" y="14" text-anchor="end" font-size="11" fill="var(--gold)">● ${label}</text>
    ${spy?`<text x="${w-pad}" y="28" text-anchor="end" font-size="11" fill="var(--muted)">● S&P 500</text>`:''}
   </svg>
-  <div style="margin-top:10px;font-size:12px;color:var(--muted)">
-   Holds the <b>${names.length}</b> name(s) scoring &ge;${min} in today’s screen, equal-weighted, rebased to 100 at the start of the ~1-year window: <b style="color:var(--ink)">${names.map(s=>s.sym).join(', ')}</b>.
-  </div>
-  <p class="hint" style="margin-top:12px;line-height:1.6">
-   <b>Read with care.</b> This is an illustrative look-back, not a true historical strategy test. It uses <i>today’s</i> top-rated names applied to past prices, so it carries selection &amp; survivorship bias (names that fell out of favour or de-listed aren’t shown). A genuine backtest would re-screen on every past date. Past performance does not predict future results.
-  </p>`;
+  <div style="margin-top:10px;font-size:12px;color:var(--muted)">Holds <b>${holds.length}</b> name(s): <b style="color:var(--ink)">${holds.map(h=>h.sym).join(', ')}</b>, equal-weighted, rebased to 100.</div>
+  <p class="hint" style="margin-top:10px;line-height:1.6"><b>Read with care.</b> ${note} Past performance does not predict future results.</p>`;
+}
+
+function renderHistory(){
+ const body=document.getElementById('histBody');
+ const hist=DATA.history||[];
+ if(!hist.length){body.innerHTML='<div class="empty">No history saved yet. Run an update after the close — today’s score-≥6 names will be archived to history.json.</div>';return;}
+ const rows=[...hist].reverse().map(d=>{
+  const isToday=d.date===(DATA.generated||'').slice(0,10);
+  return `<tr><td>${d.date}${isToday?'<span class="daybadge">today</span>':''}</td>
+   <td style="text-align:left">${(d.picks||[]).map(p=>`<span class="chip">${p.sym} <span style="color:var(--dim);font-weight:400">${p.score}${p.price!=null?'·$'+(+p.price).toFixed(2):''}</span></span>`).join('')||'<span style="color:var(--dim)">none</span>'}</td>
+   <td>${(d.picks||[]).length}</td></tr>`;}).join('');
+ body.innerHTML=`<table><thead><tr><th>Date</th><th style="text-align:left">Score ≥6 picks (score · close)</th><th>Count</th></tr></thead><tbody>${rows}</tbody></table>
+  <p class="hint" style="margin-top:12px">The <b>“From history”</b> source in the Backtest tab reads this archive: each ticker enters the portfolio on the date it first appeared here, then is tracked forward against the S&P 500.</p>`;
 }
 </script></body></html>
 """
