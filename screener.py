@@ -544,8 +544,10 @@ def main():
         print("Enriching UP side...");   up_final   = enrich_and_rank(ups)
         print("Enriching DOWN side..."); down_final = enrich_and_rank(downs)
 
+    print("Fetching S&P 500 benchmark history...")
+    bench = dict(sym="SPY", name="S&P 500 (SPY)", hist=yahoo_history("SPY"))
     payload = dict(generated=dt.datetime.now().strftime("%Y-%m-%d %H:%M"),
-                   config=cfg, up=up_final, down=down_final, demo=False)
+                   config=cfg, up=up_final, down=down_final, bench=bench, demo=False)
     build_dashboard(payload, cfg["OUT_HTML"])
     print(f"Done -> {cfg['OUT_HTML']}  ({len(up_final)} up, {len(down_final)} down)")
     if "--no-open" not in sys.argv:
@@ -723,6 +725,7 @@ advisor before investing.</p>
 <nav class="tabs">
 <button class="active" data-tab="screen">Screen</button>
 <button data-tab="magellan">Magellan &mdash; Portfolio</button>
+<button data-tab="backtest">Backtest</button>
 </nav>
 
 <section class="view active" id="screen">
@@ -747,6 +750,16 @@ advisor before investing.</p>
 </div>
 <div id="pStatus" class="status"></div>
 <div id="pBody"></div>
+</section>
+
+<section class="view" id="backtest">
+<div class="scorebar">
+<span class="lab">Min score to include</span>
+<input type="range" id="btSlider" min="4" max="6" step="1" value="6"/>
+<span class="lab">&ge; <b id="btScoreVal" class="cnt">6</b></span>
+<span class="lab" style="margin-left:auto"><b class="cnt" id="btN">0</b> names &middot; equal weight</span>
+</div>
+<div id="btBody"></div>
 </section>
 </div>
 
@@ -795,7 +808,8 @@ document.getElementById('asof').textContent=(DATA.demo?'Demo seed \u00b7 ':'Live
 document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>{
  document.querySelectorAll('nav.tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');
  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
- document.getElementById(b.dataset.tab).classList.add('active');});
+ document.getElementById(b.dataset.tab).classList.add('active');
+ if(b.dataset.tab==='backtest') renderBacktest();});
 
 /* ---- screen + score slider ---- */
 const slider=document.getElementById('scoreSlider');
@@ -1170,6 +1184,59 @@ function renderP(){
  body.querySelectorAll('button[data-rm]').forEach(b=>b.onclick=()=>{PORT.splice(+b.dataset.rm,1);saveP(PORT);renderP();});
 }
 renderP();
+
+/* ---- backtest: equal-weight score>=N portfolio vs S&P 500 over the embedded 1Y window ---- */
+const btSlider=document.getElementById('btSlider');
+if(btSlider) btSlider.oninput=renderBacktest;
+function normSeries(h){ // rebase a price series to start at 100
+ if(!h||h.length<2)return null;const base=h[0];if(!base)return null;return h.map(x=>x/base*100);}
+function renderBacktest(){
+ const min=+btSlider.value;document.getElementById('btScoreVal').textContent=min;
+ const body=document.getElementById('btBody');
+ // candidates: any screened name with score>=min that has real embedded history
+ const names=[...DATA.up,...DATA.down].filter(s=>s.score>=min && s.hist && s.hist.length>1);
+ document.getElementById('btN').textContent=names.length;
+ const bench=DATA.bench&&DATA.bench.hist&&DATA.bench.hist.length>1?DATA.bench:null;
+ if(!names.length){
+  body.innerHTML='<div class="empty">No score &ge;'+min+' names have embedded price history yet. Lower the threshold, or run an update after the close (full history is pulled for the top '+((DATA.config&&DATA.config.DETAIL_N)||40)+' names per side).</div>';
+  return;}
+ // align all series to the shortest length so the index lines up
+ const L=Math.min(...names.map(s=>s.hist.length), bench?bench.hist.length:Infinity);
+ const port=[];
+ for(let i=0;i<L;i++){let sum=0,k=0;
+  names.forEach(s=>{const n=normSeries(s.hist.slice(0,L));if(n){sum+=n[i];k++;}});
+  port.push(k?sum/k:100);}
+ const spy=bench?normSeries(bench.hist.slice(0,L)):null;
+ const portRet=port[L-1]-100, spyRet=spy?spy[L-1]-100:null;
+ const alpha=spy?portRet-spyRet:null;
+ // chart
+ const w=900,h=320,pad=34;
+ const allV=[...port,...(spy||[])];const mn=Math.min(...allV),mx=Math.max(...allV),r=(mx-mn)||1;
+ const xy=(arr)=>arr.map((y,i)=>{const X=pad+i*(w-2*pad)/(L-1),Y=h-pad-((y-mn)/r)*(h-2*pad);
+  return (i?'L':'M')+X.toFixed(1)+' '+Y.toFixed(1);}).join(' ');
+ const y100=h-pad-((100-mn)/r)*(h-2*pad);
+ const stat=(l,v,suf)=>`<div class="mcell"><div class="k">${l}</div><div class="v ${v>=0?'pos':'neg'}">${v==null?'–':(v>=0?'+':'')+v.toFixed(1)+(suf||'%')}</div></div>`;
+ body.innerHTML=`
+  <div class="mgrid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px">
+   ${stat('Magellan score ≥'+min, portRet)}
+   ${stat('S&P 500 (SPY)', spyRet)}
+   ${stat('Outperformance', alpha)}
+  </div>
+  <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px">
+   <line class="ax" x1="${pad}" y1="${y100.toFixed(1)}" x2="${w-pad}" y2="${y100.toFixed(1)}" stroke="var(--dim)" stroke-dasharray="3 3"/>
+   <text x="${pad}" y="${(y100-4).toFixed(1)}" font-size="9" fill="var(--dim)">100 (start)</text>
+   ${spy?`<path d="${xy(spy)}" fill="none" stroke="var(--muted)" stroke-width="2"/>`:''}
+   <path d="${xy(port)}" fill="none" stroke="var(--gold)" stroke-width="2.5"/>
+   <text x="${w-pad}" y="14" text-anchor="end" font-size="11" fill="var(--gold)">● Magellan ≥${min} (equal wt.)</text>
+   ${spy?`<text x="${w-pad}" y="28" text-anchor="end" font-size="11" fill="var(--muted)">● S&P 500</text>`:''}
+  </svg>
+  <div style="margin-top:10px;font-size:12px;color:var(--muted)">
+   Holds the <b>${names.length}</b> name(s) scoring &ge;${min} in today’s screen, equal-weighted, rebased to 100 at the start of the ~1-year window: <b style="color:var(--ink)">${names.map(s=>s.sym).join(', ')}</b>.
+  </div>
+  <p class="hint" style="margin-top:12px;line-height:1.6">
+   <b>Read with care.</b> This is an illustrative look-back, not a true historical strategy test. It uses <i>today’s</i> top-rated names applied to past prices, so it carries selection &amp; survivorship bias (names that fell out of favour or de-listed aren’t shown). A genuine backtest would re-screen on every past date. Past performance does not predict future results.
+  </p>`;
+}
 </script></body></html>
 """
 
