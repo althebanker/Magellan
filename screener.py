@@ -754,6 +754,33 @@ display:none;align-items:center;justify-content:center;padding:24px;z-index:100}
 .disc .ok{background:var(--accent);border:none;color:#08122b;font-weight:700;border-radius:9px;
 padding:11px 20px;cursor:pointer;font-size:13px;width:100%}
 .disc .ok:hover{filter:brightness(1.08)}
+/* ---- Thesis tab ---- */
+.th{font-size:13.5px}
+.th .verdict{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:2px 0 6px}
+.th .verdict .v{font-size:15px;font-weight:700}
+.th .verdict .m{color:var(--dim);font-size:11.5px}
+.th .stance{color:var(--blue);font-size:11.5px;margin-bottom:12px}
+.th .sum{color:var(--muted);line-height:1.65;margin:0 0 14px}
+.th .gauge{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin-bottom:16px}
+.th .gauge .row{display:flex;justify-content:space-between;font-size:10.5px;color:var(--dim)}
+.th .gauge .track{position:relative;height:8px;border-radius:5px;background:var(--panel2);overflow:hidden;margin:7px 0;border:1px solid var(--line)}
+.th .gauge .fv{position:absolute;left:0;top:0;height:100%;background:var(--up);opacity:.5}
+.th .gauge .prem{position:absolute;top:0;height:100%;background:repeating-linear-gradient(45deg,rgba(255,93,108,.5),rgba(255,93,108,.5) 4px,transparent 4px,transparent 8px)}
+.th .gauge .tick{position:absolute;top:-3px;height:14px;width:1.5px;background:var(--ink)}
+.th .cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+@media(max-width:560px){.th .cols{grid-template-columns:1fr}}
+.th .c{border-radius:10px;padding:12px 14px;border:1px solid var(--line)}
+.th .c.str{background:rgba(63,224,138,.05);border-color:rgba(63,224,138,.25)}
+.th .c.rsk{background:rgba(255,93,108,.05);border-color:rgba(255,93,108,.25)}
+.th .c.wch{background:rgba(91,140,255,.05);border-color:rgba(91,140,255,.22);margin-bottom:14px}
+.th .c h4{margin:0 0 10px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px}
+.th .c.str h4{color:var(--up)}.th .c.rsk h4{color:var(--down)}.th .c.wch h4{color:var(--blue)}
+.th .c .b{display:block;margin-bottom:9px;line-height:1.5;font-size:12.5px;color:var(--ink)}
+.th .c .b:last-child{margin-bottom:0}
+.th .src{color:var(--dim);font-size:10px}
+.th .foot{display:flex;align-items:center;flex-wrap:wrap;gap:7px;padding-top:11px;border-top:1px solid var(--line);font-size:10px;color:var(--dim)}
+.th .foot .chip2{background:var(--panel);border:1px solid var(--line);padding:2px 7px;border-radius:5px}
+.th .foot .sp{margin-left:auto}
 </style></head><body>
 <div class="disc" id="disc"><div class="box">
 <h2><span class="ic">&#9888;</span> Important notice</h2>
@@ -820,7 +847,12 @@ advisor before investing.</p>
 <button data-src="portfolio">My portfolio</button>
 <button data-src="history">From history</button>
 </div>
-<span class="lab" id="srcExtra" style="margin-left:auto"></span>
+<span class="lab" style="margin-left:auto">Window</span>
+<div class="seg" id="winSeg">
+<button class="on" data-win="1y">1Y</button>
+<button data-win="5y">5Y</button>
+</div>
+<span class="lab" id="srcExtra"></span>
 </div>
 <div class="scorebar" id="screenCtl">
 <span class="lab">Min score</span>
@@ -1029,6 +1061,93 @@ function trendsBlock(s){
   <div class="dev5 devset active" id="devYoY">${grid(1,yLab,'YoY')}</div>
   <div class="dev5 devset" id="devQoQ">${grid(4,qLab,'QoQ')}</div>`;
 }
+/* ---- Thesis: built strictly from embedded data (score tests, statements,
+   valuation, signals). A baked-in s.thesis object overrides it. No invented figures. ---- */
+function trendYoY(t){ // latest YoY % from a real statement trend (values are most-recent-first)
+ if(!t||!t.annual)return null;
+ const v=(t.annual.values||[]).filter(x=>x!=null&&isFinite(x));
+ if(v.length<2||!v[1])return null;
+ return (v[0]/Math.abs(v[1])-1)*100*(v[1]<0?-1:1);
+}
+function thesisBlock(s){
+ if(s.thesis) return thesisRender(s.thesis,s);          // baked-in override wins
+ const S=[],R=[],W=[], tf={};
+ (s.tests||[]).forEach(t=>tf[t.label]=t.ok);
+ const fv=s.fv, price=s.price;
+ /* strengths from PASSED score tests */
+ if(tf['ROE > 15%'])             S.push({m:'g',t:`Strong returns — ROE ${pct(s.roe)}.`,s:'Financials'});
+ if(tf['Net cash positive'])     S.push({m:'g',t:`Net cash on the balance sheet — $${fmt(s.netcash)}/share.`,s:'Balance sheet'});
+ if(tf['Cash > 10% of price'])   S.push({m:'g',t:`Cash cushion — ${pct((s.cashport||0)*100)} of the price is net cash.`,s:'Balance sheet'});
+ if(tf['PEG 0.5-1.0'])           S.push({m:'g',t:`Growth fairly priced — PEG ${fmt(s.peg,2)} against a ${fmt(s.pe,1)} P/E.`,s:'Valuation'});
+ if(tf['Cheaper ex-cash P/E'])   S.push({m:'g',t:`Cheaper stripped of cash — ex-cash P/E ${fmt(s.newpe,1)} below the ${fmt(s.pe,1)} headline.`,s:'Valuation'});
+ if(tf['Upside vs fair value'])  S.push({m:'g',t:`Model sees upside — fair value $${fmt(s.fv)} above the $${fmt(s.price)} price.`,s:'Valuation model'});
+ if(tf['Debt covered by earnings'])S.push({m:'g',t:`Leverage in check — debt covered by earnings.`,s:'Balance sheet'});
+ /* strengths from REAL statement trends (detail names only) */
+ if(s.trends){
+  const rg=trendYoY(s.trends.revenue), ng=trendYoY(s.trends.ni), eg=trendYoY(s.trends.ebit);
+  if(rg!=null&&rg>=10){let x=`Top line growing — revenue ${pct(rg)} YoY`; if(eg!=null)x+=`, EBIT ${pct(eg)}`; S.push({m:'g',t:x+'.',s:'Financials'});}
+  if(ng!=null&&ng>=15) S.push({m:'g',t:`Profit inflecting — net income ${pct(ng)} YoY.`,s:'Financials'});
+ }
+ if(isFinite(s.grossMargin)&&s.grossMargin>=50) S.push({m:'g',t:`High gross margin — ${pct(s.grossMargin)}.`,s:'Financials'});
+ /* risks from FAILED tests + signals */
+ if(tf['Upside vs fair value']===false&&fv) R.push({m:'r',t:`No margin of safety — fair value $${fmt(s.fv)} below the $${fmt(s.price)} price.`,s:'Valuation model'});
+ if(tf['ROE > 15%']===false)     R.push({m:'r',t:`Returns light — ROE ${pct(s.roe)} under the 15% bar.`,s:'Financials'});
+ if(tf['Net cash positive']===false) R.push({m:'a',t:`Net debt — the balance sheet is not in a net-cash position.`,s:'Balance sheet'});
+ if(isFinite(s.pe)&&s.pe>=35)    R.push({m:'r',t:`Rich absolute multiple — P/E ${fmt(s.pe,1)}; the case leans on growth holding up.`,s:'Valuation'});
+ if(s.revg==null)                R.push({m:'a',t:`Data gap — revenue-growth field is blank; confirm before sizing.`,s:'Screen'});
+ if(isFinite(s.relvol)&&s.relvol>=1.5) R.push({m:'a',t:`Heightened activity — ${fmt(s.relvol,2)}x relative volume on a ${pct(s.chg)} move; expect volatility.`,s:'Screen'});
+ if(s.trends){const ng=trendYoY(s.trends.ni); if(ng!=null&&ng<0) R.push({m:'r',t:`Earnings sliding — net income ${pct(ng)} YoY.`,s:'Financials'});}
+ /* never leave a card empty */
+ if(!S.length) S.push({m:'a',t:`Few standout positives in the data — passes ${s.score}/7 of the screen tests.`,s:'Screen'});
+ if(!R.length) R.push({m:'g',t:`No screen test currently flags a weakness (score ${s.score}/7) — re-check after the next report.`,s:'Screen'});
+ /* what to watch (data-true, neutral) */
+ if(s.trends&&trendYoY(s.trends.revenue)!=null) W.push({m:'b',t:`Whether the ${pct(trendYoY(s.trends.revenue))} revenue trend holds at the next report.`,s:'Financials'});
+ if(fv&&price) W.push({m:'b',t:`The gap between price ($${fmt(price)}) and model fair value ($${fmt(fv)}).`,s:'Valuation'});
+ W.push({m:'b',t:`Live headlines and sentiment — see the News tab.`,s:'News'});
+ /* verdict + summary */
+ const lean=S.length-R.length, rich=fv&&price&&price>fv*1.15;
+ const verdict = s.score>=5 ? (rich?'Quality screen, priced full':'Screens well across the board')
+              : s.score>=3 ? 'Mixed signals — selective' : 'Weak on the screen tests';
+ const stance = lean>1?'Stance: constructive — mind the price':lean<-1?'Stance: cautious — risks outweigh':'Stance: balanced';
+ const mult=(fv&&price)?price/fv:null;
+ const summary=`Built from the screen tests, statements and valuation fields. `
+   +`${S.length} strength signal(s) vs ${R.length} risk signal(s)`
+   +(mult?(mult>1?`; the stock trades ${fmt(mult,1)}x the model's fair value.`:`; the stock trades below the model's fair value.`):'.');
+ return thesisRender({verdict,stance,summary,strengths:S,risks:R,watch:W,fv,price,
+   sources:['Financials','TradingView'],asOf:(DATA.generated||'').slice(0,10)},s);
+}
+function thesisRender(t,s){
+ const mkCls={g:'pos',r:'neg'}, mkSt={a:'color:var(--gold)',b:'color:var(--blue)'};
+ const bullet=b=>`<span class="b"><span class="${mkCls[b.m]||''}" style="font-weight:700;${mkSt[b.m]||''}">▸</span> ${b.t}${b.s?` <span class="src">${b.s}</span>`:''}</span>`;
+ const list=a=>a.map(bullet).join('');
+ let gauge=''; const fv=t.fv, price=t.price;
+ if(fv>0&&price>0){
+  const fvPct=Math.max(0,Math.min(100,fv/price*100));
+  if(price>fv){const prem=Math.max(0,100-fvPct),mult=(price/fv).toFixed(1),over=((price/fv-1)*100).toFixed(0);
+   gauge=`<div class="gauge"><div class="row"><span>Model fair value $${fmt(fv)}</span><span>Price $${fmt(price)}</span></div>
+    <div class="track"><div class="fv" style="width:${fvPct}%"></div><div class="prem" style="left:${fvPct}%;width:${prem}%"></div><div class="tick" style="left:${fvPct}%"></div></div>
+    <div class="row"><span style="color:var(--up)">fair value zone</span><span style="color:var(--down)">+${over}% above FV · trades ${mult}x</span></div></div>`;
+  } else {const up=((fv/price-1)*100).toFixed(0);
+   gauge=`<div class="gauge"><div class="row"><span>Price $${fmt(price)}</span><span>Model fair value $${fmt(fv)}</span></div>
+    <div class="track"><div class="fv" style="width:100%"></div><div class="tick" style="left:${(price/fv*100).toFixed(1)}%"></div></div>
+    <div class="row"><span style="color:var(--up)">trades below model FV</span><span style="color:var(--up)">+${up}% to fair value</span></div></div>`;
+  }
+ }
+ const watch=(t.watch&&t.watch.length)?`<div class="c wch"><h4>&#128065; What to watch</h4>${list(t.watch)}</div>`:'';
+ const src=(t.sources||[]).map(x=>`<span class="chip2">${x}</span>`).join('');
+ return `<div class="th">
+  <div class="verdict"><span class="v">${t.verdict}</span><span class="m">Composite ${s.score} / 7</span>${s.mcap?`<span class="m">· ${fmtCap(s.mcap)}</span>`:''}</div>
+  ${t.stance?`<div class="stance">${t.stance}</div>`:''}
+  <p class="sum">${t.summary}</p>
+  ${gauge}
+  <div class="cols">
+   <div class="c str"><h4>&#9650; Strengths</h4>${list(t.strengths)}</div>
+   <div class="c rsk"><h4>&#9888; Risks &amp; weaknesses</h4>${list(t.risks)}</div>
+  </div>
+  ${watch}
+  <div class="foot">${t.asOf?`<span>Screen as of ${t.asOf}</span>`:''}<span class="sp">Sources:</span>${src}</div>
+ </div>`;
+}
 function peersBlock(s){
  const peers=[...DATA.up,...DATA.down].filter(p=>p.sector===s.sector && p.sym!==s.sym)
    .sort((a,b)=>(b.mcap||0)-(a.mcap||0)).slice(0,6);
@@ -1055,13 +1174,16 @@ function openDetail(sym){
  <button class="x" id="mx">&times;</button></div>
  <div style="margin-top:14px">${chartSVG(s)}</div>
  <div class="subtabs">
-  <button class="active" data-pane="scorePane">Magellan Score</button>
+  <button class="active" data-pane="thesisPane"><svg viewBox="0 0 24 24" width="13" height="13" style="vertical-align:-2px;margin-right:5px" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10c.7.7 1 1.4 1 2.3h6c0-.9.3-1.6 1-2.3A6 6 0 0 0 12 3z"/></svg>Thesis</button>
+  <button data-pane="scorePane">Magellan Score</button>
   <button data-pane="dcfPane">DCF</button>
   <button data-pane="multPane">Multiples</button>
   <button data-pane="peerPane">Peers</button>
   <button data-pane="newsPane" data-sym="${s.sym}">News</button></div>
 
- <div class="pane active" id="scorePane">
+ <div class="pane active" id="thesisPane">${thesisBlock(s)}</div>
+
+ <div class="pane" id="scorePane">
   <div class="bigscore"><span class="n">${s.score}</span><span class="of">Composite score / 7</span></div>
   <div class="mgrid">
    ${mcell('Price','$'+fmt(s.price))}
@@ -1272,39 +1394,46 @@ renderP();
 
 /* ================= BACKTEST + HISTORY ================= */
 let BT_SRC='screen';        // screen | portfolio | history
-let BT_MANUAL=[];           // [{sym,closes,dates}] manually added tickers
-const HISTCACHE={};         // sym -> {closes,dates} live-fetch cache
+let BT_WINDOW='1y';         // 1y | 5y  (lookback window)
+let BT_MANUAL=[];           // [{sym}] manually added tickers (fetched per window)
+const HISTCACHE={};         // "sym|range" -> {closes,dates} live-fetch cache
 const btSlider=document.getElementById('btSlider');
 if(btSlider) btSlider.oninput=renderBacktest;
 function normSeries(h){ if(!h||h.length<2)return null;const base=h[0];if(!base)return null;return h.map(x=>x/base*100);}
 
-// live 1Y daily history via Yahoo chart API -> {closes,dates} downsampled to ~64 pts
-async function fetchHist1y(sym){
- sym=sym.toUpperCase();
- if(HISTCACHE[sym])return HISTCACHE[sym];
- const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=1y&interval=1d&corsDomain=finance.yahoo.com`;
+// live daily history via Yahoo chart API -> {closes,dates}, downsampled
+async function fetchHist(sym,range){
+ sym=sym.toUpperCase(); range=range||'1y';
+ const key=sym+'|'+range;
+ if(HISTCACHE[key])return HISTCACHE[key];
+ const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=${range}&interval=1d&corsDomain=finance.yahoo.com`;
  const res=await fetch(url,{headers:{'Accept':'application/json'}});
  const d=await res.json();
  const r=d?.chart?.result?.[0]; if(!r)throw new Error('no data');
  const ts=r.timestamp||[], cl=(r.indicators?.quote?.[0]?.close)||[];
  let pts=ts.map((t,i)=>({t,c:cl[i]})).filter(p=>p.c!=null&&isFinite(p.c));
- if(pts.length>64){const step=pts.length/64;pts=Array.from({length:64},(_,i)=>pts[Math.min(pts.length-1,Math.floor(i*step))]);}
+ const target=range==='5y'?80:64;
+ if(pts.length>target){const step=pts.length/target;pts=Array.from({length:target},(_,i)=>pts[Math.min(pts.length-1,Math.floor(i*step))]);}
  const out={closes:pts.map(p=>+p.c.toFixed(4)),dates:pts.map(p=>new Date(p.t*1000).toISOString().slice(0,10))};
- HISTCACHE[sym]=out; return out;
+ HISTCACHE[key]=out; return out;
 }
+const fetchHist1y=sym=>fetchHist(sym,'1y');  // back-compat alias
 
 document.querySelectorAll('#srcSeg button').forEach(b=>b.onclick=()=>{
  document.querySelectorAll('#srcSeg button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
  BT_SRC=b.dataset.src;
  document.getElementById('screenCtl').style.display = BT_SRC==='screen'?'flex':'none';
  renderBacktest();});
+document.querySelectorAll('#winSeg button').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('#winSeg button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+ BT_WINDOW=b.dataset.win; renderBacktest();});
 document.getElementById('btAdd').onclick=async()=>{
  const t=document.getElementById('btTicker').value.trim().toUpperCase();
  const st=document.getElementById('btAddStatus');
  if(!t){st.textContent='Type a ticker first.';return;}
  if(BT_MANUAL.find(m=>m.sym===t)){st.textContent=t+' already added.';return;}
- st.textContent='Fetching 1Y history for '+t+'…';
- try{const h=await fetchHist1y(t);BT_MANUAL.push({sym:t,closes:h.closes,dates:h.dates});
+ st.textContent='Fetching history for '+t+'…';
+ try{await fetchHist(t,BT_WINDOW);BT_MANUAL.push({sym:t});
   document.getElementById('btTicker').value='';st.textContent=t+' added.';renderBacktest();}
  catch(e){st.textContent='Could not fetch '+t+' ('+e.message+').';}
 };
@@ -1315,25 +1444,25 @@ async function btHoldings(){
  let holds=[];
  if(BT_SRC==='screen'){
   const min=+btSlider.value;
-  holds=[...DATA.up,...DATA.down].filter(s=>s.score>=min&&s.hist&&s.hist.length>1)
-        .map(s=>({sym:s.sym,closes:s.hist}));         // embedded, no dates needed for window mode
- } else if(BT_SRC==='portfolio'){
-  for(const p of PORT){
-   try{const h=await fetchHist1y(p.t);holds.push({sym:p.t,closes:h.closes,dates:h.dates});}catch(e){}
+  const names=[...DATA.up,...DATA.down].filter(s=>s.score>=min);
+  if(BT_WINDOW==='1y'){
+   holds=names.filter(s=>s.hist&&s.hist.length>1).map(s=>({sym:s.sym,closes:s.hist})); // embedded 1Y, fast
+  } else { // 5Y: embedded history is only 1Y, so fetch live
+   for(const s of names){ try{const h=await fetchHist(s.sym,BT_WINDOW);holds.push({sym:s.sym,closes:h.closes,dates:h.dates});}catch(e){} }
   }
+ } else if(BT_SRC==='portfolio'){
+  for(const p of PORT){ try{const h=await fetchHist(p.t,BT_WINDOW);holds.push({sym:p.t,closes:h.closes,dates:h.dates});}catch(e){} }
  } else { // history: each unique archived name, entering on its first-seen date
   const seen={};(DATA.history||[]).forEach(d=>d.picks.forEach(p=>{if(!seen[p.sym])seen[p.sym]={sym:p.sym,first:d.date};}));
-  for(const o of Object.values(seen)){
-   try{const h=await fetchHist1y(o.sym);holds.push({sym:o.sym,closes:h.closes,dates:h.dates,first:o.first});}catch(e){}
-  }
+  for(const o of Object.values(seen)){ try{const h=await fetchHist(o.sym,BT_WINDOW);holds.push({sym:o.sym,closes:h.closes,dates:h.dates,first:o.first});}catch(e){} }
  }
- BT_MANUAL.forEach(m=>{if(!holds.find(h=>h.sym===m.sym))holds.push({sym:m.sym,closes:m.closes,dates:m.dates,manual:true});});
+ for(const m of BT_MANUAL){ if(!holds.find(h=>h.sym===m.sym)){ try{const h=await fetchHist(m.sym,BT_WINDOW);holds.push({sym:m.sym,closes:h.closes,dates:h.dates,manual:true});}catch(e){} } }
  return holds.filter(h=>h.closes&&h.closes.length>1);
 }
 
 async function renderBacktest(){
  if(btSlider)document.getElementById('btScoreVal').textContent=+btSlider.value;
- document.getElementById('btN').textContent=[...DATA.up,...DATA.down].filter(s=>s.score>=(btSlider?+btSlider.value:6)&&s.hist&&s.hist.length>1).length;
+ document.getElementById('btN').textContent=[...DATA.up,...DATA.down].filter(s=>s.score>=(btSlider?+btSlider.value:6)).length;
  const body=document.getElementById('btBody');
  const srcExtra=document.getElementById('srcExtra');
  srcExtra.textContent = BT_SRC==='portfolio'?'using your '+PORT.length+' holding(s)'
@@ -1353,7 +1482,7 @@ async function renderBacktest(){
 
  // benchmark series (live for history mode so we have dates; embedded otherwise)
  let benchCloses,benchDates=null;
- if(BT_SRC==='history'){try{const b=await fetchHist1y('SPY');benchCloses=b.closes;benchDates=b.dates;}catch(e){benchCloses=DATA.bench&&DATA.bench.hist;}}
+ if(BT_WINDOW==='5y'||BT_SRC==='history'){try{const b=await fetchHist('SPY',BT_WINDOW);benchCloses=b.closes;benchDates=b.dates;}catch(e){benchCloses=DATA.bench&&DATA.bench.hist;}}
  else benchCloses=DATA.bench&&DATA.bench.hist;
  const haveBench=benchCloses&&benchCloses.length>1;
  const L=Math.min(haveBench?benchCloses.length:Infinity,...holds.map(h=>h.closes.length));
@@ -1377,27 +1506,49 @@ async function renderBacktest(){
  }
  const PL=port.length;
  const portRet=port[PL-1]-100, spyRet=spy?spy[spy.length-1]-100:null, alpha=spy?portRet-spyRet:null;
- const w=900,h=320,pad=36;
- const allV=[...port,...(spy||[])];const mn=Math.min(...allV),mx=Math.max(...allV),r=(mx-mn)||1;
- const xy=arr=>arr.map((y,i)=>{const X=pad+i*(w-2*pad)/(arr.length-1),Y=h-pad-((y-mn)/r)*(h-2*pad);return (i?'L':'M')+X.toFixed(1)+' '+Y.toFixed(1);}).join(' ');
- const y100=h-pad-((100-mn)/r)*(h-2*pad);
+ const w=900,h=340,padL=52,padR=16,padT=28,padB=34;
+ const allV=[...port,...(spy||[])];let mn=Math.min(...allV),mx=Math.max(...allV);
+ {const m=(mx-mn)*0.08||1;mn-=m;mx+=m;} const r=(mx-mn)||1;
+ const X=i=>padL+i*(w-padL-padR)/(PL-1);
+ const Y=v=>h-padB-((v-mn)/r)*(h-padT-padB);
+ const xy=arr=>arr.map((v,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(v).toFixed(1)).join(' ');
+ // Y axis — gridlines + return % labels (start = 0%)
+ let yAxis='';{const steps=5;for(let i=0;i<=steps;i++){const v=mn+r*i/steps,yy=Y(v).toFixed(1),ret=v-100;
+   yAxis+=`<line x1="${padL}" y1="${yy}" x2="${w-padR}" y2="${yy}" stroke="var(--line)" stroke-width="1"/>`
+        +`<text x="${padL-6}" y="${(+yy+3).toFixed(1)}" text-anchor="end" font-size="9" fill="var(--dim)">${(ret>=0?'+':'')+ret.toFixed(0)+'%'}</text>`;}}
+ // X axis — time ticks across the trailing window (real dates in history mode, else relative)
+ const spanDays=BT_WINDOW==='5y'?1825:365, today=new Date();
+ const xsrc=(BT_SRC==='history'&&(benchDates||(holds[0]&&holds[0].dates)))?(benchDates||holds[0].dates).slice(startIdx,startIdx+PL):null;
+ const nTk=BT_WINDOW==='5y'?6:5;
+ let xAxis='';for(let k=0;k<nTk;k++){const i=Math.round(k*(PL-1)/(nTk-1));let lab;
+   if(xsrc&&xsrc[i]) lab=new Date(xsrc[i]).toLocaleDateString('en-US',{month:'short',year:'2-digit'});
+   else lab=new Date(today.getTime()-(1-i/(PL-1))*spanDays*864e5).toLocaleDateString('en-US',{month:'short',year:'2-digit'});
+   const xx=X(i).toFixed(1);
+   xAxis+=`<line x1="${xx}" y1="${h-padB}" x2="${xx}" y2="${h-padB+4}" stroke="var(--dim)" stroke-width="1"/>`
+        +`<text x="${xx}" y="${h-padB+16}" text-anchor="middle" font-size="9" fill="var(--dim)">${lab}</text>`;}
+ const y100=Y(100).toFixed(1);
  const stat=(l,v)=>`<div class="mcell"><div class="k">${l}</div><div class="v ${v>=0?'pos':'neg'}">${v==null?'–':(v>=0?'+':'')+v.toFixed(1)+'%'}</div></div>`;
+ const winLbl=BT_WINDOW==='5y'?'5-year':'1-year';
  const note = BT_SRC==='screen'?'Uses <i>today’s</i> top-rated names on past prices → carries selection &amp; survivorship bias.'
    : BT_SRC==='history'?'Each name enters on the date it first appeared in the screen → no survivorship bias. Live prices are fetched per name.'
    : 'Your actual holdings, equal-weighted, vs the market over the same window.';
  body.innerHTML=`
   <div class="mgrid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px">
-   ${stat(label, portRet)}${stat('S&P 500 (SPY)', spyRet)}${stat('Outperformance', alpha)}
+   ${stat(label+' · '+winLbl, portRet)}${stat('S&P 500 (SPY)', spyRet)}${stat('Outperformance', alpha)}
   </div>
   <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px">
-   <line class="ax" x1="${pad}" y1="${y100.toFixed(1)}" x2="${w-pad}" y2="${y100.toFixed(1)}" stroke="var(--dim)" stroke-dasharray="3 3"/>
-   <text x="${pad}" y="${(y100-4).toFixed(1)}" font-size="9" fill="var(--dim)">100 (start)</text>
+   ${yAxis}
+   <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${h-padB}" stroke="var(--dim)" stroke-width="1"/>
+   <line x1="${padL}" y1="${h-padB}" x2="${w-padR}" y2="${h-padB}" stroke="var(--dim)" stroke-width="1"/>
+   <line x1="${padL}" y1="${y100}" x2="${w-padR}" y2="${y100}" stroke="var(--gold)" stroke-dasharray="4 3" stroke-width="1" opacity="0.55"/>
+   ${xAxis}
    ${spy?`<path d="${xy(spy)}" fill="none" stroke="var(--muted)" stroke-width="2"/>`:''}
    <path d="${xy(port)}" fill="none" stroke="var(--gold)" stroke-width="2.5"/>
-   <text x="${w-pad}" y="14" text-anchor="end" font-size="11" fill="var(--gold)">● ${label}</text>
-   ${spy?`<text x="${w-pad}" y="28" text-anchor="end" font-size="11" fill="var(--muted)">● S&P 500</text>`:''}
+   <text x="${w-padR}" y="${padT-14}" text-anchor="end" font-size="11" fill="var(--gold)">● ${label}</text>
+   ${spy?`<text x="${w-padR}" y="${padT-1}" text-anchor="end" font-size="11" fill="var(--muted)">● S&P 500</text>`:''}
+   <text x="${padL-44}" y="${padT-14}" font-size="9" fill="var(--dim)">return %</text>
   </svg>
-  <div style="margin-top:10px;font-size:12px;color:var(--muted)">Holds <b>${holds.length}</b> name(s): <b style="color:var(--ink)">${holds.map(h=>h.sym).join(', ')}</b>, equal-weighted, rebased to 100.</div>
+  <div style="margin-top:10px;font-size:12px;color:var(--muted)">Holds <b>${holds.length}</b> name(s): <b style="color:var(--ink)">${holds.map(h=>h.sym).join(', ')}</b>, equal-weighted, rebased to 100 over the ${winLbl} window.</div>
   <p class="hint" style="margin-top:10px;line-height:1.6"><b>Read with care.</b> ${note} Past performance does not predict future results.</p>`;
 }
 
