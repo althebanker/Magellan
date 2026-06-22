@@ -127,5 +127,52 @@
     "side": "up"
    }
   ]
+ },
+ {
+  "date": "2026-06-22",
+  "picks": [
+   {
+    "sym": "CGAU",
+    "score": 6,
+    "price": 16.57,
+    "side": "down"
+   },
+   {
+    "sym": "DECK",
+    "score": 6,
+    "price": 109.11,
+    "side": "up"
+   },
+   {
+    "sym": "EGAN",
+    "score": 6,
+    "price": 7.51,
+    "side": "up"
+   },
+   {
+    "sym": "NAGE",
+    "score": 6,
+    "price": 3.5,
+    "side": "up"
+   },
+   {
+    "sym": "NKLR",
+    "score": 6,
+    "price": 5.14,
+    "side": "up"
+   },
+   {
+    "sym": "QNST",
+    "score": 6,
+    "price": 13.06,
+    "side": "up"
+   },
+   {
+    "sym": "STG",
+    "score": 6,
+    "price": 3.41,
+    "side": "up"
+   }
+  ]
  }
 ]
