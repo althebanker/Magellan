@@ -473,18 +473,42 @@ def yahoo_trends(sym):
         ltdebt    =trend(_pick(bs_a,"Long Term Debt"), _pick(bs_q,"Long Term Debt"), "Long-term debt","bs"),
     )
 
-def yahoo_history(sym, points=64):
+_HISTCACHE = {}   # sym -> (hist1[~64], hist5[~80], mapser{d,c}~150); one 5y pull per ticker
+
+def yahoo_hist_both(sym):
+    """ONE 5y daily pull (cached) -> (1y closes ~64, 5y closes ~80, dated 5y series {d:[],c:[]} ~150).
+    Everything the backtest needs is baked into the page from here, so the browser never has to
+    make a cross-origin Yahoo call (static hosts like GitHub Pages block those via CORS)."""
+    sym = sym.upper()
+    if sym in _HISTCACHE:
+        return _HISTCACHE[sym]
     import yfinance as yf
+    def _ds(arr, n):
+        if len(arr) <= n: return arr
+        step = len(arr) / n
+        return [arr[min(len(arr)-1, int(k*step))] for k in range(n)]
     try:
-        hist = yf.Ticker(sym).history(period="1y", interval="1d")
-        closes = [float(x) for x in hist["Close"].tolist() if x == x]
-        if len(closes) > points:
-            step = len(closes) / points
-            closes = [closes[min(len(closes)-1, int(i*step))] for i in range(points)]
-        return [round(x, 4) for x in closes]
+        h = yf.Ticker(sym).history(period="5y", interval="1d")
+        paired = [(str(i)[:10], float(c)) for i, c in zip(h.index, h["Close"].tolist()) if c == c]
+        c_all = [p[1] for p in paired]
+        if not c_all:
+            res = ([], [], dict(d=[], c=[]))
+        else:
+            c1 = c_all[-252:] if len(c_all) > 252 else c_all
+            hist1 = [round(x, 4) for x in _ds(c1, 64)]
+            hist5 = [round(x, 4) for x in _ds(c_all, 80)]
+            mp = _ds(paired, 150)
+            mapser = dict(d=[p[0] for p in mp], c=[round(p[1], 4) for p in mp])
+            res = (hist1, hist5, mapser)
     except Exception as e:
         print(f"      history failed {sym}: {e}")
-        return []
+        res = ([], [], dict(d=[], c=[]))
+    _HISTCACHE[sym] = res
+    return res
+
+def yahoo_history(sym, points=64):
+    # back-compat: 1y closes, served from the single cached 5y pull above
+    return yahoo_hist_both(sym)[0]
 
 # ----------------------------------------------------------------------------- main
 def main():
@@ -547,11 +571,28 @@ def main():
         print("Enriching DOWN side..."); down_final = enrich_and_rank(downs)
 
     print("Fetching S&P 500 benchmark history...")
-    bench = dict(sym="SPY", name="S&P 500 (SPY)", hist=yahoo_history("SPY"))
+    _b1, _b5, _bmap = yahoo_hist_both("SPY")
+    bench = dict(sym="SPY", name="S&P 500 (SPY)", hist=_b1, hist5y=_b5)
+    histmap = {"SPY": _bmap}
     history = update_history_archive(up_final, down_final, cfg)
+
+    # Bake a 5y dated series for everything the backtest can reference, so the browser never
+    # needs a cross-origin Yahoo fetch (GitHub Pages blocks those via CORS). Detailed names are
+    # already cached from the detail loop above (no re-pull); archive-only names pull once here.
+    for r in (up_final + down_final):
+        if r.get("sym") and r.get("hist"):          # detailed names (cached) -> add 5y + map
+            _h1, _h5, _mp = yahoo_hist_both(r["sym"])
+            r["hist5y"] = _h5
+            histmap[r["sym"]] = _mp
+    arch_syms = {p["sym"] for d in history for p in d.get("picks", []) if p.get("sym")}
+    for _sym in sorted(arch_syms - set(histmap)):
+        _, _, _mp = yahoo_hist_both(_sym)
+        histmap[_sym] = _mp
+        if cfg["FUND_SLEEP"]: time.sleep(cfg["FUND_SLEEP"])
+
     payload = dict(generated=dt.datetime.now().strftime("%Y-%m-%d %H:%M"),
                    config=cfg, up=up_final, down=down_final, bench=bench,
-                   history=history, demo=False)
+                   history=history, histmap=histmap, demo=False)
     build_dashboard(payload, cfg["OUT_HTML"])
     print(f"Done -> {cfg['OUT_HTML']}  ({len(up_final)} up, {len(down_final)} down)")
     if "--no-open" not in sys.argv:
@@ -1406,6 +1447,21 @@ async function fetchHist(sym,range){
  sym=sym.toUpperCase(); range=range||'1y';
  const key=sym+'|'+range;
  if(HISTCACHE[key])return HISTCACHE[key];
+ // 1) embedded series baked by the Python build — no network, works on GitHub Pages
+ const emb=(DATA.histmap||{})[sym];
+ if(emb&&emb.c&&emb.c.length>1){
+  let d=(emb.d||[]).slice(), c=emb.c.slice();
+  if(range==='1y'){ // trailing ~1 year of the 5y series
+   const cut=new Date(); cut.setFullYear(cut.getFullYear()-1);
+   let s=d.findIndex(x=>new Date(x)>=cut); if(s<0)s=Math.max(0,c.length-64);
+   d=d.slice(s); c=c.slice(s);
+  }
+  const target=range==='5y'?80:64; let idx=c.map((_,i)=>i);
+  if(c.length>target){const step=c.length/target;idx=Array.from({length:target},(_,i)=>Math.min(c.length-1,Math.floor(i*step)));}
+  const out={closes:idx.map(i=>c[i]),dates:idx.map(i=>d[i]||'')};
+  HISTCACHE[key]=out; return out;
+ }
+ // 2) fallback: live Yahoo (works locally / non-Pages hosts; blocked by CORS on GitHub Pages)
  const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=${range}&interval=1d&corsDomain=finance.yahoo.com`;
  const res=await fetch(url,{headers:{'Accept':'application/json'}});
  const d=await res.json();
@@ -1447,7 +1503,7 @@ async function btHoldings(){
   const names=[...DATA.up,...DATA.down].filter(s=>s.score>=min);
   if(BT_WINDOW==='1y'){
    holds=names.filter(s=>s.hist&&s.hist.length>1).map(s=>({sym:s.sym,closes:s.hist})); // embedded 1Y, fast
-  } else { // 5Y: embedded history is only 1Y, so fetch live
+  } else { // 5Y: served from the baked-in 5y series (DATA.histmap), no live fetch
    for(const s of names){ try{const h=await fetchHist(s.sym,BT_WINDOW);holds.push({sym:s.sym,closes:h.closes,dates:h.dates});}catch(e){} }
   }
  } else if(BT_SRC==='portfolio'){
@@ -1530,7 +1586,7 @@ async function renderBacktest(){
  const stat=(l,v)=>`<div class="mcell"><div class="k">${l}</div><div class="v ${v>=0?'pos':'neg'}">${v==null?'–':(v>=0?'+':'')+v.toFixed(1)+'%'}</div></div>`;
  const winLbl=BT_WINDOW==='5y'?'5-year':'1-year';
  const note = BT_SRC==='screen'?'Uses <i>today’s</i> top-rated names on past prices → carries selection &amp; survivorship bias.'
-   : BT_SRC==='history'?'Each name enters on the date it first appeared in the screen → no survivorship bias. Live prices are fetched per name.'
+   : BT_SRC==='history'?'Each name enters on the date it first appeared in the screen → no survivorship bias. Prices are baked into the page at build time.'
    : 'Your actual holdings, equal-weighted, vs the market over the same window.';
  body.innerHTML=`
   <div class="mgrid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px">
