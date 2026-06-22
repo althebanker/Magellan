@@ -132,45 +132,33 @@
   "date": "2026-06-22",
   "picks": [
    {
-    "sym": "CGAU",
+    "sym": "ADYEY",
     "score": 6,
-    "price": 16.57,
+    "price": 9.88,
     "side": "down"
    },
    {
-    "sym": "DECK",
+    "sym": "CALM",
     "score": 6,
-    "price": 109.11,
+    "price": 75.97,
+    "side": "down"
+   },
+   {
+    "sym": "HRTG",
+    "score": 6,
+    "price": 23.79,
     "side": "up"
    },
    {
-    "sym": "EGAN",
+    "sym": "SLDE",
     "score": 6,
-    "price": 7.51,
-    "side": "up"
-   },
-   {
-    "sym": "NAGE",
-    "score": 6,
-    "price": 3.5,
-    "side": "up"
-   },
-   {
-    "sym": "NKLR",
-    "score": 6,
-    "price": 5.14,
-    "side": "up"
-   },
-   {
-    "sym": "QNST",
-    "score": 6,
-    "price": 13.06,
+    "price": 16.94,
     "side": "up"
    },
    {
     "sym": "STG",
     "score": 6,
-    "price": 3.41,
+    "price": 4.15,
     "side": "up"
    }
   ]
