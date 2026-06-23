@@ -1027,7 +1027,10 @@ def _market_setup(mv, regime, vix, rates):
     watch.append("HY OAS - if it widens, an equity wobble is turning into a credit event")
     watch.append("Gold vs the dollar - is it catching a haven bid, or is this real-yield/USD led?")
     if not price_in: price_in = ["Market snapshot still populating - run a Magellan update."]
-    return dict(story=story, price_in=price_in, watch=watch)
+    hook = {"Risk-off": "Defensive tape - risk is being taken off the table.",
+            "Risk-on": "Constructive tape - risk is being put to work.",
+            "Neutral": "Mixed tape - no clear risk signal yet."}.get(regime, "")
+    return dict(hook=hook, story=story, price_in=price_in, watch=watch)
 
 
 def _macro_news(feeds, http, k=3):
@@ -1098,7 +1101,17 @@ nav.tabs button.active{background:var(--panel);color:var(--ink);border-color:var
 .mkrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px}
 .mkcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:14px}
 .mkrow .mkcard{margin-top:14px}
-.mkh{color:var(--muted);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px}
+.mkh{color:var(--ink);font-size:12.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin:0 0 13px;padding-left:10px;border-left:3px solid var(--accent)}
+.mkhero{display:grid;grid-template-columns:120px 1fr;gap:22px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin:14px 0 6px}
+.mkdial{width:120px;height:120px;flex:none}
+.mkhlead{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-bottom:3px}
+.mkhreg{font-size:28px;font-weight:700;line-height:1.1}
+.mkhcount{font-size:13px;font-weight:400;color:var(--muted);margin-left:10px}
+.mkhhook{font-size:15px;color:var(--ink);margin:9px 0 12px}
+.mkhchips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.mkhchip{font-size:12.5px;padding:4px 10px;border-radius:8px;background:rgba(127,140,170,.13)}
+.mkhcta{font-size:13px;color:var(--accent);font-weight:600}
+@media(max-width:560px){.mkhero{grid-template-columns:1fr;justify-items:center;text-align:center}.mkhhook{text-align:left}}
 .mkrowln{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-top:1px solid var(--line)}
 .mkrowln:first-child{border-top:none}
 .mkrowln .k{color:var(--muted)}.mkrowln .v{font-variant-numeric:tabular-nums}
@@ -1310,6 +1323,7 @@ advisor before investing.</p>
 <section class="view active" id="market">
 <div class="mktq">What is the market <b>expecting</b> today? - not what happened yesterday.</div>
 <div class="mksub" id="mkAsof"></div>
+<div class="mkhero" id="mkHero"></div>
 <div id="mkGroups"></div>
 <div class="mkcard"><div class="mkh">What&rsquo;s priced into rates</div><div id="mkRates"></div><div id="mkFedEcb"></div></div>
 <div class="mkrow">
@@ -1440,6 +1454,30 @@ function renderMarket(){
  const dash=v=>(v&&String(v).trim())?v:'-';
  const asof=document.getElementById('mkAsof');
  if(asof)asof.textContent='Snapshot as of '+(M.asof||DATA.generated||'-')+' \u00b7 refreshed each Magellan update';
+
+ const Kh=M.risk||{}, Sh=M.setup||{}, H=document.getElementById('mkHero');
+ if(H){
+  const regc=Kh.dir==='off'?'var(--down)':Kh.dir==='on'?'var(--up)':'var(--muted)';
+  const ang=(-90+(Kh.pos!=null?Kh.pos:50)*1.8).toFixed(1);
+  const chips=(Kh.signals||[]).map(s=>'<span class="mkhchip" style="color:'+(s.dir==='off'?'var(--down)':'var(--up)')+'">'+s.name+'</span>').join('');
+  H.innerHTML=
+   '<svg class="mkdial" viewBox="0 0 120 120" aria-hidden="true">'+
+     '<circle cx="60" cy="60" r="50" fill="none" stroke="var(--line)" stroke-width="2"/>'+
+     '<g stroke="var(--dim)" stroke-width="1.4"><line x1="60" y1="13" x2="60" y2="19"/><line x1="13" y1="60" x2="19" y2="60"/><line x1="101" y1="60" x2="107" y2="60"/></g>'+
+     '<text x="6" y="74" font-size="7.5" fill="var(--down)">off</text>'+
+     '<text x="114" y="74" text-anchor="end" font-size="7.5" fill="var(--up)">on</text>'+
+     '<g style="transform-origin:60px 60px;transform:rotate('+ang+'deg);transition:transform 1s cubic-bezier(.2,.8,.2,1)">'+
+       '<path d="M60 24 L64 60 L60 65 L56 60 Z" fill="'+regc+'"/><path d="M60 96 L56 60 L60 55 L64 60 Z" fill="var(--dim)"/>'+
+     '</g>'+
+     '<circle cx="60" cy="60" r="4.5" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.5"/>'+
+   '</svg>'+
+   '<div><div class="mkhlead">Today\u2019s bearing</div>'+
+     '<div class="mkhreg" style="color:'+regc+'">'+(Kh.regime||'-')+'<span class="mkhcount">'+(Kh.count||'')+'</span></div>'+
+     '<div class="mkhhook">'+(Sh.hook||'')+'</div>'+
+     (chips?'<div class="mkhchips">'+chips+'</div>':'')+
+     '<div class="mkhcta">Dive in below for rates, risk and the full setup \u2193</div>'+
+   '</div>';
+ }
 
  const G=M.groups||[];
  document.getElementById('mkGroups').innerHTML = G.length
