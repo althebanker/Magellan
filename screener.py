@@ -49,45 +49,38 @@ CONFIG = dict(
 )
 
 # ----------------------------------------------------------------------------- MARKET window
-# "What's priced in today" landing dashboard. The TILES are pulled live from Yahoo at build
-# time (same baked-into-the-page pattern as histmap, so it renders on GitHub Pages with no
-# cross-origin fetch). The EXPECT / CATALYSTS / CHAIN fields below have no free, reliable
-# feed, so you fill them from your morning Bloomberg read (WIRP / ECO / yield curve) - leave
-# any value as "" and the panel shows a neutral dash instead of a made-up number.
+# "What's priced in today" landing dashboard. Everything is fetched at build time and baked
+# into the page (same pattern as histmap) so it renders on GitHub Pages with no cross-origin
+# fetch. Sources: equity/commodity/FX tiles + Fed funds futures + the SPY option chain from
+# Yahoo; US yields, 2s10s, 10Y real (TIPS), 5y5y, HY OAS from FRED (free, no key); German
+# yields from the ECB data portal (euro-area AAA curve, a Bund proxy); Japan yields from the
+# Japanese MoF; macro headlines from public RSS. Any feed that fails degrades to a dash.
+#   The two policy anchors (Fed target midpoint, ECB deposit rate) move only a few times a
+#   year - update them here when the central banks change rates, and roll the FED contract.
 MARKET = dict(
-    # tiles: (group, label, yahoo_symbol, kind)  -- kind drives formatting:
-    #   index/price -> % change, fx -> % change (4dp), yield -> bp change, level -> raw +/-
-    TILES = [
-        ("Equity",      "S&P fut",    "ES=F",      "index"),
-        ("Equity",      "Nasdaq fut", "NQ=F",      "index"),
-        ("Equity",      "Euro Stoxx", "^STOXX50E", "index"),
-        ("Rates",       "US 10Y",     "^TNX",      "yield"),
-        ("Rates",       "US 5Y",      "^FVX",      "yield"),
-        ("Rates",       "US 30Y",     "^TYX",      "yield"),
-        ("FX",          "DXY",        "DX-Y.NYB",  "level"),
-        ("FX",          "EUR/USD",    "EURUSD=X",  "fx"),
-        ("FX",          "USD/JPY",    "USDJPY=X",  "fx"),
-        ("Commodities", "WTI",        "CL=F",      "price"),
-        ("Commodities", "Gold",       "GC=F",      "price"),
-        ("Vol",         "VIX",        "^VIX",      "level"),
+    # (label, yahoo_symbol) tiles, grouped:
+    INDEX = [("S&P fut", "ES=F"), ("Nasdaq fut", "NQ=F"), ("Dow fut", "YM=F"), ("Euro Stoxx", "^STOXX50E")],
+    COMMODITIES = [("Gold", "GC=F"), ("Silver", "SI=F"), ("WTI crude", "CL=F"), ("Brent crude", "BZ=F")],
+    FX_EUR = [("EUR/USD", "EURUSD=X"), ("EUR/GBP", "EURGBP=X"), ("EUR/JPY", "EURJPY=X"), ("EUR/CHF", "EURCHF=X")],
+    FX_USD = [("DXY", "DX-Y.NYB"), ("USD/JPY", "USDJPY=X"), ("GBP/USD", "GBPUSD=X"), ("USD/CHF", "USDCHF=X"), ("USD/CAD", "USDCAD=X")],
+    US_BONDS = [("US 2Y", "DGS2"), ("US 5Y", "DGS5"), ("US 10Y", "DGS10"), ("US 30Y", "DGS30")],  # FRED ids
+    DE_BONDS = [("Germany 2Y", "2Y"), ("Germany 10Y", "10Y")],   # ECB AAA euro-area curve (Bund proxy)
+    JP_BONDS = [("Japan 2Y", "2"), ("Japan 10Y", "10")],         # Japan MoF JGB column years
+    # what's-priced-into-rates FRED series (free, no key):
+    FRED = dict(two_ten="T10Y2Y", real_10y="DFII10", five_y_five="T5YIFR", hy_oas="BAMLH0A0HYM2"),
+    # Fed: implied cuts from a dated 30-day Fed Funds future. Update contract + target_mid as policy moves.
+    FED = dict(target_mid=3.625, contract="ZQU26=F", label="Fed \u2013 cuts priced by Sep", horizon_bp=50),
+    # ECB: no free futures feed, so estimated from German 2Y vs the deposit rate (update depo on ECB moves).
+    ECB = dict(depo=2.00, label="ECB \u2013 2Y vs deposit (est.)", horizon_bp=50),
+    # Alpha Risk Matrix: 25-delta 1M risk reversal = IV(25d put) - IV(25d call) on the option chain.
+    ARM = dict(underlying="SPY", target_days=30, r=0.04, q=0.012),
+    HISTORY_FILE = "market_history.json",   # rolling daily store that builds the 30-day percentile
+    # top macro headlines (first feeds that return items win; all fail -> graceful note):
+    NEWS_FEEDS = [
+        "https://feeds.marketwatch.com/marketwatch/topstories/",
+        "https://www.cnbc.com/id/20910258/device/rss/rss.html",
+        "https://www.investing.com/rss/news_25.rss",
     ],
-    # credit ratio is computed live; the rest below are your morning read (edit freely):
-    EXPECT = dict(
-        fed_label = "Fed cut priced - Sep", fed_pct = "",   # e.g. "68"  (percent, no % sign)
-        ecb_label = "ECB cut priced - Jul", ecb_pct = "",   # e.g. "41"
-        two_ten   = "",   # 2s10s spread, e.g. "+37 bp"
-        real_10y  = "",   # 10Y TIPS real yield, e.g. "1.92%"
-        five_y_five = "", # 5y5y inflation, e.g. "2.31%"
-        hy_oas    = "",   # HY OAS spread, e.g. "312 bp"
-        regime    = "",   # your one-word read: "Risk-on" / "Risk-off" / "Neutral"
-    ),
-    # today's catalysts you actually care about (CPI/NFP/Fed/ECB/PMI/GDP). dicts of t/event/cons/prior:
-    CATALYSTS = [
-        # dict(t="08:30", event="US CPI (core, MoM)", cons="+0.3%", prior="+0.2%"),
-    ],
-    # the "reasoning chain of the day" prompt - the daily thinking drill from your routine:
-    CHAIN = "Pick today's key print. Walk the chain: Fed pricing \u2192 2Y \u2192 growth stocks "
-            "\u2192 banks \u2192 USD \u2192 gold. Write the one-line answer before the open.",
 )
 
 # ----------------------------------------------------------------------------- universe
@@ -695,64 +688,371 @@ def update_history_archive(up_final, down_final, cfg):
 
 # ===================== market snapshot (what's priced in) =====================
 def build_market_snapshot(mkt):
-    """Pull the market basket live (Yahoo) and return a display-ready dict baked into the page.
-    Every value is pre-formatted server-side so the browser does zero math and never needs a
-    cross-origin fetch (GitHub Pages blocks those via CORS)."""
-    import yfinance as yf
+    """Pull the whole 'what's priced in' dashboard at build time and return a display-ready
+    dict baked into the page (no client-side cross-origin fetch). Every sub-fetch is wrapped;
+    anything that fails degrades to None/dash so the page always renders."""
+    import yfinance as yf, math, urllib.request
+
+    def _http(url, timeout=15):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (Magellan screener)",
+                                                        "Accept": "text/csv,text/xml,application/xml,*/*"})
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                return r.read().decode("utf-8", "replace")
+        except Exception as e:
+            print(f"      http failed {url[:60]}: {e}"); return None
+
     def _closes(sym, period="1mo"):
         try:
             h = yf.Ticker(sym).history(period=period, interval="1d")
-            c = [float(x) for x in h["Close"].tolist() if x == x]
-            return c
+            return [float(x) for x in h["Close"].tolist() if x == x]
         except Exception as e:
-            print(f"      market fetch failed {sym}: {e}")
-            return []
+            print(f"      yahoo failed {sym}: {e}"); return []
+
     def _ds(arr, n=22):
         if len(arr) <= n: return [round(x, 4) for x in arr]
         step = len(arr) / n
         return [round(arr[min(len(arr)-1, int(k*step))], 4) for k in range(n)]
-    def _sep(x, dp):  # thousands sep, dp decimals
+
+    def _sep(x, dp):
         return f"{x:,.{dp}f}".replace(",", "\u202f")
 
-    tiles = []
-    for grp, label, sym, kind in mkt.get("TILES", []):
-        c = _closes(sym)
-        if len(c) < 2:
-            continue
-        last, prev = c[-1], c[-2]
-        if kind == "yield" and last > 20:   # some Yahoo yield tickers come scaled x10
-            last, prev = last/10.0, prev/10.0
-        if kind == "yield":
-            bp = round((last - prev) * 100)
-            value = f"{last:.2f}%"; chg = f"{'+' if bp>=0 else '-'}{abs(bp)} bp"; d = bp
-        elif kind == "fx":
-            p = (last/prev - 1) * 100 if prev else 0
-            value = f"{last:.4f}"; chg = f"{'+' if p>=0 else '-'}{abs(p):.2f}%"; d = p
-        elif kind == "level":
-            diff = last - prev
-            value = f"{last:.1f}"; chg = f"{'+' if diff>=0 else '-'}{abs(diff):.1f}"; d = diff
-        else:  # index / price -> % change
-            p = (last/prev - 1) * 100 if prev else 0
-            value = _sep(last, 0) if last >= 1000 else f"{last:,.2f}"
-            chg = f"{'+' if p>=0 else '-'}{abs(p):.2f}%"; d = p
-        tiles.append(dict(grp=grp, label=label, value=value, chg=chg,
-                          dir=("up" if d > 0 else "dn" if d < 0 else "flat"),
-                          spark=_ds(c)))
+    def _sign(x, dp=2, suf="%"):
+        return f"{'+' if x >= 0 else '-'}{abs(x):.{dp}f}{suf}"
 
-    # credit risk-appetite: HYG / SPY ratio (live)
+    def _dir(x):
+        return "up" if x > 0 else "dn" if x < 0 else "flat"
+
+    mv = {}   # numeric reads kept for the regime + narrative
+
+    def _price_tile(label, sym, fx=False, level=False):
+        c = _closes(sym)
+        if len(c) < 2: return None, None
+        last, prev = c[-1], c[-2]
+        if level:
+            diff = last - prev
+            tile = dict(label=label, value=f"{last:.1f}", chg=_sign(diff, 1, ""), dir=_dir(diff), spark=_ds(c))
+            return tile, diff
+        p = (last/prev - 1) * 100 if prev else 0.0
+        if fx:
+            value = f"{last:.4f}"
+        else:
+            value = _sep(last, 0) if last >= 1000 else f"{last:,.2f}"
+        return dict(label=label, value=value, chg=_sign(p), dir=_dir(p), spark=_ds(c)), p
+
+    def _yield_tile(label, last, prev):
+        bp = round((last - prev) * 100)
+        return dict(label=label, value=f"{last:.2f}%", chg=f"{'+' if bp >= 0 else '-'}{abs(bp)} bp",
+                    dir=_dir(bp), spark=[])
+
+    # ---- FRED: (date,value) ascending, last 90d ----
+    def _fred(series, days=120):
+        cosd = (dt.date.today() - dt.timedelta(days=days)).isoformat()
+        txt = _http(f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series}&cosd={cosd}")
+        out = []
+        if txt:
+            for line in txt.splitlines()[1:]:
+                parts = line.split(",")
+                if len(parts) < 2: continue
+                v = parts[-1].strip()
+                if v and v != ".":
+                    try: out.append(float(v))
+                    except Exception: pass
+        return out
+
+    # ---- ECB data portal: euro-area AAA government spot yield, last 3 obs ----
+    def _ecb(tenor):
+        key = f"B.U2.EUR.4F.G_N_A.SV_C_YM.SR_{tenor}"
+        txt = _http(f"https://data-api.ecb.europa.eu/service/data/YC/{key}?lastNObservations=3&format=csvdata")
+        out = []
+        if txt:
+            lines = txt.splitlines()
+            if lines:
+                hdr = lines[0].split(",")
+                try: idx = hdr.index("OBS_VALUE")
+                except ValueError: idx = len(hdr) - 1
+                for line in lines[1:]:
+                    parts = line.split(",")
+                    if len(parts) > idx and parts[idx].strip():
+                        try: out.append(float(parts[idx]))
+                        except Exception: pass
+        return out
+
+    # ---- Japan MoF: latest two JGB rows -> {colyear: [prev,last]} ----
+    _jgb_cache = {}
+    def _jgb():
+        if _jgb_cache: return _jgb_cache.get("data", {})
+        txt = _http("https://www.mof.go.jp/english/policy/jgbs/reference/interest_rate/jgbcme.csv")
+        data = {}
+        if txt:
+            rows = [r.split(",") for r in txt.splitlines() if r.strip()]
+            if len(rows) >= 2:
+                hdr = [h.strip().replace("Y", "") for h in rows[0]]
+                good = [r for r in rows[1:] if len(r) == len(rows[0])]
+                for col in ("2", "10"):
+                    if col in hdr:
+                        ci = hdr.index(col)
+                        vals = []
+                        for r in good:
+                            try: vals.append(float(r[ci]))
+                            except Exception: pass
+                        if len(vals) >= 2: data[col] = vals[-2:]
+        _jgb_cache["data"] = data
+        return data
+
+    # ===== build tile groups =====
+    groups = []
+    g_index = []
+    for label, sym in mkt.get("INDEX", []):
+        t, d = _price_tile(label, sym)
+        if t: g_index.append(t); mv[label] = d
+    if g_index: groups.append(dict(name="Index futures", tiles=g_index))
+
+    g_bonds = []
+    for label, sid in mkt.get("US_BONDS", []):
+        s = _fred(sid)
+        if len(s) >= 2:
+            t = _yield_tile(label, s[-1], s[-2]); g_bonds.append(t); mv[label] = s[-1] - s[-2]
+    for label, tenor in mkt.get("DE_BONDS", []):
+        s = _ecb(tenor)
+        if len(s) >= 2: g_bonds.append(_yield_tile(label, s[-1], s[-2]))
+    jp = _jgb()
+    for label, col in mkt.get("JP_BONDS", []):
+        s = jp.get(col)
+        if s and len(s) >= 2: g_bonds.append(_yield_tile(label, s[-1], s[-2]))
+    if g_bonds: groups.append(dict(name="Bonds", tiles=g_bonds))
+
+    g_comm = []
+    for label, sym in mkt.get("COMMODITIES", []):
+        t, d = _price_tile(label, sym)
+        if t: g_comm.append(t); mv[label] = d
+    if g_comm: groups.append(dict(name="Commodities", tiles=g_comm))
+
+    g_eur = []
+    for label, sym in mkt.get("FX_EUR", []):
+        t, d = _price_tile(label, sym, fx=True)
+        if t: g_eur.append(t)
+    if g_eur: groups.append(dict(name="FX \u2013 EUR majors", tiles=g_eur))
+
+    g_usd = []
+    for label, sym in mkt.get("FX_USD", []):
+        lvl = (sym == "DX-Y.NYB")
+        t, d = _price_tile(label, sym, fx=not lvl, level=lvl)
+        if t: g_usd.append(t); mv[label] = d
+    if g_usd: groups.append(dict(name="FX \u2013 USD majors", tiles=g_usd))
+
+    # VIX (for the risk panel + regime)
+    vix_c = _closes("^VIX")
+    vix = {}
+    if len(vix_c) >= 2:
+        diff = vix_c[-1] - vix_c[-2]
+        vix = dict(val=f"{vix_c[-1]:.1f}", chg=_sign(diff, 1, ""), dir=_dir(diff)); mv["VIX"] = diff
+
+    # ===== what's priced into rates (FRED) =====
+    fr = mkt.get("FRED", {})
+    def _last2(series):
+        s = _fred(series); return (s[-1], s[-2]) if len(s) >= 2 else (None, None)
+    tt_l, tt_p = _last2(fr.get("two_ten", "T10Y2Y"))
+    rl_l, _ = _last2(fr.get("real_10y", "DFII10"))
+    ff_l, _ = _last2(fr.get("five_y_five", "T5YIFR"))
+    oas_l, oas_p = _last2(fr.get("hy_oas", "BAMLH0A0HYM2"))
+    rates = dict(
+        two_ten=(f"{'+' if tt_l >= 0 else '-'}{abs(round(tt_l*100))} bp" if tt_l is not None else None),
+        real_10y=(f"{rl_l:.2f}%" if rl_l is not None else None),
+        five_y_five=(f"{ff_l:.2f}%" if ff_l is not None else None),
+    )
+    hy_oas = None
+    if oas_l is not None:
+        hy_bp = round(oas_l * 100); hy_d = round((oas_l - oas_p) * 100) if oas_p is not None else 0
+        hy_oas = dict(bp=f"{hy_bp} bp", chg=f"{'+' if hy_d >= 0 else '-'}{abs(hy_d)}", dir=_dir(hy_d))
+        mv["HYOAS"] = hy_d
+
+    # ===== Fed (futures-implied) + ECB (2Y vs deposit, est.) =====
+    def _bar(cuts_bp, horizon):
+        pct = max(0, min(100, round((cuts_bp / horizon) * 100))) if cuts_bp and cuts_bp > 0 else 0
+        if cuts_bp is None: return dict(text="-", pct=None)
+        if cuts_bp <= 2:    return dict(text="~flat / none priced", pct=0)
+        return dict(text=f"~{round(cuts_bp)} bp of cuts", pct=pct)
+    fed_cfg = mkt.get("FED", {}); fed = dict(label=fed_cfg.get("label", "Fed"))
+    fc = _closes(fed_cfg.get("contract", "ZQU26=F"))
+    if fc:
+        implied = 100.0 - fc[-1]; fed.update(_bar((fed_cfg.get("target_mid", 0) - implied) * 100, fed_cfg.get("horizon_bp", 50)))
+    else:
+        fed.update(text="-", pct=None)
+    ecb_cfg = mkt.get("ECB", {}); ecb = dict(label=ecb_cfg.get("label", "ECB"))
+    de2 = _ecb("2Y")
+    if de2:
+        ecb.update(_bar((ecb_cfg.get("depo", 0) - de2[-1]) * 100, ecb_cfg.get("horizon_bp", 50)))
+    else:
+        ecb.update(text="-", pct=None)
+
+    # ===== credit ratio HYG/SPY =====
     credit = {}
     hyg, spy = _closes("HYG"), _closes("SPY")
     if len(hyg) >= 2 and len(spy) >= 2:
         r_last, r_prev = hyg[-1]/spy[-1], hyg[-2]/spy[-2]
         p = (r_last/r_prev - 1) * 100 if r_prev else 0
-        credit = dict(hyg_spx=f"{r_last:.4f}",
-                      hyg_chg=f"{'+' if p>=0 else '-'}{abs(p):.2f}%",
-                      hyg_dir=("up" if p > 0 else "dn" if p < 0 else "flat"))
+        credit = dict(hyg_spx=f"{r_last:.4f}", hyg_chg=_sign(p), hyg_dir=_dir(p)); mv["HYG"] = p
 
-    exp = dict(mkt.get("EXPECT", {}))
-    return dict(asof=dt.datetime.now().strftime("%Y-%m-%d %H:%M"),
-                tiles=tiles, credit=credit, expect=exp,
-                catalysts=list(mkt.get("CATALYSTS", [])), chain=mkt.get("CHAIN", ""))
+    # ===== Alpha Risk Matrix: 25d 1M risk reversal on the option chain =====
+    arm = _risk_reversal(mkt.get("ARM", {}))
+    arm = _arm_percentile(arm, mkt.get("HISTORY_FILE", "market_history.json"))
+
+    # ===== regime (risk-on/off) from the reads above =====
+    eq = [mv.get(l) for l in ("S&P fut", "Nasdaq fut", "Dow fut", "Euro Stoxx") if mv.get(l) is not None]
+    sig = []
+    def add(name, off_cond, on_cond):
+        if off_cond: sig.append(dict(name=name, dir="off"))
+        elif on_cond: sig.append(dict(name=name, dir="on"))
+    if eq: add("Equities " + ("\u2193" if sum(eq) < 0 else "\u2191"), sum(eq) < 0, sum(eq) > 0)
+    if "VIX" in mv: add("VIX " + ("\u2191" if mv["VIX"] > 0 else "\u2193"), mv["VIX"] > 0, mv["VIX"] < 0)
+    if "DXY" in mv: add("USD " + ("\u2191" if mv["DXY"] > 0 else "\u2193"), mv["DXY"] > 0, mv["DXY"] < 0)
+    if "WTI crude" in mv: add("Oil " + ("\u2193" if mv["WTI crude"] < 0 else "\u2191"), mv["WTI crude"] < 0, mv["WTI crude"] > 0)
+    cred_off = (mv.get("HYG", 0) < 0) or (mv.get("HYOAS", 0) > 0)
+    cred_on = (mv.get("HYG", 0) > 0) and (mv.get("HYOAS", 0) <= 0)
+    if ("HYG" in mv) or ("HYOAS" in mv):
+        sig.append(dict(name="Credit " + ("soft" if cred_off else "firm"), dir="off" if cred_off else "on"))
+    n_off = sum(1 for s in sig if s["dir"] == "off"); n_on = len(sig) - n_off
+    regime = "Risk-off" if n_off > n_on else "Risk-on" if n_on > n_off else "Neutral"
+    rdir = "off" if n_off > n_on else "on" if n_on > n_off else "neutral"
+    score = round((n_on / len(sig)) * 100) if sig else 50   # 0 = full risk-off, 100 = full risk-on
+    risk = dict(regime=regime, dir=rdir, count=f"{max(n_off, n_on)} of {len(sig)} signals" if sig else "",
+                pos=score, signals=sig, vix=vix, **credit)
+    if hy_oas: risk["hy_oas"] = hy_oas
+
+    setup = _market_setup(mv, regime, vix, rates)
+    news = _macro_news(mkt.get("NEWS_FEEDS", []), _http)
+
+    return dict(asof=dt.datetime.now().strftime("%Y-%m-%d %H:%M"), groups=groups,
+                rates=rates, fed=fed, ecb=ecb, risk=risk, arm=arm, setup=setup, news=news)
+
+
+def _risk_reversal(cfg):
+    """25-delta 1M risk reversal = IV(25d put) - IV(25d call), in vol points, from the Yahoo
+    option chain. Positive => downside skew (puts bid). None on any failure."""
+    import yfinance as yf, math
+    try:
+        sym = cfg.get("underlying", "SPY"); r = cfg.get("r", 0.04); q = cfg.get("q", 0.012)
+        target = cfg.get("target_days", 30)
+        t = yf.Ticker(sym)
+        h = t.history(period="5d"); spot = float(h["Close"].dropna().iloc[-1])
+        exps = list(t.options or [])
+        today = dt.date.today(); best = None
+        for e in exps:
+            d = (dt.date.fromisoformat(e) - today).days
+            if d <= 1: continue
+            if best is None or abs(d - target) < abs(best[1] - target): best = (e, d)
+        if not best: return None
+        exp, days = best; T = max(days, 1) / 365.0
+        oc = t.option_chain(exp)
+        N = lambda x: 0.5 * (1 + math.erf(x / math.sqrt(2)))
+        def iv_at_25(df, is_call):
+            rows = []
+            for K, iv in zip(df["strike"].tolist(), df["impliedVolatility"].tolist()):
+                try: K = float(K); iv = float(iv)
+                except Exception: continue
+                if not (0.01 < iv < 3.0) or K <= 0: continue
+                d1 = (math.log(spot / K) + (r - q + 0.5 * iv * iv) * T) / (iv * math.sqrt(T))
+                delta = math.exp(-q * T) * (N(d1) if is_call else (N(d1) - 1))
+                rows.append((abs(delta), iv))
+            if len(rows) < 2: return None
+            rows.sort()
+            for i in range(1, len(rows)):
+                a, b = rows[i-1], rows[i]
+                if (a[0] - 0.25) * (b[0] - 0.25) <= 0:
+                    if b[0] == a[0]: return a[1]
+                    w = (0.25 - a[0]) / (b[0] - a[0]); return a[1] + w * (b[1] - a[1])
+            return min(rows, key=lambda x: abs(x[0] - 0.25))[1]
+        civ, piv = iv_at_25(oc.calls, True), iv_at_25(oc.puts, False)
+        if civ is None or piv is None: return None
+        return round((piv - civ) * 100, 2)   # vol points
+    except Exception as e:
+        print(f"      risk-reversal failed: {e}"); return None
+
+
+def _arm_percentile(rr, path):
+    """Append today's risk reversal to a rolling file and return display dict with the 30-day
+    percentile. Builds up over ~30 daily runs; shows 'building' until it has enough history."""
+    today = dt.date.today().isoformat(); arr = []
+    if os.path.exists(path):
+        try:
+            with open(path, "r", encoding="utf-8") as f: arr = json.load(f)
+            if not isinstance(arr, list): arr = []
+        except Exception: arr = []
+    if rr is not None:
+        arr = [x for x in arr if x.get("date") != today]
+        arr.append(dict(date=today, rr=rr)); arr.sort(key=lambda x: x.get("date", ""))
+        arr = arr[-90:]
+        try:
+            with open(path, "w", encoding="utf-8") as f: json.dump(arr, f, indent=1)
+        except Exception as e:
+            print(f"      ! market_history write: {e}")
+    last30 = [x["rr"] for x in arr[-30:] if isinstance(x.get("rr"), (int, float))]
+    n = len(last30)
+    if rr is None:
+        return dict(value=None, n=n, building=(n < 10))
+    lo, hi = (min(last30), max(last30)) if last30 else (rr, rr)
+    below = sum(1 for v in last30 if v < rr)
+    pct = round(below / max(1, n - 1) * 100) if n > 1 else 50
+    pos = round((rr - lo) / ((hi - lo) or 1) * 100)
+    return dict(value=f"{'+' if rr >= 0 else '-'}{abs(rr):.1f}", raw=rr, lo=f"{lo:.1f}", hi=f"{hi:.1f}",
+                pct=pct, pos=pos, n=n, building=(n < 10),
+                elevated=(pct >= 70), depressed=(pct <= 30))
+
+
+def _market_setup(mv, regime, vix, rates):
+    """Generate the short 'today's setup' story + what-to-price-in / what-to-watch bullets
+    straight from the numeric reads, so it rewrites itself each update."""
+    def mo(k, dp=2):
+        v = mv.get(k); return None if v is None else (f"{'+' if v >= 0 else '-'}{abs(v):.{dp}f}%")
+    eq = [mv.get(l) for l in ("S&P fut", "Nasdaq fut", "Dow fut", "Euro Stoxx") if mv.get(l) is not None]
+    tone = {"Risk-off": "Risk-off tape", "Risk-on": "Risk-on tape", "Neutral": "Mixed, two-way tape"}[regime]
+    eq_word = "broadly lower" if (eq and sum(eq) < 0) else "broadly higher" if (eq and sum(eq) > 0) else "mixed"
+    bits = [f"{tone} into the open - equities are {eq_word}"]
+    if vix.get("val"): bits.append(f"the VIX is at {vix['val']} ({vix.get('chg','')})")
+    if mv.get("DXY") is not None: bits.append("the dollar is " + ("firm" if mv["DXY"] > 0 else "softer"))
+    if mv.get("WTI crude") is not None: bits.append("oil is " + ("off" if mv["WTI crude"] < 0 else "up"))
+    story = ", ".join(bits) + ". The read is driven by what's moving together: watch whether credit and gold confirm or fade the equity move."
+    price_in = []
+    if eq:
+        parts = [f"{l} {mo(l)}" for l in ("S&P fut", "Nasdaq fut", "Dow fut", "Euro Stoxx") if mo(l)]
+        if parts: price_in.append("Equities: " + ", ".join(parts[:3]))
+    if vix.get("val"): price_in.append(f"Volatility: VIX {vix['val']} ({vix.get('chg','')})")
+    if mv.get("DXY") is not None: price_in.append("Dollar " + ("bid" if mv["DXY"] > 0 else "offered") + " - watch risk-sensitive FX")
+    if mo("WTI crude"): price_in.append(f"Oil (WTI) {mo('WTI crude')} - growth/demand read")
+    if mv.get("HYG") is not None: price_in.append("Credit (HYG/SPX) " + ("firm" if mv["HYG"] >= 0 else "soft") + " vs equities")
+    watch = []
+    if rates.get("two_ten"): watch.append(f"2s10s ({rates['two_ten']}) - flattening on a selloff = growth scare")
+    if rates.get("real_10y"): watch.append(f"10Y real yield ({rates['real_10y']}) - the lever under growth/tech")
+    watch.append("HY OAS - if it widens, an equity wobble is turning into a credit event")
+    watch.append("Gold vs the dollar - is it catching a haven bid, or is this real-yield/USD led?")
+    if not price_in: price_in = ["Market snapshot still populating - run a Magellan update."]
+    return dict(story=story, price_in=price_in, watch=watch)
+
+
+def _macro_news(feeds, http, k=3):
+    """Top macro headlines from public RSS, baked in as clickable links."""
+    import re, html as _html
+    def src_of(u):
+        for name in ("marketwatch", "cnbc", "investing", "reuters", "bloomberg", "ft"):
+            if name in u: return name.capitalize()
+        return "News"
+    items = []
+    for url in feeds:
+        txt = http(url)
+        if not txt: continue
+        for m in re.finditer(r"<item[ >](.*?)</item>", txt, re.S):
+            block = m.group(1)
+            tm = re.search(r"<title>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</title>", block, re.S)
+            lm = re.search(r"<link>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?</link>", block, re.S)
+            if tm and lm:
+                hd = _html.unescape(re.sub(r"<[^>]+>", "", tm.group(1)).strip())
+                lk = _html.unescape(lm.group(1).strip())
+                if hd and lk.startswith("http"):
+                    items.append(dict(hd=hd[:130], url=lk, src=src_of(url)))
+            if len(items) >= k: break
+        if len(items) >= k: break
+    return items[:k]
 
 # ===================== inlined dashboard renderer =====================
 def build_dashboard(payload, out_path="dashboard.html"):
@@ -810,6 +1110,20 @@ nav.tabs button.active{background:var(--panel);color:var(--ink);border-color:var
 .mkcat td{padding:7px 0;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
 .mkchain{border-left:3px solid var(--gold)}
 .mkchaintext{color:var(--blue);font-size:14px;line-height:1.6}
+.mksetup{border-left:3px solid var(--gold);border-radius:12px}
+.mkstory{color:var(--blue);font-size:14px;line-height:1.65;margin:0 0 12px}
+.mkcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.mkcolh{font-size:12px;font-weight:600;margin:0 0 6px}
+.mkbul{margin:0;padding-left:18px}.mkbul li{font-size:13px;line-height:1.55;margin:3px 0;color:var(--ink)}
+.mkchip{display:inline-block;font-size:12px;padding:3px 9px;border-radius:7px;margin:0 6px 6px 0}
+.mktrk{height:8px;background:var(--panel2);border-radius:4px;position:relative;margin-top:4px}
+.mktrk>i{position:absolute;top:-3px;width:3px;height:14px;border-radius:2px}
+.mkends{display:flex;justify-content:space-between;font-size:11px;color:var(--dim);margin:10px 0 4px}
+.mkbig{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}
+.mknw{display:flex;gap:10px;padding:9px 0;border-top:1px solid var(--line);text-decoration:none}
+.mknw:first-child{border-top:none}
+.mknw .hd{font-size:13px;color:var(--ink);line-height:1.4}
+.mknw .mt{font-size:11px;color:var(--dim);margin-top:2px;font-variant-numeric:tabular-nums}
 .scorebar{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line);
 border-radius:12px;padding:12px 16px;margin:12px 0 16px}
 .scorebar input[type=range]{flex:1;accent-color:var(--accent)}
@@ -994,14 +1308,14 @@ advisor before investing.</p>
 <section class="view active" id="market">
 <div class="mktq">What is the market <b>expecting</b> today? - not what happened yesterday.</div>
 <div class="mksub" id="mkAsof"></div>
-<div class="mkgrp">Global markets</div>
-<div class="mktiles" id="mkTiles"></div>
+<div id="mkGroups"></div>
+<div class="mkcard"><div class="mkh">What&rsquo;s priced into rates</div><div id="mkRates"></div><div id="mkFedEcb"></div></div>
 <div class="mkrow">
-<div class="mkcard"><div class="mkh">What&rsquo;s priced into rates</div><div id="mkRates"></div><div id="mkFed"></div></div>
 <div class="mkcard"><div class="mkh">Risk appetite</div><div id="mkRisk"></div></div>
+<div class="mkcard"><div class="mkh">Alpha Risk Matrix</div><div id="mkArm"></div></div>
 </div>
-<div class="mkcard"><div class="mkh">Today&rsquo;s catalysts</div><div id="mkCat"></div></div>
-<div class="mkcard mkchain"><div class="mkh">Reasoning chain of the day</div><div id="mkChain" class="mkchaintext"></div></div>
+<div class="mkcard mksetup"><div class="mkh">Today&rsquo;s setup</div><div id="mkSetup"></div></div>
+<div class="mkcard"><div class="mkh">Top macro news</div><div id="mkNews"></div></div>
 </section>
 
 <section class="view" id="screen">
@@ -1119,34 +1433,64 @@ function mkspark(arr,color){
  return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" style="display:block;margin-top:6px"><polyline points="'+pts+'" fill="none" stroke="'+color+'" stroke-width="1.5"/></svg>';
 }
 function renderMarket(){
- const M=DATA.market||{}, E=M.expect||{}, C=M.credit||{};
+ const M=DATA.market||{};
  const col=d=>d==='up'?'var(--up)':d==='dn'?'var(--down)':'var(--muted)';
  const dash=v=>(v&&String(v).trim())?v:'-';
  const asof=document.getElementById('mkAsof');
  if(asof)asof.textContent='Snapshot as of '+(M.asof||DATA.generated||'-')+' \u00b7 refreshed each Magellan update';
- const tiles=M.tiles||[];
- document.getElementById('mkTiles').innerHTML = tiles.length
-  ? tiles.map(t=>'<div class="mktile"><span class="tg">'+t.grp+'</span><div class="tl">'+t.label+'</div><div class="tv">'+t.value+'</div><div class="tc" style="color:'+col(t.dir)+'">'+t.chg+'</div>'+mkspark(t.spark,col(t.dir))+'</div>').join('')
+
+ const G=M.groups||[];
+ document.getElementById('mkGroups').innerHTML = G.length
+  ? G.map(g=>'<div class="mkgrp">'+g.name+'</div><div class="mktiles">'+
+      g.tiles.map(t=>'<div class="mktile"><div class="tl">'+t.label+'</div><div class="tv">'+t.value+'</div><div class="tc" style="color:'+col(t.dir)+'">'+t.chg+'</div>'+(t.spark&&t.spark.length?mkspark(t.spark,col(t.dir)):'')+'</div>').join('')+'</div>').join('')
   : '<div class="empty">Market snapshot unavailable - run a Magellan update to populate it.</div>';
+
+ const R=M.rates||{};
  document.getElementById('mkRates').innerHTML =
-  '<div class="mkrowln"><span class="k">2s10s spread</span><span class="v">'+dash(E.two_ten)+'</span></div>'+
-  '<div class="mkrowln"><span class="k">10Y real yield (TIPS)</span><span class="v">'+dash(E.real_10y)+'</span></div>'+
-  '<div class="mkrowln"><span class="k">5y5y inflation</span><span class="v">'+dash(E.five_y_five)+'</span></div>';
- const bar=(label,pct)=>{const has=pct!=null&&String(pct).trim()!=='';const p=has?Math.max(0,Math.min(100,parseFloat(pct))):0;
-  return '<div class="mkbarw"><div class="mkbarl"><span>'+label+'</span><span class="v">'+(has?Math.round(p)+'%':'-')+'</span></div><div class="mkbar"><i style="width:'+p+'%"></i></div></div>';};
- document.getElementById('mkFed').innerHTML = bar(E.fed_label||'Fed cut priced',E.fed_pct)+bar(E.ecb_label||'ECB cut priced',E.ecb_pct);
- const reg=(E.regime||'').trim();
- const regcol=/on/i.test(reg)?'var(--up)':/off/i.test(reg)?'var(--down)':'var(--muted)';
- document.getElementById('mkRisk').innerHTML =
-  '<div class="mkregime" style="color:'+(reg?regcol:'var(--muted)')+'">'+(reg||'-')+'</div>'+
-  '<div class="mkrowln"><span class="k">HYG / SPX</span><span class="v">'+(C.hyg_spx?(C.hyg_spx+' <span style="color:'+col(C.hyg_dir)+'">'+(C.hyg_chg||'')+'</span>'):'-')+'</span></div>'+
-  '<div class="mkrowln"><span class="k">HY OAS spread</span><span class="v">'+dash(E.hy_oas)+'</span></div>';
- const cat=M.catalysts||[];
- document.getElementById('mkCat').innerHTML = cat.length
-  ? '<table class="mkcat"><tr><th>Time</th><th>Event</th><th style="text-align:right">Cons.</th><th style="text-align:right">Prior</th></tr>'+
-    cat.map(c=>'<tr><td>'+(c.t||'')+'</td><td>'+(c.event||'')+'</td><td style="text-align:right">'+(c.cons||'-')+'</td><td style="text-align:right;color:var(--muted)">'+(c.prior||'-')+'</td></tr>').join('')+'</table>'
-  : '<p class="hint">No catalysts set. Add today\u2019s prints (CPI / NFP / Fed / ECB / PMI) in the MARKET config block.</p>';
- document.getElementById('mkChain').textContent = M.chain||'';
+  '<div class="mkrowln"><span class="k">2s10s spread</span><span class="v">'+dash(R.two_ten)+'</span></div>'+
+  '<div class="mkrowln"><span class="k">10Y real yield (TIPS)</span><span class="v">'+dash(R.real_10y)+'</span></div>'+
+  '<div class="mkrowln"><span class="k">5y5y inflation</span><span class="v">'+dash(R.five_y_five)+'</span></div>';
+ const bar=o=>{o=o||{};const has=o.pct!=null;const p=has?Math.max(0,Math.min(100,o.pct)):0;
+  return '<div class="mkbarw"><div class="mkbarl"><span>'+(o.label||'')+'</span><span class="v">'+(o.text||'-')+'</span></div><div class="mkbar"><i style="width:'+p+'%"></i></div></div>';};
+ document.getElementById('mkFedEcb').innerHTML = bar(M.fed)+bar(M.ecb);
+
+ const K=M.risk||{}, vix=K.vix||{};
+ const regcol=K.dir==='off'?'var(--down)':K.dir==='on'?'var(--up)':'var(--muted)';
+ let riskH='<div style="display:flex;align-items:baseline;gap:8px"><span class="mkbig" style="color:'+regcol+'">'+(K.regime||'-')+'</span><span style="font-size:12px;color:var(--muted)">'+(K.count||'')+'</span></div>';
+ if(K.signals&&K.signals.length){
+  riskH+='<div class="mkends"><span>risk-off</span><span>risk-on</span></div><div class="mktrk"><i style="left:'+(K.pos!=null?K.pos:50)+'%;background:var(--ink)"></i></div>';
+  riskH+='<div style="margin-top:12px">'+K.signals.map(s=>'<span class="mkchip" style="background:rgba(127,127,127,.10);color:'+(s.dir==='off'?'var(--down)':'var(--up)')+'">'+s.name+'</span>').join('')+'</div>';
+ }
+ if(K.hyg_spx) riskH+='<div class="mkrowln"><span class="k">HYG / SPX</span><span class="v">'+K.hyg_spx+' <span style="color:'+col(K.hyg_dir)+'">'+(K.hyg_chg||'')+'</span></span></div>';
+ if(K.hy_oas) riskH+='<div class="mkrowln"><span class="k">HY OAS spread</span><span class="v">'+K.hy_oas.bp+' <span style="color:'+col(K.hy_oas.dir)+'">'+(K.hy_oas.chg||'')+'</span></span></div>';
+ if(vix.val) riskH+='<div class="mkrowln"><span class="k">VIX</span><span class="v">'+vix.val+' <span style="color:'+col(vix.dir)+'">'+(vix.chg||'')+'</span></span></div>';
+ document.getElementById('mkRisk').innerHTML=riskH;
+
+ const A=M.arm||{};
+ let armH;
+ if(A.value==null){
+  armH='<div style="color:var(--muted);font-size:13px">Building history'+(A.n!=null?' ('+A.n+'/30)':'')+' - the matrix needs a few daily runs to calibrate.</div>';
+ } else {
+  const tag=A.elevated?'<span style="color:var(--down)">'+A.pct+'th pctile (30d) - elevated</span>':A.depressed?'<span style="color:var(--up)">'+A.pct+'th pctile (30d) - low</span>':'<span style="color:var(--muted)">'+A.pct+'th pctile (30d)</span>';
+  const mk=A.elevated?'var(--down)':A.depressed?'var(--up)':'var(--ink)';
+  armH='<div style="display:flex;align-items:baseline;gap:10px"><span class="mkbig">'+A.value+'</span>'+tag+'</div>';
+  if(A.building) armH+='<div style="font-size:11px;color:var(--dim);margin-top:2px">building ('+A.n+'/30) - percentile still calibrating</div>';
+  armH+='<div style="font-size:12px;color:var(--muted);margin:8px 0 0">Today vs its 30-day range</div>';
+  armH+='<div class="mkends"><span>'+A.lo+'</span><span>'+A.hi+'</span></div><div class="mktrk"><i style="left:'+(A.pos!=null?A.pos:50)+'%;background:'+mk+'"></i></div>';
+  armH+='<div style="font-size:12px;color:var(--muted);margin-top:12px;line-height:1.5">'+(A.elevated?'More downside protection is being bid than usual - a defensive tilt.':A.depressed?'Less downside protection than usual - complacent / risk-on positioning.':'Downside-protection demand is around its 30-day norm.')+'</div>';
+ }
+ document.getElementById('mkArm').innerHTML=armH;
+
+ const S=M.setup||{};
+ let setH='<p class="mkstory">'+(S.story||'')+'</p><div class="mkcols">';
+ setH+='<div><p class="mkcolh" style="color:var(--accent)">What to price in today</p><ul class="mkbul">'+((S.price_in||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul></div>';
+ setH+='<div><p class="mkcolh" style="color:var(--gold)">What to watch</p><ul class="mkbul">'+((S.watch||[]).map(x=>'<li>'+x+'</li>').join(''))+'</ul></div></div>';
+ document.getElementById('mkSetup').innerHTML=setH;
+
+ const NW=M.news||[];
+ document.getElementById('mkNews').innerHTML = NW.length
+  ? NW.map(n=>'<a class="mknw" href="'+n.url+'" target="_blank" rel="noopener"><span style="color:var(--dim)">\u2197</span><div><div class="hd">'+n.hd+'</div><div class="mt">'+(n.src||'')+'</div></div></a>').join('')
+  : '<p class="hint">Macro headlines unavailable right now - they refresh on the next update.</p>';
 }
 
 document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>{
