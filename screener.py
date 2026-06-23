@@ -1077,12 +1077,12 @@ html{overflow-y:scroll;scrollbar-gutter:stable}
 body{margin:0;background:radial-gradient(1200px 600px at 80% -10%,#152b4a 0,transparent 60%),var(--bg);
 color:var(--ink);font:14px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}
 .wrap{max-width:1180px;margin:0 auto;padding:22px 20px 60px;}
-header{display:flex;align-items:center;gap:16px;border-bottom:1px solid var(--line);padding-bottom:18px;}
+header{display:flex;align-items:center;gap:16px;border-bottom:1px solid var(--line);padding-bottom:18px;flex-wrap:wrap;}
 .compass{width:42px;height:42px;flex:none}
 .brand h1{margin:0;font-size:22px;letter-spacing:.5px;font-weight:700}
 .brand .sub{color:var(--muted);font-size:12px;letter-spacing:2px;text-transform:uppercase}
 .asof{margin-left:auto;color:var(--dim);font-size:12px;text-align:right}
-nav.tabs{display:flex;gap:6px;margin:18px 0 8px}
+nav.tabs{display:flex;gap:6px;margin:18px 0 8px;flex-wrap:wrap}
 nav.tabs button{background:transparent;border:1px solid var(--line);color:var(--muted);
 padding:8px 16px;border-radius:999px;cursor:pointer;font-size:13px}
 nav.tabs button.active{background:var(--panel);color:var(--ink);border-color:var(--accent)}
@@ -1285,6 +1285,28 @@ padding:11px 20px;cursor:pointer;font-size:13px;width:100%}
 .th .foot{display:flex;align-items:center;flex-wrap:wrap;gap:7px;padding-top:11px;border-top:1px solid var(--line);font-size:10px;color:var(--dim)}
 .th .foot .chip2{background:var(--panel);border:1px solid var(--line);padding:2px 7px;border-radius:5px}
 .th .foot .sp{margin-left:auto}
+@media(max-width:600px){
+  .wrap{padding:14px 12px 48px}
+  .compass{width:34px;height:34px}
+  .brand h1{font-size:18px;letter-spacing:.3px}
+  .brand .sub{font-size:11px;letter-spacing:1.2px}
+  .asof{margin-left:0;width:100%;text-align:left;margin-top:2px}
+  nav.tabs{gap:5px;margin:14px 0 6px}
+  nav.tabs button{padding:7px 12px;font-size:12.5px}
+  .scorebar{flex-wrap:wrap;gap:10px;padding:11px 13px}
+  .mktiles{grid-template-columns:repeat(auto-fit,minmax(116px,1fr));gap:8px}
+  .mktile .tv{font-size:17px}
+  .mkhero{padding:16px;gap:14px}
+  .mkhreg{font-size:23px}
+  .mkcard{padding:14px 14px}
+  table{font-size:12.5px}
+  #btBody,#histBody,#pBody{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .modal{padding:16px 14px}
+}
+@media(max-width:430px){
+  .addbar{grid-template-columns:1fr}
+  .mkhchips .mkhchip{font-size:12px;padding:3px 8px}
+}
 </style></head><body>
 <div class="disc" id="disc"><div class="box">
 <h2><span class="ic">&#9888;</span> Important notice</h2>
