@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-MarketScreen — automated daily screening deck (independent of Excel/TradingView).
+MarketScreen - automated daily screening deck (independent of Excel/TradingView).
 
 Pipeline:
   1. Screen the market (TradingView by default, or a Yahoo universe scan).
@@ -42,9 +42,52 @@ CONFIG = dict(
     MAX_UNIVERSE   = 0,
     OUT_HTML       = "dashboard.html",
     HISTORY_FILE   = "history.json",  # accumulating daily archive of score>=HISTORY_SCORE picks
-    HISTORY_SCORE  = 6,               # min score a name needs to be saved to the history archive
+    HISTORY_SCORE  = 4,               # min score a name needs to be saved to the history archive
+                                      #   (the backtest score slider re-filters this 4..7 after the fact)
     DL_CHUNK       = 250,
     FUND_SLEEP     = 0.4,
+)
+
+# ----------------------------------------------------------------------------- MARKET window
+# "What's priced in today" landing dashboard. The TILES are pulled live from Yahoo at build
+# time (same baked-into-the-page pattern as histmap, so it renders on GitHub Pages with no
+# cross-origin fetch). The EXPECT / CATALYSTS / CHAIN fields below have no free, reliable
+# feed, so you fill them from your morning Bloomberg read (WIRP / ECO / yield curve) - leave
+# any value as "" and the panel shows a neutral dash instead of a made-up number.
+MARKET = dict(
+    # tiles: (group, label, yahoo_symbol, kind)  -- kind drives formatting:
+    #   index/price -> % change, fx -> % change (4dp), yield -> bp change, level -> raw +/-
+    TILES = [
+        ("Equity",      "S&P fut",    "ES=F",      "index"),
+        ("Equity",      "Nasdaq fut", "NQ=F",      "index"),
+        ("Equity",      "Euro Stoxx", "^STOXX50E", "index"),
+        ("Rates",       "US 10Y",     "^TNX",      "yield"),
+        ("Rates",       "US 5Y",      "^FVX",      "yield"),
+        ("Rates",       "US 30Y",     "^TYX",      "yield"),
+        ("FX",          "DXY",        "DX-Y.NYB",  "level"),
+        ("FX",          "EUR/USD",    "EURUSD=X",  "fx"),
+        ("FX",          "USD/JPY",    "USDJPY=X",  "fx"),
+        ("Commodities", "WTI",        "CL=F",      "price"),
+        ("Commodities", "Gold",       "GC=F",      "price"),
+        ("Vol",         "VIX",        "^VIX",      "level"),
+    ],
+    # credit ratio is computed live; the rest below are your morning read (edit freely):
+    EXPECT = dict(
+        fed_label = "Fed cut priced - Sep", fed_pct = "",   # e.g. "68"  (percent, no % sign)
+        ecb_label = "ECB cut priced - Jul", ecb_pct = "",   # e.g. "41"
+        two_ten   = "",   # 2s10s spread, e.g. "+37 bp"
+        real_10y  = "",   # 10Y TIPS real yield, e.g. "1.92%"
+        five_y_five = "", # 5y5y inflation, e.g. "2.31%"
+        hy_oas    = "",   # HY OAS spread, e.g. "312 bp"
+        regime    = "",   # your one-word read: "Risk-on" / "Risk-off" / "Neutral"
+    ),
+    # today's catalysts you actually care about (CPI/NFP/Fed/ECB/PMI/GDP). dicts of t/event/cons/prior:
+    CATALYSTS = [
+        # dict(t="08:30", event="US CPI (core, MoM)", cons="+0.3%", prior="+0.2%"),
+    ],
+    # the "reasoning chain of the day" prompt - the daily thinking drill from your routine:
+    CHAIN = "Pick today's key print. Walk the chain: Fed pricing \u2192 2Y \u2192 growth stocks "
+            "\u2192 banks \u2192 USD \u2192 gold. Write the one-line answer before the open.",
 )
 
 # ----------------------------------------------------------------------------- universe
@@ -516,7 +559,7 @@ def main():
     if "--quick" in sys.argv:
         cfg["MAX_UNIVERSE"] = 500
         print("[--quick] scanning a reduced universe for a fast test run")
-    print("MarketScreen — daily run", dt.date.today())
+    print("MarketScreen - daily run", dt.date.today())
 
     if cfg["SOURCE"] == "tradingview":
         print("Screening via TradingView...")
@@ -590,9 +633,12 @@ def main():
         histmap[_sym] = _mp
         if cfg["FUND_SLEEP"]: time.sleep(cfg["FUND_SLEEP"])
 
+    print("Building market snapshot (what's priced in)...")
+    market = build_market_snapshot(MARKET)
+
     payload = dict(generated=dt.datetime.now().strftime("%Y-%m-%d %H:%M"),
                    config=cfg, up=up_final, down=down_final, bench=bench,
-                   history=history, histmap=histmap, demo=False)
+                   history=history, histmap=histmap, market=market, demo=False)
     build_dashboard(payload, cfg["OUT_HTML"])
     print(f"Done -> {cfg['OUT_HTML']}  ({len(up_final)} up, {len(down_final)} down)")
     if "--no-open" not in sys.argv:
@@ -647,6 +693,67 @@ def update_history_archive(up_final, down_final, cfg):
         print(f"  ! could not write {path}: {e}")
     return archive
 
+# ===================== market snapshot (what's priced in) =====================
+def build_market_snapshot(mkt):
+    """Pull the market basket live (Yahoo) and return a display-ready dict baked into the page.
+    Every value is pre-formatted server-side so the browser does zero math and never needs a
+    cross-origin fetch (GitHub Pages blocks those via CORS)."""
+    import yfinance as yf
+    def _closes(sym, period="1mo"):
+        try:
+            h = yf.Ticker(sym).history(period=period, interval="1d")
+            c = [float(x) for x in h["Close"].tolist() if x == x]
+            return c
+        except Exception as e:
+            print(f"      market fetch failed {sym}: {e}")
+            return []
+    def _ds(arr, n=22):
+        if len(arr) <= n: return [round(x, 4) for x in arr]
+        step = len(arr) / n
+        return [round(arr[min(len(arr)-1, int(k*step))], 4) for k in range(n)]
+    def _sep(x, dp):  # thousands sep, dp decimals
+        return f"{x:,.{dp}f}".replace(",", "\u202f")
+
+    tiles = []
+    for grp, label, sym, kind in mkt.get("TILES", []):
+        c = _closes(sym)
+        if len(c) < 2:
+            continue
+        last, prev = c[-1], c[-2]
+        if kind == "yield" and last > 20:   # some Yahoo yield tickers come scaled x10
+            last, prev = last/10.0, prev/10.0
+        if kind == "yield":
+            bp = round((last - prev) * 100)
+            value = f"{last:.2f}%"; chg = f"{'+' if bp>=0 else '-'}{abs(bp)} bp"; d = bp
+        elif kind == "fx":
+            p = (last/prev - 1) * 100 if prev else 0
+            value = f"{last:.4f}"; chg = f"{'+' if p>=0 else '-'}{abs(p):.2f}%"; d = p
+        elif kind == "level":
+            diff = last - prev
+            value = f"{last:.1f}"; chg = f"{'+' if diff>=0 else '-'}{abs(diff):.1f}"; d = diff
+        else:  # index / price -> % change
+            p = (last/prev - 1) * 100 if prev else 0
+            value = _sep(last, 0) if last >= 1000 else f"{last:,.2f}"
+            chg = f"{'+' if p>=0 else '-'}{abs(p):.2f}%"; d = p
+        tiles.append(dict(grp=grp, label=label, value=value, chg=chg,
+                          dir=("up" if d > 0 else "dn" if d < 0 else "flat"),
+                          spark=_ds(c)))
+
+    # credit risk-appetite: HYG / SPY ratio (live)
+    credit = {}
+    hyg, spy = _closes("HYG"), _closes("SPY")
+    if len(hyg) >= 2 and len(spy) >= 2:
+        r_last, r_prev = hyg[-1]/spy[-1], hyg[-2]/spy[-2]
+        p = (r_last/r_prev - 1) * 100 if r_prev else 0
+        credit = dict(hyg_spx=f"{r_last:.4f}",
+                      hyg_chg=f"{'+' if p>=0 else '-'}{abs(p):.2f}%",
+                      hyg_dir=("up" if p > 0 else "dn" if p < 0 else "flat"))
+
+    exp = dict(mkt.get("EXPECT", {}))
+    return dict(asof=dt.datetime.now().strftime("%Y-%m-%d %H:%M"),
+                tiles=tiles, credit=credit, expect=exp,
+                catalysts=list(mkt.get("CATALYSTS", [])), chain=mkt.get("CHAIN", ""))
+
 # ===================== inlined dashboard renderer =====================
 def build_dashboard(payload, out_path="dashboard.html"):
     html = _TEMPLATE.replace("/*__DATA__*/", json.dumps(payload, default=str))
@@ -676,6 +783,33 @@ nav.tabs button{background:transparent;border:1px solid var(--line);color:var(--
 padding:8px 16px;border-radius:999px;cursor:pointer;font-size:13px}
 nav.tabs button.active{background:var(--panel);color:var(--ink);border-color:var(--accent)}
 .view{display:none}.view.active{display:block}
+.mktq{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:11px 16px;color:var(--blue);font-size:14px;margin:6px 0 4px}
+.mktq b{color:var(--ink)}
+.mksub{color:var(--dim);font-size:11px;letter-spacing:1px;text-transform:uppercase;margin:0 2px 16px}
+.mkgrp{color:var(--muted);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin:16px 2px 9px}
+.mktiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:10px}
+.mktile{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.mktile .tg{float:right;color:var(--dim);font-size:9px;letter-spacing:1px;text-transform:uppercase}
+.mktile .tl{color:var(--muted);font-size:11px;margin-bottom:3px}
+.mktile .tv{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
+.mktile .tc{font-size:12px;font-variant-numeric:tabular-nums;margin-top:2px}
+.mkrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px}
+.mkcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:14px}
+.mkrow .mkcard{margin-top:14px}
+.mkh{color:var(--muted);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px}
+.mkrowln{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-top:1px solid var(--line)}
+.mkrowln:first-child{border-top:none}
+.mkrowln .k{color:var(--muted)}.mkrowln .v{font-variant-numeric:tabular-nums}
+.mkbarw{margin-top:12px}
+.mkbarl{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-bottom:5px}
+.mkbar{height:7px;background:var(--panel2);border-radius:4px;overflow:hidden}
+.mkbar>i{display:block;height:100%;background:var(--accent)}
+.mkregime{font-size:22px;font-weight:700;margin-bottom:6px}
+.mkcat{width:100%;border-collapse:collapse;font-size:13px}
+.mkcat th{color:var(--dim);font-size:10px;letter-spacing:1px;text-transform:uppercase;text-align:left;font-weight:600;padding:4px 0}
+.mkcat td{padding:7px 0;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+.mkchain{border-left:3px solid var(--gold)}
+.mkchaintext{color:var(--blue);font-size:14px;line-height:1.6}
 .scorebar{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line);
 border-radius:12px;padding:12px 16px;margin:12px 0 16px}
 .scorebar input[type=range]{flex:1;accent-color:var(--accent)}
@@ -850,13 +984,27 @@ advisor before investing.</p>
 </header>
 
 <nav class="tabs">
-<button class="active" data-tab="screen">Screen</button>
-<button data-tab="magellan">Magellan &mdash; Portfolio</button>
+<button class="active" data-tab="market">Market</button>
+<button data-tab="screen">Screen</button>
+<button data-tab="magellan">Magellan - Portfolio</button>
 <button data-tab="backtest">Backtest</button>
 <button data-tab="history">History</button>
 </nav>
 
-<section class="view active" id="screen">
+<section class="view active" id="market">
+<div class="mktq">What is the market <b>expecting</b> today? - not what happened yesterday.</div>
+<div class="mksub" id="mkAsof"></div>
+<div class="mkgrp">Global markets</div>
+<div class="mktiles" id="mkTiles"></div>
+<div class="mkrow">
+<div class="mkcard"><div class="mkh">What&rsquo;s priced into rates</div><div id="mkRates"></div><div id="mkFed"></div></div>
+<div class="mkcard"><div class="mkh">Risk appetite</div><div id="mkRisk"></div></div>
+</div>
+<div class="mkcard"><div class="mkh">Today&rsquo;s catalysts</div><div id="mkCat"></div></div>
+<div class="mkcard mkchain"><div class="mkh">Reasoning chain of the day</div><div id="mkChain" class="mkchaintext"></div></div>
+</section>
+
+<section class="view" id="screen">
 <div class="scorebar">
 <span class="lab">Minimum Magellan score</span>
 <input type="range" id="scoreSlider" min="0" max="6" step="1" value="4"/>
@@ -897,7 +1045,7 @@ advisor before investing.</p>
 </div>
 <div class="scorebar" id="screenCtl">
 <span class="lab">Min score</span>
-<input type="range" id="btSlider" min="4" max="6" step="1" value="6"/>
+<input type="range" id="btSlider" min="4" max="7" step="1" value="6"/>
 <span class="lab">&ge; <b id="btScoreVal" class="cnt">6</b></span>
 <span class="lab" style="margin-left:auto"><b class="cnt" id="btN">0</b> names &middot; equal weight</span>
 </div>
@@ -912,9 +1060,10 @@ advisor before investing.</p>
 </section>
 
 <section class="view" id="history">
-<div class="note" id="histNote">Each time you run <b>Update Magellan</b> after the close, that day's score-&ge;6 names are
-appended to <b>history.json</b> on disk (with their close). This archive powers the
-<b>&ldquo;From history&rdquo;</b> backtest &mdash; each name enters on the date it first appeared, tracked forward against the S&amp;P 500.</div>
+<div class="note" id="histNote">Each time you run <b>Update Magellan</b> after the close, that day's score-&ge;4 names are
+appended to <b>history.json</b> on disk (with their score &amp; close). This archive powers the
+<b>&ldquo;From history&rdquo;</b> backtest - set the <b>Min score</b> slider to backtest any threshold (4-7),
+each name entering on the first date it crossed it, tracked forward against the S&amp;P 500.</div>
 <div class="subt" style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:18px 2px 8px">Saved daily screens</div>
 <div id="histBody"></div>
 </section>
@@ -954,18 +1103,57 @@ const PXMAP={};[...DATA.up,...DATA.down].forEach(s=>{if(s.sym)PXMAP[s.sym.toUppe
   setTimeout(()=>c.classList.remove('spin'),1000);
  };
 })();
-const fmt=(n,d=2)=>(n==null||isNaN(n))?'\u2013':Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
-const pct=n=>(n==null||isNaN(n))?'\u2013':(n>=0?'+':'')+Number(n).toFixed(1)+'%';
-const fmtCap=m=>{ if(m==null||isNaN(m)) return '\u2013';
+const fmt=(n,d=2)=>(n==null||isNaN(n))?'-':Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const pct=n=>(n==null||isNaN(n))?'-':(n>=0?'+':'')+Number(n).toFixed(1)+'%';
+const fmtCap=m=>{ if(m==null||isNaN(m)) return '-';
   if(m>=1e9) return '$'+fmt(m/1e9,1)+'B';
   if(m>=1e7) return '$'+fmt(m/1e6,0)+'M';
   return '$'+fmt(m/1e6,1)+'M'; };
 document.getElementById('asof').textContent=(DATA.demo?'Demo seed \u00b7 ':'Live \u00b7 ')+DATA.generated;
 
+/* ---- Market: what's priced in today ---- */
+function mkspark(arr,color){
+ if(!arr||arr.length<2)return '';
+ const w=60,h=20,mn=Math.min(...arr),mx=Math.max(...arr),rng=(mx-mn)||1;
+ const pts=arr.map((v,i)=>((i/(arr.length-1))*w).toFixed(1)+','+(h-((v-mn)/rng)*h).toFixed(1)).join(' ');
+ return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" style="display:block;margin-top:6px"><polyline points="'+pts+'" fill="none" stroke="'+color+'" stroke-width="1.5"/></svg>';
+}
+function renderMarket(){
+ const M=DATA.market||{}, E=M.expect||{}, C=M.credit||{};
+ const col=d=>d==='up'?'var(--up)':d==='dn'?'var(--down)':'var(--muted)';
+ const dash=v=>(v&&String(v).trim())?v:'-';
+ const asof=document.getElementById('mkAsof');
+ if(asof)asof.textContent='Snapshot as of '+(M.asof||DATA.generated||'-')+' \u00b7 refreshed each Magellan update';
+ const tiles=M.tiles||[];
+ document.getElementById('mkTiles').innerHTML = tiles.length
+  ? tiles.map(t=>'<div class="mktile"><span class="tg">'+t.grp+'</span><div class="tl">'+t.label+'</div><div class="tv">'+t.value+'</div><div class="tc" style="color:'+col(t.dir)+'">'+t.chg+'</div>'+mkspark(t.spark,col(t.dir))+'</div>').join('')
+  : '<div class="empty">Market snapshot unavailable - run a Magellan update to populate it.</div>';
+ document.getElementById('mkRates').innerHTML =
+  '<div class="mkrowln"><span class="k">2s10s spread</span><span class="v">'+dash(E.two_ten)+'</span></div>'+
+  '<div class="mkrowln"><span class="k">10Y real yield (TIPS)</span><span class="v">'+dash(E.real_10y)+'</span></div>'+
+  '<div class="mkrowln"><span class="k">5y5y inflation</span><span class="v">'+dash(E.five_y_five)+'</span></div>';
+ const bar=(label,pct)=>{const has=pct!=null&&String(pct).trim()!=='';const p=has?Math.max(0,Math.min(100,parseFloat(pct))):0;
+  return '<div class="mkbarw"><div class="mkbarl"><span>'+label+'</span><span class="v">'+(has?Math.round(p)+'%':'-')+'</span></div><div class="mkbar"><i style="width:'+p+'%"></i></div></div>';};
+ document.getElementById('mkFed').innerHTML = bar(E.fed_label||'Fed cut priced',E.fed_pct)+bar(E.ecb_label||'ECB cut priced',E.ecb_pct);
+ const reg=(E.regime||'').trim();
+ const regcol=/on/i.test(reg)?'var(--up)':/off/i.test(reg)?'var(--down)':'var(--muted)';
+ document.getElementById('mkRisk').innerHTML =
+  '<div class="mkregime" style="color:'+(reg?regcol:'var(--muted)')+'">'+(reg||'-')+'</div>'+
+  '<div class="mkrowln"><span class="k">HYG / SPX</span><span class="v">'+(C.hyg_spx?(C.hyg_spx+' <span style="color:'+col(C.hyg_dir)+'">'+(C.hyg_chg||'')+'</span>'):'-')+'</span></div>'+
+  '<div class="mkrowln"><span class="k">HY OAS spread</span><span class="v">'+dash(E.hy_oas)+'</span></div>';
+ const cat=M.catalysts||[];
+ document.getElementById('mkCat').innerHTML = cat.length
+  ? '<table class="mkcat"><tr><th>Time</th><th>Event</th><th style="text-align:right">Cons.</th><th style="text-align:right">Prior</th></tr>'+
+    cat.map(c=>'<tr><td>'+(c.t||'')+'</td><td>'+(c.event||'')+'</td><td style="text-align:right">'+(c.cons||'-')+'</td><td style="text-align:right;color:var(--muted)">'+(c.prior||'-')+'</td></tr>').join('')+'</table>'
+  : '<p class="hint">No catalysts set. Add today\u2019s prints (CPI / NFP / Fed / ECB / PMI) in the MARKET config block.</p>';
+ document.getElementById('mkChain').textContent = M.chain||'';
+}
+
 document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>{
  document.querySelectorAll('nav.tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');
  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
  document.getElementById(b.dataset.tab).classList.add('active');
+ if(b.dataset.tab==='market') renderMarket();
  if(b.dataset.tab==='backtest') renderBacktest();
  if(b.dataset.tab==='history') renderHistory();});
 
@@ -990,6 +1178,21 @@ function renderScreen(){
 function emptyMsg(){return '<div class="empty">No names at this score. Lower the slider.</div>';}
 function findStock(sym){return [...DATA.up,...DATA.down].find(s=>s.sym===sym);}
 renderScreen();
+renderMarket();
+
+/* ---- keep every dash off the page: clean rendered text + any dynamically inserted text ---- */
+(function(){
+ const fix=s=>s.replace(/[\u2014\u2013\u2212]/g,'-');
+ function clean(node){
+  try{const tw=document.createTreeWalker(node,NodeFilter.SHOW_TEXT,null);let n;
+   while(n=tw.nextNode()){const w=fix(n.nodeValue);if(w!==n.nodeValue)n.nodeValue=w;}}catch(e){}
+ }
+ clean(document.body);
+ new MutationObserver(ms=>{for(const m of ms){
+  if(m.type==='characterData'){const w=fix(m.target.nodeValue);if(w!==m.target.nodeValue)m.target.nodeValue=w;}
+  else m.addedNodes.forEach(nd=>{if(nd.nodeType===3){const w=fix(nd.nodeValue);if(w!==nd.nodeValue)nd.nodeValue=w;}else if(nd.nodeType===1)clean(nd);});
+ }}).observe(document.body,{childList:true,subtree:true,characterData:true});
+})();
 
 /* ---- 1Y price chart: uses real Yahoo history (s.hist) when available ---- */
 function synthSeries(sym,last){let s=0;for(const ch of sym)s=(s*31+ch.charCodeAt(0))%9973;
@@ -1026,7 +1229,7 @@ scrim.onclick=e=>{if(e.target===scrim)scrim.classList.remove('open');};
 
 function mcell(k,v){return `<div class="mcell"><div class="k">${k}</div><div class="v">${v}</div></div>`;}
 /* shared bar/card helpers used by both real and synthetic trend renderers */
-const _fmtV=v=>{if(v==null||!isFinite(v))return '–';const a=Math.abs(v);
+const _fmtV=v=>{if(v==null||!isFinite(v))return '-';const a=Math.abs(v);
  if(a>=1e9)return (v<0?'-':'')+'$'+(Math.abs(v)/1e9).toFixed(1)+'B';
  if(a>=1e6)return (v<0?'-':'')+'$'+(Math.abs(v)/1e6).toFixed(0)+'M';
  if(a>=1e3)return (v<0?'-':'')+'$'+(Math.abs(v)/1e3).toFixed(0)+'K';
@@ -1095,7 +1298,7 @@ function trendsBlock(s){
   return `<div class="devcard"><div class="devtop"><span class="l">${label} <span style="color:var(--dim);font-size:9px">est.</span></span>
    <span class="g ${g>=0?'pos':'neg'}">${(g>=0?'+':'')+g.toFixed(1)}% ${unit}</span></div>${_bars(a,lab,tips)}</div>`;};
  const grid=(steps,lab,unit)=>defs.map(d=>cardSyn(d[0],d[1],d[2],steps,lab,unit)).join('');
- return `<div class="devhdr">Developments <span style="color:var(--dim);font-size:10px">(estimated — full data for top ${DATA.config&&DATA.config.DETAIL_N||40} names)</span></div>
+ return `<div class="devhdr">Developments <span style="color:var(--dim);font-size:10px">(estimated - full data for top ${DATA.config&&DATA.config.DETAIL_N||40} names)</span></div>
   <div class="devtoggle">
    <button class="active" data-dev="devYoY">Yearly · YoY (5y)</button>
    <button data-dev="devQoQ">Quarterly · QoQ (5q)</button></div>
@@ -1116,40 +1319,51 @@ function thesisBlock(s){
  (s.tests||[]).forEach(t=>tf[t.label]=t.ok);
  const fv=s.fv, price=s.price;
  /* strengths from PASSED score tests */
- if(tf['ROE > 15%'])             S.push({m:'g',t:`Strong returns — ROE ${pct(s.roe)}.`,s:'Financials'});
- if(tf['Net cash positive'])     S.push({m:'g',t:`Net cash on the balance sheet — $${fmt(s.netcash)}/share.`,s:'Balance sheet'});
- if(tf['Cash > 10% of price'])   S.push({m:'g',t:`Cash cushion — ${pct((s.cashport||0)*100)} of the price is net cash.`,s:'Balance sheet'});
- if(tf['PEG 0.5-1.0'])           S.push({m:'g',t:`Growth fairly priced — PEG ${fmt(s.peg,2)} against a ${fmt(s.pe,1)} P/E.`,s:'Valuation'});
- if(tf['Cheaper ex-cash P/E'])   S.push({m:'g',t:`Cheaper stripped of cash — ex-cash P/E ${fmt(s.newpe,1)} below the ${fmt(s.pe,1)} headline.`,s:'Valuation'});
- if(tf['Upside vs fair value'])  S.push({m:'g',t:`Model sees upside — fair value $${fmt(s.fv)} above the $${fmt(s.price)} price.`,s:'Valuation model'});
- if(tf['Debt covered by earnings'])S.push({m:'g',t:`Leverage in check — debt covered by earnings.`,s:'Balance sheet'});
+ if(tf['ROE > 15%'])             S.push({m:'g',t:`Strong returns - ROE ${pct(s.roe)}.`,s:'Financials'});
+ if(tf['Net cash positive'])     S.push({m:'g',t:`Net cash on the balance sheet - $${fmt(s.netcash)}/share.`,s:'Balance sheet'});
+ if(tf['Cash > 10% of price'])   S.push({m:'g',t:`Cash cushion - ${pct((s.cashport||0)*100)} of the price is net cash.`,s:'Balance sheet'});
+ if(tf['PEG 0.5-1.0'])           S.push({m:'g',t:`Growth fairly priced - PEG ${fmt(s.peg,2)} against a ${fmt(s.pe,1)} P/E.`,s:'Valuation'});
+ if(tf['Cheaper ex-cash P/E'])   S.push({m:'g',t:`Cheaper stripped of cash - ex-cash P/E ${fmt(s.newpe,1)} below the ${fmt(s.pe,1)} headline.`,s:'Valuation'});
+ if(tf['Upside vs fair value'])  S.push({m:'g',t:`Model sees upside - fair value $${fmt(s.fv)} above the $${fmt(s.price)} price.`,s:'Valuation model'});
+ if(tf['Debt covered by earnings'])S.push({m:'g',t:`Leverage in check - debt covered by earnings.`,s:'Balance sheet'});
  /* strengths from REAL statement trends (detail names only) */
  if(s.trends){
   const rg=trendYoY(s.trends.revenue), ng=trendYoY(s.trends.ni), eg=trendYoY(s.trends.ebit);
-  if(rg!=null&&rg>=10){let x=`Top line growing — revenue ${pct(rg)} YoY`; if(eg!=null)x+=`, EBIT ${pct(eg)}`; S.push({m:'g',t:x+'.',s:'Financials'});}
-  if(ng!=null&&ng>=15) S.push({m:'g',t:`Profit inflecting — net income ${pct(ng)} YoY.`,s:'Financials'});
+  if(rg!=null&&rg>=10){let x=`Top line growing - revenue ${pct(rg)} YoY`; if(eg!=null)x+=`, EBIT ${pct(eg)}`; S.push({m:'g',t:x+'.',s:'Financials'});}
+  if(ng!=null&&ng>=15) S.push({m:'g',t:`Profit inflecting - net income ${pct(ng)} YoY.`,s:'Financials'});
  }
- if(isFinite(s.grossMargin)&&s.grossMargin>=50) S.push({m:'g',t:`High gross margin — ${pct(s.grossMargin)}.`,s:'Financials'});
- /* risks from FAILED tests + signals */
- if(tf['Upside vs fair value']===false&&fv) R.push({m:'r',t:`No margin of safety — fair value $${fmt(s.fv)} below the $${fmt(s.price)} price.`,s:'Valuation model'});
- if(tf['ROE > 15%']===false)     R.push({m:'r',t:`Returns light — ROE ${pct(s.roe)} under the 15% bar.`,s:'Financials'});
- if(tf['Net cash positive']===false) R.push({m:'a',t:`Net debt — the balance sheet is not in a net-cash position.`,s:'Balance sheet'});
- if(isFinite(s.pe)&&s.pe>=35)    R.push({m:'r',t:`Rich absolute multiple — P/E ${fmt(s.pe,1)}; the case leans on growth holding up.`,s:'Valuation'});
- if(s.revg==null)                R.push({m:'a',t:`Data gap — revenue-growth field is blank; confirm before sizing.`,s:'Screen'});
- if(isFinite(s.relvol)&&s.relvol>=1.5) R.push({m:'a',t:`Heightened activity — ${fmt(s.relvol,2)}x relative volume on a ${pct(s.chg)} move; expect volatility.`,s:'Screen'});
- if(s.trends){const ng=trendYoY(s.trends.ni); if(ng!=null&&ng<0) R.push({m:'r',t:`Earnings sliding — net income ${pct(ng)} YoY.`,s:'Financials'});}
+ if(isFinite(s.grossMargin)&&s.grossMargin>=50) S.push({m:'g',t:`High gross margin - ${pct(s.grossMargin)}.`,s:'Financials'});
+ /* risks & weaknesses - substantive, from the name's own data (never a data-plumbing note) */
+ const rich=fv&&price&&price>fv*1.15;
+ if(tf['Upside vs fair value']===false&&fv) R.push({m:'r',t:`No margin of safety - the model's fair value $${fmt(s.fv)} sits below the $${fmt(s.price)} price.`,s:'Valuation model'});
+ else if(rich)                   R.push({m:'r',t:`Stretched vs the model - price is ${fmt(price/fv,1)}x the $${fmt(fv)} fair value, so a lot of good news is already in.`,s:'Valuation model'});
+ if(isFinite(s.pe)&&s.pe>=35)    R.push({m:'r',t:`Rich multiple - ${fmt(s.pe,1)}x earnings; the case leans on that growth actually holding up.`,s:'Valuation'});
+ if(tf['ROE > 15%']===false&&isFinite(s.roe)) R.push({m:'r',t:`Returns light - ROE ${pct(s.roe)}, under the 15% bar; capital isn't compounding hard.`,s:'Financials'});
+ if(tf['Net cash positive']===false) R.push({m:'a',t:`Net debt - not in a net-cash position, so it carries refinancing/balance-sheet risk into any downturn.`,s:'Balance sheet'});
+ /* statement-trend weaknesses (detail names with real Yahoo statements) */
+ if(s.trends){
+  const rrg=trendYoY(s.trends.revenue), rng=trendYoY(s.trends.ni), reg=trendYoY(s.trends.ebit);
+  if(rng!=null&&rng<0)             R.push({m:'r',t:`Earnings going backwards - net income ${pct(rng)} YoY despite the screen flag.`,s:'Financials'});
+  if(rrg!=null&&rrg<0)             R.push({m:'r',t:`Top line shrinking - revenue ${pct(rrg)} YoY.`,s:'Financials'});
+  else if(rrg!=null&&reg!=null&&reg<rrg-5) R.push({m:'a',t:`Margins compressing - EBIT growing ${pct(reg)} against revenue ${pct(rrg)}; costs are outrunning sales.`,s:'Financials'});
+ }
+ /* price-action & structural weaknesses that apply to essentially every screen name */
+ if(isFinite(s.chg)&&s.chg<0)    R.push({m:'r',t:`Surfaced on heavy selling - a ${pct(s.chg)} drop on ${fmt(s.relvol,1)}x volume; the trend is against it until it bases (falling-knife risk).`,s:'Price action'});
+ else if(isFinite(s.chg))        R.push({m:'a',t:`Chase risk - already up ${pct(s.chg)} on ${fmt(s.relvol,1)}x volume today; single-session pops often give part of the move back.`,s:'Price action'});
+ if(isFinite(s.mcap)&&s.mcap>0&&s.mcap<2e9) R.push({m:'a',t:`Small-cap risk - ~${fmtCap(s.mcap)} market cap means thinner liquidity and wider swings than large caps.`,s:'Liquidity'});
+ if(s.sector)                    R.push({m:'a',t:`Sector exposure - a single ${s.sector} name; a sector-wide drawdown would hit it whatever the screen score says.`,s:'Sector'});
  /* never leave a card empty */
- if(!S.length) S.push({m:'a',t:`Few standout positives in the data — passes ${s.score}/7 of the screen tests.`,s:'Screen'});
- if(!R.length) R.push({m:'g',t:`No screen test currently flags a weakness (score ${s.score}/7) — re-check after the next report.`,s:'Screen'});
+ if(!S.length) S.push({m:'a',t:`Few standout positives in the data - it passes ${s.score}/7 of the screen tests.`,s:'Screen'});
+ if(!R.length) R.push({m:'a',t:`Nothing in the screen fields flags a clear weakness yet (score ${s.score}/7) - that's the absence of a red flag, not a guarantee; re-check after the next report.`,s:'Screen'});
  /* what to watch (data-true, neutral) */
  if(s.trends&&trendYoY(s.trends.revenue)!=null) W.push({m:'b',t:`Whether the ${pct(trendYoY(s.trends.revenue))} revenue trend holds at the next report.`,s:'Financials'});
  if(fv&&price) W.push({m:'b',t:`The gap between price ($${fmt(price)}) and model fair value ($${fmt(fv)}).`,s:'Valuation'});
- W.push({m:'b',t:`Live headlines and sentiment — see the News tab.`,s:'News'});
+ W.push({m:'b',t:`Live headlines and sentiment - see the News tab.`,s:'News'});
  /* verdict + summary */
- const lean=S.length-R.length, rich=fv&&price&&price>fv*1.15;
+ const lean=S.length-R.length;
  const verdict = s.score>=5 ? (rich?'Quality screen, priced full':'Screens well across the board')
-              : s.score>=3 ? 'Mixed signals — selective' : 'Weak on the screen tests';
- const stance = lean>1?'Stance: constructive — mind the price':lean<-1?'Stance: cautious — risks outweigh':'Stance: balanced';
+              : s.score>=3 ? 'Mixed signals - selective' : 'Weak on the screen tests';
+ const stance = lean>1?'Stance: constructive - mind the price':lean<-1?'Stance: cautious - risks outweigh':'Stance: balanced';
  const mult=(fv&&price)?price/fv:null;
  const summary=`Built from the screen tests, statements and valuation fields. `
    +`${S.length} strength signal(s) vs ${R.length} risk signal(s)`
@@ -1259,7 +1473,7 @@ function openDetail(sym){
    ${inp('nwcPct','Working cap % of rev',2)}
   </div>
   <div class="baseline">
-   <span>From data &mdash; <b>Revenue</b> $${fmt(FIX.rev0,0)}mn</span>
+   <span>From data - <b>Revenue</b> $${fmt(FIX.rev0,0)}mn</span>
    <span><b>Net debt</b> $${fmt(FIX.netDebt,0)}mn</span>
    <span><b>Shares</b> ${fmt(FIX.shares,0)}mn</span>
    <span><b>WACC</b> ${FIX.wacc}%</span>
@@ -1274,7 +1488,7 @@ function openDetail(sym){
    ${inp('mPe','Target P/E',Math.round(s.pe||15))}
    ${inp('mEvEbit','Target EV/EBIT',12)}
   </div>
-  <div class="baseline"><span>From data &mdash; <b>EPS</b> $${fmt(s.eps)}</span>
+  <div class="baseline"><span>From data - <b>EPS</b> $${fmt(s.eps)}</span>
    <span><b>EBIT/share</b> $${fmt((s.eps||0)*1.4)}</span></div>
   <div class="scen" id="multScen"></div></div>
 
@@ -1317,7 +1531,7 @@ function recalcMult(s){
 function scenHTML(out,price){
  const box=(c,l,v)=>{const ud=(v!=null&&price)?(v-price)/price*100:null;
   return `<div class="box ${c}"><div class="lab">${l}</div>
-  <div class="val">${v==null?'\u2013':'$'+fmt(v)}</div>
+  <div class="val">${v==null?'-':'$'+fmt(v)}</div>
   <div class="ud ${ud>=0?'pos':'neg'}">${ud==null?'':(ud>=0?'+':'')+ud.toFixed(0)+'% vs price'}</div></div>`;};
  return box('worst','Worst case',out.worst)+box('base','Base case',out.base)+box('opt','Optimistic',out.opt);}
 
@@ -1339,7 +1553,7 @@ async function loadNews(sym){
  const redditFeed=document.getElementById('redditFeed');
  if(!status||!newsFeed||!redditFeed)return;
  status.textContent='Loading news…';
- // Yahoo Finance RSS via rss2json.com — CORS-safe, no API key needed
+ // Yahoo Finance RSS via rss2json.com - CORS-safe, no API key needed
  try{
   const rss=encodeURIComponent('https://feeds.finance.yahoo.com/rss/2.0/headline?s='+sym+'&region=US&lang=en-US');
   const res=await fetch('https://api.rss2json.com/v1/api.json?rss_url='+rss);
@@ -1405,14 +1619,14 @@ document.getElementById('pAdd').onclick=async()=>{
  let cur,live=false;
  try{cur=await livePrice(t);live=true;stat.textContent='';}
  catch(e){cur=(PXMAP[t]!=null?PXMAP[t]:b);
-  stat.textContent='Could not fetch '+t+' live \u2014 using '+(PXMAP[t]!=null?'today\u2019s screen price':'your buy price')+'. Edit it in the Current column.';}
+  stat.textContent='Could not fetch '+t+' live - using '+(PXMAP[t]!=null?'today\u2019s screen price':'your buy price')+'. Edit it in the Current column.';}
  PORT.push({t,b,sh,cur,live});saveP(PORT);
  document.getElementById('pTicker').value='';document.getElementById('pBuy').value='';document.getElementById('pSh').value='';
  renderP();
 };
 function renderP(){
  const body=document.getElementById('pBody');
- if(!PORT.length){body.innerHTML='<div class="empty">No holdings yet. Add a ticker, your buy price and shares above \u2014 the live price is fetched automatically.</div>';return;}
+ if(!PORT.length){body.innerHTML='<div class="empty">No holdings yet. Add a ticker, your buy price and shares above - the live price is fetched automatically.</div>';return;}
  let cost=0,val=0;
  const rows=PORT.map((h,i)=>{const c=h.cur,hv=c*h.sh,hc=h.b*h.sh,pl=hv-hc,plp=hc?pl/hc*100:0;
   cost+=hc;val+=hv;
@@ -1447,7 +1661,7 @@ async function fetchHist(sym,range){
  sym=sym.toUpperCase(); range=range||'1y';
  const key=sym+'|'+range;
  if(HISTCACHE[key])return HISTCACHE[key];
- // 1) embedded series baked by the Python build — no network, works on GitHub Pages
+ // 1) embedded series baked by the Python build - no network, works on GitHub Pages
  const emb=(DATA.histmap||{})[sym];
  if(emb&&emb.c&&emb.c.length>1){
   let d=(emb.d||[]).slice(), c=emb.c.slice();
@@ -1478,7 +1692,7 @@ const fetchHist1y=sym=>fetchHist(sym,'1y');  // back-compat alias
 document.querySelectorAll('#srcSeg button').forEach(b=>b.onclick=()=>{
  document.querySelectorAll('#srcSeg button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
  BT_SRC=b.dataset.src;
- document.getElementById('screenCtl').style.display = BT_SRC==='screen'?'flex':'none';
+ document.getElementById('screenCtl').style.display = (BT_SRC==='screen'||BT_SRC==='history')?'flex':'none';
  renderBacktest();});
 document.querySelectorAll('#winSeg button').forEach(b=>b.onclick=()=>{
  document.querySelectorAll('#winSeg button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
@@ -1508,8 +1722,9 @@ async function btHoldings(){
   }
  } else if(BT_SRC==='portfolio'){
   for(const p of PORT){ try{const h=await fetchHist(p.t,BT_WINDOW);holds.push({sym:p.t,closes:h.closes,dates:h.dates});}catch(e){} }
- } else { // history: each unique archived name, entering on its first-seen date
-  const seen={};(DATA.history||[]).forEach(d=>d.picks.forEach(p=>{if(!seen[p.sym])seen[p.sym]={sym:p.sym,first:d.date};}));
+ } else { // history: archived names with score>=slider, entering the first date they crossed it
+  const min=btSlider?+btSlider.value:4;
+  const seen={};(DATA.history||[]).forEach(d=>d.picks.forEach(p=>{if((p.score||0)>=min&&!seen[p.sym])seen[p.sym]={sym:p.sym,first:d.date};}));
   for(const o of Object.values(seen)){ try{const h=await fetchHist(o.sym,BT_WINDOW);holds.push({sym:o.sym,closes:h.closes,dates:h.dates,first:o.first});}catch(e){} }
  }
  for(const m of BT_MANUAL){ if(!holds.find(h=>h.sym===m.sym)){ try{const h=await fetchHist(m.sym,BT_WINDOW);holds.push({sym:m.sym,closes:h.closes,dates:h.dates,manual:true});}catch(e){} } }
@@ -1518,7 +1733,11 @@ async function btHoldings(){
 
 async function renderBacktest(){
  if(btSlider)document.getElementById('btScoreVal').textContent=+btSlider.value;
- document.getElementById('btN').textContent=[...DATA.up,...DATA.down].filter(s=>s.score>=(btSlider?+btSlider.value:6)).length;
+ const _min=btSlider?+btSlider.value:6;
+ let _cnt;
+ if(BT_SRC==='history'){const _s={};(DATA.history||[]).forEach(d=>d.picks.forEach(p=>{if((p.score||0)>=_min)_s[p.sym]=1;}));_cnt=Object.keys(_s).length;}
+ else _cnt=[...DATA.up,...DATA.down].filter(s=>s.score>=_min).length;
+ document.getElementById('btN').textContent=_cnt;
  const body=document.getElementById('btBody');
  const srcExtra=document.getElementById('srcExtra');
  srcExtra.textContent = BT_SRC==='portfolio'?'using your '+PORT.length+' holding(s)'
@@ -1533,7 +1752,7 @@ async function renderBacktest(){
  chipsEl.querySelectorAll('button[data-rm]').forEach(btn=>btn.onclick=()=>{BT_MANUAL=BT_MANUAL.filter(m=>m.sym!==btn.dataset.rm);renderBacktest();});
 
  if(!holds.length){
-  body.innerHTML='<div class="empty">'+(BT_SRC==='portfolio'?'No holdings in your portfolio yet — add some in the Portfolio tab, or add a ticker manually above.':BT_SRC==='history'?'No history saved yet. Run an update after the close to start the archive.':'No score names with price history. Lower the score or add a ticker manually.')+'</div>';
+  body.innerHTML='<div class="empty">'+(BT_SRC==='portfolio'?'No holdings in your portfolio yet - add some in the Portfolio tab, or add a ticker manually above.':BT_SRC==='history'?'No history saved yet. Run an update after the close to start the archive.':'No score names with price history. Lower the score or add a ticker manually.')+'</div>';
   return;}
 
  // benchmark series (live for history mode so we have dates; embedded otherwise)
@@ -1554,7 +1773,7 @@ async function renderBacktest(){
    holds.forEach(h=>{if(i>=h._e){const base=h.closes[h._e];if(base){sum+=h.closes[i]/base*100;k++;}}});
    port.push(k?sum/k:100);}
   if(haveBench){const base=benchCloses[startIdx];spy=[];for(let i=startIdx;i<L;i++)spy.push(benchCloses[i]/base*100);}
-  label='Magellan picks (forward-tracked)';
+  label='Magellan \u2265'+(btSlider?+btSlider.value:4)+' (forward-tracked)';
  } else {
   for(let i=0;i<L;i++){let sum=0,k=0;holds.forEach(h=>{const n=normSeries(h.closes.slice(0,L));if(n){sum+=n[i];k++;}});port.push(k?sum/k:100);}
   if(haveBench)spy=normSeries(benchCloses.slice(0,L));
@@ -1568,11 +1787,11 @@ async function renderBacktest(){
  const X=i=>padL+i*(w-padL-padR)/(PL-1);
  const Y=v=>h-padB-((v-mn)/r)*(h-padT-padB);
  const xy=arr=>arr.map((v,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(v).toFixed(1)).join(' ');
- // Y axis — gridlines + return % labels (start = 0%)
+ // Y axis - gridlines + return % labels (start = 0%)
  let yAxis='';{const steps=5;for(let i=0;i<=steps;i++){const v=mn+r*i/steps,yy=Y(v).toFixed(1),ret=v-100;
    yAxis+=`<line x1="${padL}" y1="${yy}" x2="${w-padR}" y2="${yy}" stroke="var(--line)" stroke-width="1"/>`
         +`<text x="${padL-6}" y="${(+yy+3).toFixed(1)}" text-anchor="end" font-size="9" fill="var(--dim)">${(ret>=0?'+':'')+ret.toFixed(0)+'%'}</text>`;}}
- // X axis — time ticks across the trailing window (real dates in history mode, else relative)
+ // X axis - time ticks across the trailing window (real dates in history mode, else relative)
  const spanDays=BT_WINDOW==='5y'?1825:365, today=new Date();
  const xsrc=(BT_SRC==='history'&&(benchDates||(holds[0]&&holds[0].dates)))?(benchDates||holds[0].dates).slice(startIdx,startIdx+PL):null;
  const nTk=BT_WINDOW==='5y'?6:5;
@@ -1583,7 +1802,7 @@ async function renderBacktest(){
    xAxis+=`<line x1="${xx}" y1="${h-padB}" x2="${xx}" y2="${h-padB+4}" stroke="var(--dim)" stroke-width="1"/>`
         +`<text x="${xx}" y="${h-padB+16}" text-anchor="middle" font-size="9" fill="var(--dim)">${lab}</text>`;}
  const y100=Y(100).toFixed(1);
- const stat=(l,v)=>`<div class="mcell"><div class="k">${l}</div><div class="v ${v>=0?'pos':'neg'}">${v==null?'–':(v>=0?'+':'')+v.toFixed(1)+'%'}</div></div>`;
+ const stat=(l,v)=>`<div class="mcell"><div class="k">${l}</div><div class="v ${v>=0?'pos':'neg'}">${v==null?'-':(v>=0?'+':'')+v.toFixed(1)+'%'}</div></div>`;
  const winLbl=BT_WINDOW==='5y'?'5-year':'1-year';
  const note = BT_SRC==='screen'?'Uses <i>today’s</i> top-rated names on past prices → carries selection &amp; survivorship bias.'
    : BT_SRC==='history'?'Each name enters on the date it first appeared in the screen → no survivorship bias. Prices are baked into the page at build time.'
@@ -1611,7 +1830,7 @@ async function renderBacktest(){
 function renderHistory(){
  const body=document.getElementById('histBody');
  const hist=DATA.history||[];
- if(!hist.length){body.innerHTML='<div class="empty">No history saved yet. Run an update after the close — today’s score-≥6 names will be archived to history.json.</div>';return;}
+ if(!hist.length){body.innerHTML='<div class="empty">No history saved yet. Run an update after the close - today’s score-≥6 names will be archived to history.json.</div>';return;}
  const rows=[...hist].reverse().map(d=>{
   const isToday=d.date===(DATA.generated||'').slice(0,10);
   return `<tr><td>${d.date}${isToday?'<span class="daybadge">today</span>':''}</td>
