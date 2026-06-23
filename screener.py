@@ -1070,6 +1070,7 @@ _TEMPLATE = r"""
 :root{--bg:#0b1220;--panel:#111b2e;--panel2:#0e1726;--line:#1f2c44;--ink:#e8eef9;
 --muted:#8aa0c2;--dim:#5b6f92;--up:#3fe08a;--down:#ff5d6c;--gold:#e8c170;--accent:#5b8cff;--blue:#9fc0ff;}
 *{box-sizing:border-box}
+html{overflow-y:scroll;scrollbar-gutter:stable}
 body{margin:0;background:radial-gradient(1200px 600px at 80% -10%,#152b4a 0,transparent 60%),var(--bg);
 color:var(--ink);font:14px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}
 .wrap{max-width:1180px;margin:0 auto;padding:22px 20px 60px;}
@@ -1086,11 +1087,12 @@ nav.tabs button.active{background:var(--panel);color:var(--ink);border-color:var
 .mktq{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:11px 16px;color:var(--blue);font-size:14px;margin:6px 0 4px}
 .mktq b{color:var(--ink)}
 .mksub{color:var(--dim);font-size:11px;letter-spacing:1px;text-transform:uppercase;margin:0 2px 16px}
-.mkgrp{color:var(--muted);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin:16px 2px 9px}
+.mkgrp{color:var(--ink);font-size:12.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin:24px 2px 11px;padding-left:10px;border-left:3px solid var(--accent)}
 .mktiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:10px}
-.mktile{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.mktile{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:11px 13px;transition:border-color .15s ease}
+.mktile:hover{border-color:var(--accent)}
 .mktile .tg{float:right;color:var(--dim);font-size:9px;letter-spacing:1px;text-transform:uppercase}
-.mktile .tl{color:var(--muted);font-size:11px;margin-bottom:3px}
+.mktile .tl{color:var(--blue);font-size:12.5px;font-weight:500;margin-bottom:4px;letter-spacing:.2px}
 .mktile .tv{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
 .mktile .tc{font-size:12px;font-variant-numeric:tabular-nums;margin-top:2px}
 .mkrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px}
