@@ -167,9 +167,147 @@
   "date": "2026-06-23",
   "picks": [
    {
+    "sym": "EGAN",
+    "score": 6,
+    "price": 6.6,
+    "side": "down"
+   },
+   {
+    "sym": "SLDE",
+    "score": 6,
+    "price": 17.48,
+    "side": "up"
+   },
+   {
+    "sym": "TBPH",
+    "score": 6,
+    "price": 16.97,
+    "side": "up"
+   },
+   {
+    "sym": "ARGX",
+    "score": 5,
+    "price": 853.4,
+    "side": "down"
+   },
+   {
+    "sym": "CRTO",
+    "score": 5,
+    "price": 17.36,
+    "side": "up"
+   },
+   {
+    "sym": "FBIO",
+    "score": 5,
+    "price": 3.16,
+    "side": "up"
+   },
+   {
+    "sym": "FIX",
+    "score": 5,
+    "price": 1908.07,
+    "side": "down"
+   },
+   {
+    "sym": "FIZZ",
+    "score": 5,
+    "price": 34.55,
+    "side": "up"
+   },
+   {
+    "sym": "GNTX",
+    "score": 5,
+    "price": 24.75,
+    "side": "down"
+   },
+   {
+    "sym": "IBKR",
+    "score": 5,
+    "price": 94.7,
+    "side": "down"
+   },
+   {
+    "sym": "PBYI",
+    "score": 5,
+    "price": 8.04,
+    "side": "up"
+   },
+   {
+    "sym": "RCRUY",
+    "score": 5,
+    "price": 13.75,
+    "side": "down"
+   },
+   {
+    "sym": "SPNT",
+    "score": 5,
+    "price": 23.64,
+    "side": "up"
+   },
+   {
+    "sym": "TSM",
+    "score": 5,
+    "price": 436.39,
+    "side": "down"
+   },
+   {
+    "sym": "CTSH",
+    "score": 4,
+    "price": 40.95,
+    "side": "down"
+   },
+   {
     "sym": "HTHIY",
     "score": 4,
-    "price": 29.11455,
+    "price": 29.38,
+    "side": "down"
+   },
+   {
+    "sym": "JD",
+    "score": 4,
+    "price": 26.12,
+    "side": "down"
+   },
+   {
+    "sym": "MPWR",
+    "score": 4,
+    "price": 1423.76,
+    "side": "down"
+   },
+   {
+    "sym": "POWL",
+    "score": 4,
+    "price": 291.5,
+    "side": "down"
+   },
+   {
+    "sym": "TDC",
+    "score": 4,
+    "price": 31.16,
+    "side": "up"
+   },
+   {
+    "sym": "TER",
+    "score": 4,
+    "price": 420.12,
+    "side": "down"
+   },
+   {
+    "sym": "VICR",
+    "score": 4,
+    "price": 336.12,
+    "side": "down"
+   },
+   {
+    "sym": "WHD",
+    "score": 4,
+    "price": 52.84,
+    "side": "down"
+   },
+   {
+    "sym": "XIACY",
+    "score": 4,
+    "price": 14.55,
     "side": "down"
    }
   ]
