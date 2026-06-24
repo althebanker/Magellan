@@ -311,5 +311,22 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-06-24",
+  "picks": [
+   {
+    "sym": "INMD",
+    "score": 5,
+    "price": 14.995,
+    "side": "up"
+   },
+   {
+    "sym": "TOYO",
+    "score": 4,
+    "price": 8.49,
+    "side": "down"
+   }
+  ]
  }
 ]
