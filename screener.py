@@ -46,6 +46,9 @@ CONFIG = dict(
                                       #   (the backtest score slider re-filters this 4..7 after the fact)
     DL_CHUNK       = 250,
     FUND_SLEEP     = 0.4,
+    WORKER_URL     = "",   # Cloudflare Worker base URL for live price + Magellan score of
+                           #   tickers not in today's screen (see worker.js). Leave blank to
+                           #   fall back to the legacy in-browser price fetch (price only).
 )
 
 # ----------------------------------------------------------------------------- MARKET window
@@ -1425,7 +1428,8 @@ each name entering on the first date it crossed it, tracked forward against the 
 
 <script>
 const DATA = /*__DATA__*/;
-const PXMAP={};[...DATA.up,...DATA.down].forEach(s=>{if(s.sym)PXMAP[s.sym.toUpperCase()]=s.price;});
+const PXMAP={},SCOREMAP={};[...DATA.up,...DATA.down].forEach(s=>{if(s.sym){PXMAP[s.sym.toUpperCase()]=s.price;if(s.score!=null)SCOREMAP[s.sym.toUpperCase()]=s.score;}});
+const WORKER_URL=((DATA.config||{}).WORKER_URL||'').replace(/\/+$/,'');
 
 /* ---- disclaimer: shows on entry, auto-closes after 10s, closable anytime, once per session ---- */
 (function(){
@@ -2015,18 +2019,38 @@ async function livePrice(t){
  const close=parseFloat(line[6]);
  if(!isFinite(close)||/N\/D/i.test(txt))throw new Error('not found');
  return close;}
+/* resolve price + Magellan score for any ticker:
+   1) baked screen data  - instant, identical to the Screen tab
+   2) the Cloudflare worker - live price + the same 7-test score (if configured)
+   3) legacy in-browser price fetch - price only, no score                      */
+async function lookupTicker(t){
+ if(PXMAP[t]!=null){return{price:PXMAP[t],score:(SCOREMAP[t]!=null?SCOREMAP[t]:null),source:'screen'};}
+ if(WORKER_URL){
+  try{
+   const r=await fetch(WORKER_URL+'/?t='+encodeURIComponent(t));
+   const d=await r.json();
+   if(d&&isFinite(d.price))return{price:d.price,score:(d.score!=null?d.score:null),source:'live'};
+  }catch(e){}
+ }
+ const px=await livePrice(t);          // throws if unavailable
+ return{price:px,score:null,source:'live'};
+}
 const stat=document.getElementById('pStatus');
 document.getElementById('pAdd').onclick=async()=>{
  const t=document.getElementById('pTicker').value.trim().toUpperCase();
  const b=parseFloat(document.getElementById('pBuy').value);
  const sh=parseFloat(document.getElementById('pSh').value);
  if(!t||!(b>0)||!(sh>0)){stat.textContent='Enter ticker, buy price and shares.';return;}
- stat.textContent='Fetching live price for '+t+'\u2026';
- let cur,live=false;
- try{cur=await livePrice(t);live=true;stat.textContent='';}
- catch(e){cur=(PXMAP[t]!=null?PXMAP[t]:b);
-  stat.textContent='Could not fetch '+t+' live - using '+(PXMAP[t]!=null?'today\u2019s screen price':'your buy price')+'. Edit it in the Current column.';}
- PORT.push({t,b,sh,cur,live});saveP(PORT);
+ stat.textContent='Looking up '+t+'\u2026';
+ let cur,sc=null,live=false;
+ try{const r=await lookupTicker(t);cur=r.price;sc=r.score;live=true;
+  stat.textContent=r.source==='screen'
+    ? t+' found in today\u2019s screen \u2014 price + Magellan score loaded.'
+    : (sc!=null ? t+' fetched live \u2014 price + Magellan score loaded.'
+                : t+' price fetched live \u2014 score unavailable for this name.');}
+ catch(e){cur=(PXMAP[t]!=null?PXMAP[t]:b);sc=(SCOREMAP[t]!=null?SCOREMAP[t]:null);
+  stat.textContent='Could not fetch '+t+' live \u2014 using '+(PXMAP[t]!=null?'today\u2019s screen price':'your buy price')+'. Edit it in the Current column.';}
+ PORT.push({t,b,sh,cur,sc,live});saveP(PORT);
  document.getElementById('pTicker').value='';document.getElementById('pBuy').value='';document.getElementById('pSh').value='';
  renderP();
 };
@@ -2037,15 +2061,16 @@ function renderP(){
  const rows=PORT.map((h,i)=>{const c=h.cur,hv=c*h.sh,hc=h.b*h.sh,pl=hv-hc,plp=hc?pl/hc*100:0;
   cost+=hc;val+=hv;
   return `<tr><td>${h.t} ${h.live?'<span class="badge">live</span>':'<span class="badge">manual</span>'}</td>
+  <td>${h.sc!=null?('<b>'+h.sc+'</b><span style="color:var(--dim)">/7</span>'):'<span style="color:var(--dim)">&ndash;</span>'}</td>
   <td>$${fmt(h.b)}</td><td>${fmt(h.sh,0)}</td>
   <td><input class="f" style="width:90px;text-align:right;padding:4px 6px" type="number" step="any" value="${c}" data-i="${i}"/></td>
   <td>$${fmt(hv)}</td><td class="${pl>=0?'pos':'neg'}">${pl>=0?'+':''}$${fmt(pl)}</td>
   <td class="${pl>=0?'pos':'neg'}">${pct(plp)}</td>
   <td><button class="rm" data-rm="${i}">&times;</button></td></tr>`;}).join('');
  const tpl=val-cost,tplp=cost?tpl/cost*100:0;
- body.innerHTML=`<table><thead><tr><th>Ticker</th><th>Buy</th><th>Shares</th><th>Current</th>
+ body.innerHTML=`<table><thead><tr><th>Ticker</th><th>Score</th><th>Buy</th><th>Shares</th><th>Current</th>
  <th>Value</th><th>P/L</th><th>Return</th><th></th></tr></thead><tbody>${rows}
- <tr class="totrow"><td>Portfolio</td><td></td><td></td><td></td><td>$${fmt(val)}</td>
+ <tr class="totrow"><td>Portfolio</td><td></td><td></td><td></td><td></td><td>$${fmt(val)}</td>
  <td class="${tpl>=0?'pos':'neg'}">${tpl>=0?'+':''}$${fmt(tpl)}</td>
  <td class="${tpl>=0?'pos':'neg'}">${pct(tplp)}</td><td></td></tr></tbody></table>`;
  body.querySelectorAll('input[data-i]').forEach(inp=>inp.oninput=()=>{PORT[+inp.dataset.i].cur=parseFloat(inp.value)||0;saveP(PORT);renderP();});
