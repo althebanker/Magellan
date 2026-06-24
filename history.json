@@ -316,15 +316,207 @@
   "date": "2026-06-24",
   "picks": [
    {
+    "sym": "HRTG",
+    "score": 6,
+    "price": 25.54,
+    "side": "up"
+   },
+   {
+    "sym": "SLDE",
+    "score": 6,
+    "price": 18.31,
+    "side": "up"
+   },
+   {
+    "sym": "AGI",
+    "score": 5,
+    "price": 30.1,
+    "side": "down"
+   },
+   {
+    "sym": "ATHM",
+    "score": 5,
+    "price": 19.1,
+    "side": "up"
+   },
+   {
+    "sym": "AUPH",
+    "score": 5,
+    "price": 18.62,
+    "side": "up"
+   },
+   {
+    "sym": "CME",
+    "score": 5,
+    "price": 231.68,
+    "side": "down"
+   },
+   {
+    "sym": "DRD",
+    "score": 5,
+    "price": 21.05,
+    "side": "down"
+   },
+   {
+    "sym": "HAPN",
+    "score": 5,
+    "price": 19.46,
+    "side": "up"
+   },
+   {
+    "sym": "HBM",
+    "score": 5,
+    "price": 22.99,
+    "side": "down"
+   },
+   {
     "sym": "INMD",
     "score": 5,
-    "price": 14.995,
+    "price": 14.79,
+    "side": "up"
+   },
+   {
+    "sym": "KGC",
+    "score": 5,
+    "price": 23.7,
+    "side": "down"
+   },
+   {
+    "sym": "LNC",
+    "score": 5,
+    "price": 36.23,
+    "side": "down"
+   },
+   {
+    "sym": "MRX",
+    "score": 5,
+    "price": 64.84,
+    "side": "down"
+   },
+   {
+    "sym": "PAAS",
+    "score": 5,
+    "price": 44.39,
+    "side": "down"
+   },
+   {
+    "sym": "PHM",
+    "score": 5,
+    "price": 135.71,
+    "side": "up"
+   },
+   {
+    "sym": "RYAAY",
+    "score": 5,
+    "price": 63.73,
+    "side": "up"
+   },
+   {
+    "sym": "SKWD",
+    "score": 5,
+    "price": 54.39,
+    "side": "up"
+   },
+   {
+    "sym": "VOXR",
+    "score": 5,
+    "price": 4.75,
+    "side": "down"
+   },
+   {
+    "sym": "AGYS",
+    "score": 4,
+    "price": 92.31,
+    "side": "up"
+   },
+   {
+    "sym": "ALKS",
+    "score": 4,
+    "price": 50.45,
+    "side": "up"
+   },
+   {
+    "sym": "BMI",
+    "score": 4,
+    "price": 133.58,
+    "side": "up"
+   },
+   {
+    "sym": "BYRN",
+    "score": 4,
+    "price": 5.69,
+    "side": "up"
+   },
+   {
+    "sym": "DSVSF",
+    "score": 4,
+    "price": 5.32,
+    "side": "down"
+   },
+   {
+    "sym": "EXPE",
+    "score": 4,
+    "price": 262.15,
+    "side": "up"
+   },
+   {
+    "sym": "FLYW",
+    "score": 4,
+    "price": 16.54,
+    "side": "up"
+   },
+   {
+    "sym": "JD",
+    "score": 4,
+    "price": 25.48,
+    "side": "down"
+   },
+   {
+    "sym": "LZ",
+    "score": 4,
+    "price": 5.86,
+    "side": "up"
+   },
+   {
+    "sym": "MEDP",
+    "score": 4,
+    "price": 512.79,
+    "side": "up"
+   },
+   {
+    "sym": "ONDS",
+    "score": 4,
+    "price": 7.68,
+    "side": "down"
+   },
+   {
+    "sym": "RES",
+    "score": 4,
+    "price": 5.72,
+    "side": "down"
+   },
+   {
+    "sym": "SKY",
+    "score": 4,
+    "price": 88.23,
+    "side": "up"
+   },
+   {
+    "sym": "TOST",
+    "score": 4,
+    "price": 26.02,
     "side": "up"
    },
    {
     "sym": "TOYO",
     "score": 4,
-    "price": 8.49,
+    "price": 7.91,
+    "side": "down"
+   },
+   {
+    "sym": "WHD",
+    "score": 4,
+    "price": 50.98,
     "side": "down"
    }
   ]
