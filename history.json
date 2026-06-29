@@ -1544,5 +1544,166 @@
     "side": "up"
    }
   ]
+ },
+ {
+  "date": "2026-06-29",
+  "picks": [
+   {
+    "sym": "FRSH",
+    "score": 6,
+    "price": 10.21,
+    "side": "up"
+   },
+   {
+    "sym": "NTDOY",
+    "score": 6,
+    "price": 10.68,
+    "side": "up"
+   },
+   {
+    "sym": "QNST",
+    "score": 6,
+    "price": 14.55,
+    "side": "up"
+   },
+   {
+    "sym": "QTTB",
+    "score": 6,
+    "price": 14.14,
+    "side": "up"
+   },
+   {
+    "sym": "SITC",
+    "score": 6,
+    "price": 4.14,
+    "side": "down"
+   },
+   {
+    "sym": "SLDE",
+    "score": 6,
+    "price": 19.73,
+    "side": "up"
+   },
+   {
+    "sym": "SMERY",
+    "score": 6,
+    "price": 36.68,
+    "side": "up"
+   },
+   {
+    "sym": "TBPH",
+    "score": 6,
+    "price": 17.06,
+    "side": "down"
+   },
+   {
+    "sym": "TROW",
+    "score": 6,
+    "price": 114.38,
+    "side": "up"
+   },
+   {
+    "sym": "AUPH",
+    "score": 5,
+    "price": 16.79,
+    "side": "down"
+   },
+   {
+    "sym": "CRTO",
+    "score": 5,
+    "price": 18.6,
+    "side": "up"
+   },
+   {
+    "sym": "DAKT",
+    "score": 5,
+    "price": 20.19,
+    "side": "up"
+   },
+   {
+    "sym": "FATN",
+    "score": 5,
+    "price": 6.31,
+    "side": "up"
+   },
+   {
+    "sym": "FIZZ",
+    "score": 5,
+    "price": 31.73,
+    "side": "down"
+   },
+   {
+    "sym": "MRX",
+    "score": 5,
+    "price": 58.94,
+    "side": "down"
+   },
+   {
+    "sym": "NTES",
+    "score": 5,
+    "price": 129.16,
+    "side": "up"
+   },
+   {
+    "sym": "SIGA",
+    "score": 5,
+    "price": 3.61,
+    "side": "down"
+   },
+   {
+    "sym": "SIMO",
+    "score": 5,
+    "price": 331.94,
+    "side": "up"
+   },
+   {
+    "sym": "VC",
+    "score": 5,
+    "price": 94.94,
+    "side": "down"
+   },
+   {
+    "sym": "YMM",
+    "score": 5,
+    "price": 8.08,
+    "side": "up"
+   },
+   {
+    "sym": "ATEX",
+    "score": 4,
+    "price": 98.24,
+    "side": "up"
+   },
+   {
+    "sym": "DSP",
+    "score": 4,
+    "price": 13.11,
+    "side": "up"
+   },
+   {
+    "sym": "IPI",
+    "score": 4,
+    "price": 33.42,
+    "side": "down"
+   },
+   {
+    "sym": "OPRA",
+    "score": 4,
+    "price": 19.81,
+    "side": "up"
+   },
+   {
+    "sym": "SMCI",
+    "score": 4,
+    "price": 28.15,
+    "side": "down"
+   },
+   {
+    "sym": "TOST",
+    "score": 4,
+    "price": 28.16,
+    "side": "up"
+   }
+  ]
  }
 ]
