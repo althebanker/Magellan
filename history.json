@@ -1818,5 +1818,160 @@
     "side": "up"
    }
   ]
+ },
+ {
+  "date": "2026-07-01",
+  "picks": [
+   {
+    "sym": "FUTU",
+    "score": 6,
+    "price": 99.92,
+    "side": "up"
+   },
+   {
+    "sym": "LUXE",
+    "score": 6,
+    "price": 7.78,
+    "side": "up"
+   },
+   {
+    "sym": "MLI",
+    "score": 6,
+    "price": 57.42,
+    "side": "down"
+   },
+   {
+    "sym": "NTDOY",
+    "score": 6,
+    "price": 10.74,
+    "side": "up"
+   },
+   {
+    "sym": "ORMP",
+    "score": 6,
+    "price": 4.61,
+    "side": "down"
+   },
+   {
+    "sym": "SITC",
+    "score": 6,
+    "price": 4.46,
+    "side": "up"
+   },
+   {
+    "sym": "SLDE",
+    "score": 6,
+    "price": 19.99,
+    "side": "up"
+   },
+   {
+    "sym": "VIPS",
+    "score": 6,
+    "price": 13.56,
+    "side": "up"
+   },
+   {
+    "sym": "ATAT",
+    "score": 5,
+    "price": 32.87,
+    "side": "up"
+   },
+   {
+    "sym": "DLO",
+    "score": 5,
+    "price": 14.67,
+    "side": "up"
+   },
+   {
+    "sym": "IBKR",
+    "score": 5,
+    "price": 93.25,
+    "side": "up"
+   },
+   {
+    "sym": "RLI",
+    "score": 5,
+    "price": 60.66,
+    "side": "up"
+   },
+   {
+    "sym": "AVPT",
+    "score": 4,
+    "price": 11.44,
+    "side": "up"
+   },
+   {
+    "sym": "CART",
+    "score": 4,
+    "price": 44.83,
+    "side": "down"
+   },
+   {
+    "sym": "CCJ",
+    "score": 4,
+    "price": 97.39,
+    "side": "down"
+   },
+   {
+    "sym": "CLBT",
+    "score": 4,
+    "price": 15.45,
+    "side": "up"
+   },
+   {
+    "sym": "DAVE",
+    "score": 4,
+    "price": 383.13,
+    "side": "up"
+   },
+   {
+    "sym": "FLYW",
+    "score": 4,
+    "price": 18.56,
+    "side": "up"
+   },
+   {
+    "sym": "GMED",
+    "score": 4,
+    "price": 75.96,
+    "side": "down"
+   },
+   {
+    "sym": "IPI",
+    "score": 4,
+    "price": 33.51,
+    "side": "up"
+   },
+   {
+    "sym": "MYRG",
+    "score": 4,
+    "price": 463.11,
+    "side": "down"
+   },
+   {
+    "sym": "ONDS",
+    "score": 4,
+    "price": 7.92,
+    "side": "down"
+   },
+   {
+    "sym": "QTWO",
+    "score": 4,
+    "price": 50.2,
+    "side": "up"
+   },
+   {
+    "sym": "RDDT",
+    "score": 4,
+    "price": 197.76,
+    "side": "up"
+   },
+   {
+    "sym": "ROOT",
+    "score": 4,
+    "price": 60.01,
+    "side": "up"
+   }
+  ]
  }
 ]
