@@ -1973,5 +1973,118 @@
     "side": "up"
    }
   ]
+ },
+ {
+  "date": "2026-07-02",
+  "picks": [
+   {
+    "sym": "BLBD",
+    "score": 6,
+    "price": 76.08,
+    "side": "down"
+   },
+   {
+    "sym": "CHA",
+    "score": 6,
+    "price": 11.01,
+    "side": "down"
+   },
+   {
+    "sym": "JTAI",
+    "score": 6,
+    "price": 7.79,
+    "side": "down"
+   },
+   {
+    "sym": "NTDOY",
+    "score": 6,
+    "price": 11.085,
+    "side": "up"
+   },
+   {
+    "sym": "QFIN",
+    "score": 6,
+    "price": 15.46,
+    "side": "down"
+   },
+   {
+    "sym": "SLDE",
+    "score": 6,
+    "price": 21.25,
+    "side": "up"
+   },
+   {
+    "sym": "FIZZ",
+    "score": 5,
+    "price": 33.33,
+    "side": "up"
+   },
+   {
+    "sym": "FSLR",
+    "score": 5,
+    "price": 224.57,
+    "side": "down"
+   },
+   {
+    "sym": "HAPN",
+    "score": 5,
+    "price": 19.69,
+    "side": "down"
+   },
+   {
+    "sym": "HDSN",
+    "score": 5,
+    "price": 5.99,
+    "side": "up"
+   },
+   {
+    "sym": "HMY",
+    "score": 5,
+    "price": 16.09,
+    "side": "up"
+   },
+   {
+    "sym": "RYAAY",
+    "score": 5,
+    "price": 65.49,
+    "side": "up"
+   },
+   {
+    "sym": "WDOFF",
+    "score": 5,
+    "price": 18.46,
+    "side": "up"
+   },
+   {
+    "sym": "IDEXY",
+    "score": 4,
+    "price": 16.195,
+    "side": "up"
+   },
+   {
+    "sym": "IPAR",
+    "score": 4,
+    "price": 119.39,
+    "side": "up"
+   },
+   {
+    "sym": "RYCEY",
+    "score": 4,
+    "price": 19.63,
+    "side": "up"
+   },
+   {
+    "sym": "SGHC",
+    "score": 4,
+    "price": 14.51,
+    "side": "up"
+   },
+   {
+    "sym": "TFPM",
+    "score": 4,
+    "price": 31.49,
+    "side": "up"
+   }
+  ]
  }
 ]
