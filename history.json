@@ -2199,5 +2199,82 @@
     "side": "up"
    }
   ]
+ },
+ {
+  "date": "2026-07-06",
+  "picks": [
+   {
+    "sym": "ADYEY",
+    "score": 6,
+    "price": 9.85,
+    "side": "up"
+   },
+   {
+    "sym": "FIZZ",
+    "score": 6,
+    "price": 32.34,
+    "side": "down"
+   },
+   {
+    "sym": "JTAI",
+    "score": 6,
+    "price": 6.8,
+    "side": "down"
+   },
+   {
+    "sym": "CRTO",
+    "score": 5,
+    "price": 23.17,
+    "side": "up"
+   },
+   {
+    "sym": "LOGI",
+    "score": 5,
+    "price": 97.43,
+    "side": "up"
+   },
+   {
+    "sym": "NTES",
+    "score": 5,
+    "price": 130.985,
+    "side": "up"
+   },
+   {
+    "sym": "RYAAY",
+    "score": 5,
+    "price": 67.06,
+    "side": "up"
+   },
+   {
+    "sym": "HTHIY",
+    "score": 4,
+    "price": 30.2,
+    "side": "up"
+   },
+   {
+    "sym": "RMD",
+    "score": 4,
+    "price": 218.4,
+    "side": "up"
+   },
+   {
+    "sym": "SMCAY",
+    "score": 4,
+    "price": 23.47,
+    "side": "up"
+   },
+   {
+    "sym": "SRAD",
+    "score": 4,
+    "price": 16.12,
+    "side": "up"
+   },
+   {
+    "sym": "TGOPY",
+    "score": 4,
+    "price": 8.87,
+    "side": "up"
+   }
+  ]
  }
 ]
