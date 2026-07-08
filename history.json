@@ -2395,5 +2395,130 @@
     "side": "up"
    }
   ]
+ },
+ {
+  "date": "2026-07-08",
+  "picks": [
+   {
+    "sym": "XP",
+    "score": 6,
+    "price": 15.44,
+    "side": "down"
+   },
+   {
+    "sym": "EDU",
+    "score": 5,
+    "price": 49.08,
+    "side": "up"
+   },
+   {
+    "sym": "EEFT",
+    "score": 5,
+    "price": 75.96,
+    "side": "down"
+   },
+   {
+    "sym": "EPAM",
+    "score": 5,
+    "price": 85.99,
+    "side": "down"
+   },
+   {
+    "sym": "ERIC",
+    "score": 5,
+    "price": 11.04,
+    "side": "up"
+   },
+   {
+    "sym": "INFY",
+    "score": 5,
+    "price": 10.93,
+    "side": "down"
+   },
+   {
+    "sym": "MC",
+    "score": 5,
+    "price": 64.58,
+    "side": "down"
+   },
+   {
+    "sym": "PAAS",
+    "score": 5,
+    "price": 42.6,
+    "side": "down"
+   },
+   {
+    "sym": "SCZM",
+    "score": 5,
+    "price": 6.24,
+    "side": "down"
+   },
+   {
+    "sym": "YMM",
+    "score": 5,
+    "price": 8.58,
+    "side": "up"
+   },
+   {
+    "sym": "ANET",
+    "score": 4,
+    "price": 181.05,
+    "side": "up"
+   },
+   {
+    "sym": "BKE",
+    "score": 4,
+    "price": 41.46,
+    "side": "down"
+   },
+   {
+    "sym": "CHGCY",
+    "score": 4,
+    "price": 22.55,
+    "side": "down"
+   },
+   {
+    "sym": "EADSY",
+    "score": 4,
+    "price": 56.35,
+    "side": "down"
+   },
+   {
+    "sym": "IPAR",
+    "score": 4,
+    "price": 115.62,
+    "side": "down"
+   },
+   {
+    "sym": "MANH",
+    "score": 4,
+    "price": 154.78,
+    "side": "down"
+   },
+   {
+    "sym": "SAP",
+    "score": 4,
+    "price": 157.42,
+    "side": "down"
+   },
+   {
+    "sym": "SGHC",
+    "score": 4,
+    "price": 15.51,
+    "side": "up"
+   },
+   {
+    "sym": "SYF",
+    "score": 4,
+    "price": 68.26,
+    "side": "down"
+   },
+   {
+    "sym": "XPEL",
+    "score": 4,
+    "price": 44.7,
+    "side": "down"
+   }
+  ]
  }
 ]
