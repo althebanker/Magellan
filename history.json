@@ -2520,5 +2520,106 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-07-09",
+  "picks": [
+   {
+    "sym": "ABEO",
+    "score": 6,
+    "price": 7.12,
+    "side": "up"
+   },
+   {
+    "sym": "PATH",
+    "score": 6,
+    "price": 11.8,
+    "side": "up"
+   },
+   {
+    "sym": "BYRN",
+    "score": 5,
+    "price": 3.94,
+    "side": "down"
+   },
+   {
+    "sym": "CINF",
+    "score": 5,
+    "price": 175.43,
+    "side": "down"
+   },
+   {
+    "sym": "ERIC",
+    "score": 5,
+    "price": 11.58,
+    "side": "up"
+   },
+   {
+    "sym": "FBIO",
+    "score": 5,
+    "price": 3.29,
+    "side": "up"
+   },
+   {
+    "sym": "INMD",
+    "score": 5,
+    "price": 15.01,
+    "side": "up"
+   },
+   {
+    "sym": "RYAAY",
+    "score": 5,
+    "price": 64.15,
+    "side": "down"
+   },
+   {
+    "sym": "SCZM",
+    "score": 5,
+    "price": 6.67,
+    "side": "up"
+   },
+   {
+    "sym": "AYA",
+    "score": 4,
+    "price": 19.87,
+    "side": "up"
+   },
+   {
+    "sym": "COST",
+    "score": 4,
+    "price": 912.97,
+    "side": "down"
+   },
+   {
+    "sym": "EXPD",
+    "score": 4,
+    "price": 170.62,
+    "side": "up"
+   },
+   {
+    "sym": "EXPE",
+    "score": 4,
+    "price": 267.78,
+    "side": "up"
+   },
+   {
+    "sym": "NEXN",
+    "score": 4,
+    "price": 9.62,
+    "side": "up"
+   },
+   {
+    "sym": "NSSC",
+    "score": 4,
+    "price": 36.09,
+    "side": "down"
+   },
+   {
+    "sym": "SYF",
+    "score": 4,
+    "price": 71.57,
+    "side": "up"
+   }
+  ]
  }
 ]
