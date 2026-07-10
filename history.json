@@ -2621,5 +2621,40 @@
     "side": "up"
    }
   ]
+ },
+ {
+  "date": "2026-07-10",
+  "picks": [
+   {
+    "sym": "CRE",
+    "score": 6,
+    "price": 3.24,
+    "side": "up"
+   },
+   {
+    "sym": "QFIN",
+    "score": 6,
+    "price": 13.2,
+    "side": "down"
+   },
+   {
+    "sym": "QTTB",
+    "score": 6,
+    "price": 11.21,
+    "side": "down"
+   },
+   {
+    "sym": "SMERY",
+    "score": 6,
+    "price": 34.66,
+    "side": "down"
+   },
+   {
+    "sym": "TGOPY",
+    "score": 4,
+    "price": 9.13,
+    "side": "up"
+   }
+  ]
  }
 ]
