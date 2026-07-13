@@ -2656,5 +2656,106 @@
     "side": "up"
    }
   ]
+ },
+ {
+  "date": "2026-07-13",
+  "picks": [
+   {
+    "sym": "ADYEY",
+    "score": 6,
+    "price": 9.44,
+    "side": "down"
+   },
+   {
+    "sym": "CALM",
+    "score": 6,
+    "price": 83.41,
+    "side": "down"
+   },
+   {
+    "sym": "ETOR",
+    "score": 6,
+    "price": 38.215,
+    "side": "down"
+   },
+   {
+    "sym": "NAGE",
+    "score": 6,
+    "price": 3.47,
+    "side": "up"
+   },
+   {
+    "sym": "SMERY",
+    "score": 6,
+    "price": 33.88,
+    "side": "down"
+   },
+   {
+    "sym": "ANNA",
+    "score": 5,
+    "price": 3.42,
+    "side": "up"
+   },
+   {
+    "sym": "ERIC",
+    "score": 5,
+    "price": 11.72,
+    "side": "up"
+   },
+   {
+    "sym": "JRSH",
+    "score": 5,
+    "price": 4.73,
+    "side": "up"
+   },
+   {
+    "sym": "OGC",
+    "score": 5,
+    "price": 24.15,
+    "side": "down"
+   },
+   {
+    "sym": "QTTB",
+    "score": 5,
+    "price": 21.38,
+    "side": "up"
+   },
+   {
+    "sym": "CXM",
+    "score": 4,
+    "price": 5.73,
+    "side": "up"
+   },
+   {
+    "sym": "EXPD",
+    "score": 4,
+    "price": 175.5,
+    "side": "up"
+   },
+   {
+    "sym": "FNV",
+    "score": 4,
+    "price": 200.49,
+    "side": "down"
+   },
+   {
+    "sym": "NEXN",
+    "score": 4,
+    "price": 9.87,
+    "side": "up"
+   },
+   {
+    "sym": "ONDS",
+    "score": 4,
+    "price": 6.96,
+    "side": "down"
+   },
+   {
+    "sym": "RSI",
+    "score": 4,
+    "price": 34.18,
+    "side": "up"
+   }
+  ]
  }
 ]
