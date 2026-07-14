@@ -2757,5 +2757,166 @@
     "side": "up"
    }
   ]
+ },
+ {
+  "date": "2026-07-14",
+  "picks": [
+   {
+    "sym": "CRUS",
+    "score": 6,
+    "price": 137.36,
+    "side": "down"
+   },
+   {
+    "sym": "JTAI",
+    "score": 6,
+    "price": 4.87,
+    "side": "down"
+   },
+   {
+    "sym": "PAYS",
+    "score": 6,
+    "price": 8.7,
+    "side": "down"
+   },
+   {
+    "sym": "QFIN",
+    "score": 6,
+    "price": 12.27,
+    "side": "down"
+   },
+   {
+    "sym": "EPAM",
+    "score": 5,
+    "price": 84.5,
+    "side": "down"
+   },
+   {
+    "sym": "ERIC",
+    "score": 5,
+    "price": 10.14,
+    "side": "down"
+   },
+   {
+    "sym": "FBIO",
+    "score": 5,
+    "price": 3.73,
+    "side": "up"
+   },
+   {
+    "sym": "IVR",
+    "score": 5,
+    "price": 8.1,
+    "side": "up"
+   },
+   {
+    "sym": "KRYS",
+    "score": 5,
+    "price": 339.43,
+    "side": "down"
+   },
+   {
+    "sym": "LRN",
+    "score": 5,
+    "price": 86.88,
+    "side": "down"
+   },
+   {
+    "sym": "MZTI",
+    "score": 5,
+    "price": 106.96,
+    "side": "down"
+   },
+   {
+    "sym": "NTES",
+    "score": 5,
+    "price": 128.39,
+    "side": "down"
+   },
+   {
+    "sym": "RCRUY",
+    "score": 5,
+    "price": 14.96,
+    "side": "down"
+   },
+   {
+    "sym": "WDOFF",
+    "score": 5,
+    "price": 17.65,
+    "side": "down"
+   },
+   {
+    "sym": "ASML",
+    "score": 4,
+    "price": 1775.64,
+    "side": "up"
+   },
+   {
+    "sym": "GMED",
+    "score": 4,
+    "price": 75.82,
+    "side": "down"
+   },
+   {
+    "sym": "ISRG",
+    "score": 4,
+    "price": 379.5,
+    "side": "down"
+   },
+   {
+    "sym": "MDXG",
+    "score": 4,
+    "price": 4.2,
+    "side": "up"
+   },
+   {
+    "sym": "MNDY",
+    "score": 4,
+    "price": 81.84,
+    "side": "down"
+   },
+   {
+    "sym": "MTHRY",
+    "score": 4,
+    "price": 5.93,
+    "side": "up"
+   },
+   {
+    "sym": "OKTA",
+    "score": 4,
+    "price": 154.62,
+    "side": "up"
+   },
+   {
+    "sym": "ONDS",
+    "score": 4,
+    "price": 7.36,
+    "side": "up"
+   },
+   {
+    "sym": "OPRA",
+    "score": 4,
+    "price": 20.13,
+    "side": "up"
+   },
+   {
+    "sym": "SAP",
+    "score": 4,
+    "price": 154.81,
+    "side": "down"
+   },
+   {
+    "sym": "STRL",
+    "score": 4,
+    "price": 679.62,
+    "side": "up"
+   },
+   {
+    "sym": "TDC",
+    "score": 4,
+    "price": 31.42,
+    "side": "down"
+   }
+  ]
  }
 ]
