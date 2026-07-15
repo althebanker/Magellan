@@ -2918,5 +2918,172 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-07-15",
+  "picks": [
+   {
+    "sym": "ACIC",
+    "score": 6,
+    "price": 10.13,
+    "side": "down"
+   },
+   {
+    "sym": "CRCT",
+    "score": 6,
+    "price": 4.73,
+    "side": "up"
+   },
+   {
+    "sym": "JTAI",
+    "score": 6,
+    "price": 3.14,
+    "side": "up"
+   },
+   {
+    "sym": "MCY",
+    "score": 6,
+    "price": 105.26,
+    "side": "down"
+   },
+   {
+    "sym": "NAGE",
+    "score": 6,
+    "price": 3.47,
+    "side": "up"
+   },
+   {
+    "sym": "PRDO",
+    "score": 6,
+    "price": 32.345,
+    "side": "down"
+   },
+   {
+    "sym": "QTTB",
+    "score": 6,
+    "price": 15.7,
+    "side": "down"
+   },
+   {
+    "sym": "SEIC",
+    "score": 6,
+    "price": 98.17,
+    "side": "up"
+   },
+   {
+    "sym": "CYATY",
+    "score": 5,
+    "price": 19.9,
+    "side": "up"
+   },
+   {
+    "sym": "ERIXF",
+    "score": 5,
+    "price": 9.9,
+    "side": "down"
+   },
+   {
+    "sym": "EVR",
+    "score": 5,
+    "price": 353.65,
+    "side": "up"
+   },
+   {
+    "sym": "FJTSY",
+    "score": 5,
+    "price": 19.66,
+    "side": "down"
+   },
+   {
+    "sym": "LOPE",
+    "score": 5,
+    "price": 141.77,
+    "side": "down"
+   },
+   {
+    "sym": "LRN",
+    "score": 5,
+    "price": 83.39,
+    "side": "down"
+   },
+   {
+    "sym": "RYAAY",
+    "score": 5,
+    "price": 66.63,
+    "side": "up"
+   },
+   {
+    "sym": "STRA",
+    "score": 5,
+    "price": 75.805,
+    "side": "down"
+   },
+   {
+    "sym": "THG",
+    "score": 5,
+    "price": 206.9,
+    "side": "down"
+   },
+   {
+    "sym": "YMM",
+    "score": 5,
+    "price": 9.2,
+    "side": "up"
+   },
+   {
+    "sym": "ASML",
+    "score": 4,
+    "price": 1815.27,
+    "side": "up"
+   },
+   {
+    "sym": "DAVE",
+    "score": 4,
+    "price": 438.19,
+    "side": "up"
+   },
+   {
+    "sym": "FRCOY",
+    "score": 4,
+    "price": 48.45,
+    "side": "down"
+   },
+   {
+    "sym": "IDN",
+    "score": 4,
+    "price": 3.97,
+    "side": "down"
+   },
+   {
+    "sym": "ISRG",
+    "score": 4,
+    "price": 388.97,
+    "side": "up"
+   },
+   {
+    "sym": "ONDS",
+    "score": 4,
+    "price": 7.05,
+    "side": "down"
+   },
+   {
+    "sym": "P",
+    "score": 4,
+    "price": 70.75,
+    "side": "down"
+   },
+   {
+    "sym": "RCRUY",
+    "score": 4,
+    "price": 15.34,
+    "side": "up"
+   },
+   {
+    "sym": "SF",
+    "score": 4,
+    "price": 78.75,
+    "side": "up"
+   }
+  ]
  }
 ]
