@@ -3360,5 +3360,166 @@
     "side": "up"
    }
   ]
+ },
+ {
+  "date": "2026-07-17",
+  "picks": [
+   {
+    "sym": "NTDOY",
+    "score": 6,
+    "price": 11.07,
+    "side": "up"
+   },
+   {
+    "sym": "PDD",
+    "score": 6,
+    "price": 84.14,
+    "side": "down"
+   },
+   {
+    "sym": "UPWK",
+    "score": 6,
+    "price": 9.06,
+    "side": "down"
+   },
+   {
+    "sym": "XNET",
+    "score": 6,
+    "price": 5.77,
+    "side": "down"
+   },
+   {
+    "sym": "CINF",
+    "score": 5,
+    "price": 180.79,
+    "side": "up"
+   },
+   {
+    "sym": "FJIKY",
+    "score": 5,
+    "price": 14.42,
+    "side": "up"
+   },
+   {
+    "sym": "IIIN",
+    "score": 5,
+    "price": 31.0,
+    "side": "up"
+   },
+   {
+    "sym": "KRYS",
+    "score": 5,
+    "price": 354.86,
+    "side": "up"
+   },
+   {
+    "sym": "PEGA",
+    "score": 5,
+    "price": 32.16,
+    "side": "down"
+   },
+   {
+    "sym": "RLI",
+    "score": 5,
+    "price": 61.57,
+    "side": "up"
+   },
+   {
+    "sym": "VOXR",
+    "score": 5,
+    "price": 4.14,
+    "side": "down"
+   },
+   {
+    "sym": "WYHG",
+    "score": 5,
+    "price": 3.8,
+    "side": "down"
+   },
+   {
+    "sym": "ALAB",
+    "score": 4,
+    "price": 303.62,
+    "side": "down"
+   },
+   {
+    "sym": "CDE",
+    "score": 4,
+    "price": 14.35,
+    "side": "down"
+   },
+   {
+    "sym": "DSP",
+    "score": 4,
+    "price": 11.5,
+    "side": "down"
+   },
+   {
+    "sym": "FN",
+    "score": 4,
+    "price": 478.39,
+    "side": "up"
+   },
+   {
+    "sym": "ISRG",
+    "score": 4,
+    "price": 345.42,
+    "side": "down"
+   },
+   {
+    "sym": "MHVIY",
+    "score": 4,
+    "price": 11.44,
+    "side": "down"
+   },
+   {
+    "sym": "MNST",
+    "score": 4,
+    "price": 97.5,
+    "side": "down"
+   },
+   {
+    "sym": "NEXN",
+    "score": 4,
+    "price": 10.16,
+    "side": "down"
+   },
+   {
+    "sym": "NXT",
+    "score": 4,
+    "price": 103.1,
+    "side": "down"
+   },
+   {
+    "sym": "SRAD",
+    "score": 4,
+    "price": 14.38,
+    "side": "down"
+   },
+   {
+    "sym": "TOELY",
+    "score": 4,
+    "price": 202.94,
+    "side": "down"
+   },
+   {
+    "sym": "TSM",
+    "score": 4,
+    "price": 398.37,
+    "side": "down"
+   },
+   {
+    "sym": "VICR",
+    "score": 4,
+    "price": 237.62,
+    "side": "up"
+   },
+   {
+    "sym": "WSE",
+    "score": 4,
+    "price": 12.62,
+    "side": "down"
+   }
+  ]
  }
 ]
