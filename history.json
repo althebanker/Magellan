@@ -3521,5 +3521,142 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-07-20",
+  "picks": [
+   {
+    "sym": "BLBD",
+    "score": 6,
+    "price": 81.5,
+    "side": "up"
+   },
+   {
+    "sym": "EVER",
+    "score": 6,
+    "price": 27.54,
+    "side": "up"
+   },
+   {
+    "sym": "NKLR",
+    "score": 6,
+    "price": 5.14,
+    "side": "up"
+   },
+   {
+    "sym": "UPWK",
+    "score": 6,
+    "price": 9.33,
+    "side": "up"
+   },
+   {
+    "sym": "AGNC",
+    "score": 5,
+    "price": 10.92,
+    "side": "down"
+   },
+   {
+    "sym": "AGX",
+    "score": 5,
+    "price": 602.18,
+    "side": "up"
+   },
+   {
+    "sym": "IVR",
+    "score": 5,
+    "price": 7.9,
+    "side": "down"
+   },
+   {
+    "sym": "JOYY",
+    "score": 5,
+    "price": 71.59,
+    "side": "up"
+   },
+   {
+    "sym": "PHM",
+    "score": 5,
+    "price": 123.18,
+    "side": "down"
+   },
+   {
+    "sym": "SPIR",
+    "score": 5,
+    "price": 10.96,
+    "side": "down"
+   },
+   {
+    "sym": "TSSI",
+    "score": 5,
+    "price": 9.08,
+    "side": "down"
+   },
+   {
+    "sym": "FN",
+    "score": 4,
+    "price": 494.26,
+    "side": "up"
+   },
+   {
+    "sym": "GILT",
+    "score": 4,
+    "price": 10.84,
+    "side": "down"
+   },
+   {
+    "sym": "HOG",
+    "score": 4,
+    "price": 27.82,
+    "side": "up"
+   },
+   {
+    "sym": "ISRG",
+    "score": 4,
+    "price": 353.17,
+    "side": "up"
+   },
+   {
+    "sym": "MNDY",
+    "score": 4,
+    "price": 76.75,
+    "side": "down"
+   },
+   {
+    "sym": "ONDS",
+    "score": 4,
+    "price": 6.87,
+    "side": "up"
+   },
+   {
+    "sym": "RSI",
+    "score": 4,
+    "price": 34.52,
+    "side": "up"
+   },
+   {
+    "sym": "SGHC",
+    "score": 4,
+    "price": 15.58,
+    "side": "up"
+   },
+   {
+    "sym": "TGOPY",
+    "score": 4,
+    "price": 8.5,
+    "side": "down"
+   },
+   {
+    "sym": "VICR",
+    "score": 4,
+    "price": 230.99,
+    "side": "down"
+   },
+   {
+    "sym": "WB",
+    "score": 4,
+    "price": 8.0,
+    "side": "up"
+   }
+  ]
  }
 ]
