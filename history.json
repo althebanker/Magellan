@@ -7538,5 +7538,142 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-08-11",
+  "picks": [
+   {
+    "sym": "DECK",
+    "score": 6,
+    "price": 93.84,
+    "side": "down"
+   },
+   {
+    "sym": "ETOR",
+    "score": 6,
+    "price": 29.33,
+    "side": "down"
+   },
+   {
+    "sym": "UPWK",
+    "score": 6,
+    "price": 8.36,
+    "side": "down"
+   },
+   {
+    "sym": "XP",
+    "score": 6,
+    "price": 15.51,
+    "side": "down"
+   },
+   {
+    "sym": "AMPY",
+    "score": 5,
+    "price": 4.51,
+    "side": "up"
+   },
+   {
+    "sym": "ATAT",
+    "score": 5,
+    "price": 34.02,
+    "side": "down"
+   },
+   {
+    "sym": "FINV",
+    "score": 5,
+    "price": 4.43,
+    "side": "down"
+   },
+   {
+    "sym": "JRSH",
+    "score": 5,
+    "price": 5.33,
+    "side": "up"
+   },
+   {
+    "sym": "QNST",
+    "score": 5,
+    "price": 20.9,
+    "side": "down"
+   },
+   {
+    "sym": "TIGR",
+    "score": 5,
+    "price": 4.75,
+    "side": "down"
+   },
+   {
+    "sym": "TME",
+    "score": 5,
+    "price": 8.72,
+    "side": "down"
+   },
+   {
+    "sym": "WYHG",
+    "score": 5,
+    "price": 7.39,
+    "side": "up"
+   },
+   {
+    "sym": "APEI",
+    "score": 4,
+    "price": 45.72,
+    "side": "down"
+   },
+   {
+    "sym": "CART",
+    "score": 4,
+    "price": 49.39,
+    "side": "down"
+   },
+   {
+    "sym": "COCO",
+    "score": 4,
+    "price": 64.46,
+    "side": "up"
+   },
+   {
+    "sym": "DSP",
+    "score": 4,
+    "price": 13.19,
+    "side": "down"
+   },
+   {
+    "sym": "GRDN",
+    "score": 4,
+    "price": 39.46,
+    "side": "down"
+   },
+   {
+    "sym": "ONON",
+    "score": 4,
+    "price": 30.91,
+    "side": "down"
+   },
+   {
+    "sym": "P",
+    "score": 4,
+    "price": 109.38,
+    "side": "up"
+   },
+   {
+    "sym": "SE",
+    "score": 4,
+    "price": 131.51,
+    "side": "up"
+   },
+   {
+    "sym": "SIMO",
+    "score": 4,
+    "price": 224.0,
+    "side": "down"
+   },
+   {
+    "sym": "TCMD",
+    "score": 4,
+    "price": 24.15,
+    "side": "down"
+   }
+  ]
  }
 ]
