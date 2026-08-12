@@ -7675,5 +7675,160 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-08-12",
+  "picks": [
+   {
+    "sym": "CHA",
+    "score": 6,
+    "price": 10.01,
+    "side": "down"
+   },
+   {
+    "sym": "DECK",
+    "score": 6,
+    "price": 91.2,
+    "side": "down"
+   },
+   {
+    "sym": "ETOR",
+    "score": 6,
+    "price": 28.47,
+    "side": "down"
+   },
+   {
+    "sym": "BZ",
+    "score": 5,
+    "price": 16.09,
+    "side": "down"
+   },
+   {
+    "sym": "FINV",
+    "score": 5,
+    "price": 4.54,
+    "side": "up"
+   },
+   {
+    "sym": "MNTN",
+    "score": 5,
+    "price": 11.95,
+    "side": "up"
+   },
+   {
+    "sym": "MRX",
+    "score": 5,
+    "price": 71.13,
+    "side": "up"
+   },
+   {
+    "sym": "NTES",
+    "score": 5,
+    "price": 124.11,
+    "side": "down"
+   },
+   {
+    "sym": "TIGR",
+    "score": 5,
+    "price": 4.58,
+    "side": "down"
+   },
+   {
+    "sym": "VICR",
+    "score": 5,
+    "price": 226.12,
+    "side": "up"
+   },
+   {
+    "sym": "APPF",
+    "score": 4,
+    "price": 196.77,
+    "side": "down"
+   },
+   {
+    "sym": "ASM",
+    "score": 4,
+    "price": 7.14,
+    "side": "down"
+   },
+   {
+    "sym": "ATEX",
+    "score": 4,
+    "price": 88.8,
+    "side": "down"
+   },
+   {
+    "sym": "CLBT",
+    "score": 4,
+    "price": 15.25,
+    "side": "down"
+   },
+   {
+    "sym": "DSP",
+    "score": 4,
+    "price": 12.48,
+    "side": "down"
+   },
+   {
+    "sym": "ELE",
+    "score": 4,
+    "price": 20.48,
+    "side": "up"
+   },
+   {
+    "sym": "FIGR",
+    "score": 4,
+    "price": 30.68,
+    "side": "up"
+   },
+   {
+    "sym": "IDN",
+    "score": 4,
+    "price": 3.69,
+    "side": "down"
+   },
+   {
+    "sym": "KOPN",
+    "score": 4,
+    "price": 5.02,
+    "side": "down"
+   },
+   {
+    "sym": "NBIX",
+    "score": 4,
+    "price": 156.49,
+    "side": "down"
+   },
+   {
+    "sym": "NEXN",
+    "score": 4,
+    "price": 10.74,
+    "side": "up"
+   },
+   {
+    "sym": "ROLR",
+    "score": 4,
+    "price": 5.8,
+    "side": "down"
+   },
+   {
+    "sym": "SMCI",
+    "score": 4,
+    "price": 37.61,
+    "side": "up"
+   },
+   {
+    "sym": "TCEHY",
+    "score": 4,
+    "price": 56.28,
+    "side": "down"
+   },
+   {
+    "sym": "UNICY",
+    "score": 4,
+    "price": 3.1,
+    "side": "down"
+   }
+  ]
  }
 ]
