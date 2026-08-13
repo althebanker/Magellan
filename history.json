@@ -7830,5 +7830,154 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-08-13",
+  "picks": [
+   {
+    "sym": "ABEO",
+    "score": 6,
+    "price": 6.345,
+    "side": "down"
+   },
+   {
+    "sym": "AMSF",
+    "score": 6,
+    "price": 27.2,
+    "side": "down"
+   },
+   {
+    "sym": "PDD",
+    "score": 6,
+    "price": 84.17,
+    "side": "down"
+   },
+   {
+    "sym": "AMPY",
+    "score": 5,
+    "price": 4.83,
+    "side": "up"
+   },
+   {
+    "sym": "BZ",
+    "score": 5,
+    "price": 15.42,
+    "side": "down"
+   },
+   {
+    "sym": "DLO",
+    "score": 5,
+    "price": 14.76,
+    "side": "up"
+   },
+   {
+    "sym": "PAAS",
+    "score": 5,
+    "price": 47.3,
+    "side": "down"
+   },
+   {
+    "sym": "PATH",
+    "score": 5,
+    "price": 16.68,
+    "side": "up"
+   },
+   {
+    "sym": "PLGO",
+    "score": 5,
+    "price": 22.75,
+    "side": "down"
+   },
+   {
+    "sym": "RERE",
+    "score": 5,
+    "price": 4.6,
+    "side": "up"
+   },
+   {
+    "sym": "TME",
+    "score": 5,
+    "price": 8.66,
+    "side": "up"
+   },
+   {
+    "sym": "AMAT",
+    "score": 4,
+    "price": 534.54,
+    "side": "down"
+   },
+   {
+    "sym": "AYA",
+    "score": 4,
+    "price": 26.94,
+    "side": "down"
+   },
+   {
+    "sym": "BRDCY",
+    "score": 4,
+    "price": 12.92,
+    "side": "down"
+   },
+   {
+    "sym": "CLBT",
+    "score": 4,
+    "price": 10.8,
+    "side": "down"
+   },
+   {
+    "sym": "DOCU",
+    "score": 4,
+    "price": 64.09,
+    "side": "up"
+   },
+   {
+    "sym": "ESTC",
+    "score": 4,
+    "price": 86.03,
+    "side": "up"
+   },
+   {
+    "sym": "FIGR",
+    "score": 4,
+    "price": 31.88,
+    "side": "up"
+   },
+   {
+    "sym": "HOG",
+    "score": 4,
+    "price": 27.85,
+    "side": "up"
+   },
+   {
+    "sym": "IMPP",
+    "score": 4,
+    "price": 4.65,
+    "side": "up"
+   },
+   {
+    "sym": "ONDS",
+    "score": 4,
+    "price": 8.91,
+    "side": "down"
+   },
+   {
+    "sym": "SMCI",
+    "score": 4,
+    "price": 39.16,
+    "side": "up"
+   },
+   {
+    "sym": "SNDK",
+    "score": 4,
+    "price": 1528.11,
+    "side": "up"
+   },
+   {
+    "sym": "TCMD",
+    "score": 4,
+    "price": 23.71,
+    "side": "down"
+   }
+  ]
  }
 ]
