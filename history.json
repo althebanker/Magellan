@@ -7979,5 +7979,88 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-08-14",
+  "picks": [
+   {
+    "sym": "CPRT",
+    "score": 5,
+    "price": 31.61,
+    "side": "up"
+   },
+   {
+    "sym": "DLO",
+    "score": 5,
+    "price": 14.17,
+    "side": "down"
+   },
+   {
+    "sym": "FINV",
+    "score": 5,
+    "price": 4.38,
+    "side": "down"
+   },
+   {
+    "sym": "NTDOY",
+    "score": 5,
+    "price": 13.99,
+    "side": "up"
+   },
+   {
+    "sym": "NTES",
+    "score": 5,
+    "price": 125.12,
+    "side": "up"
+   },
+   {
+    "sym": "PLGO",
+    "score": 5,
+    "price": 23.84,
+    "side": "up"
+   },
+   {
+    "sym": "TSSI",
+    "score": 5,
+    "price": 9.68,
+    "side": "down"
+   },
+   {
+    "sym": "AMAT",
+    "score": 4,
+    "price": 507.18,
+    "side": "down"
+   },
+   {
+    "sym": "AYA",
+    "score": 4,
+    "price": 25.92,
+    "side": "down"
+   },
+   {
+    "sym": "DOCU",
+    "score": 4,
+    "price": 62.04,
+    "side": "down"
+   },
+   {
+    "sym": "MGTX",
+    "score": 4,
+    "price": 13.52,
+    "side": "up"
+   },
+   {
+    "sym": "RDDT",
+    "score": 4,
+    "price": 178.09,
+    "side": "up"
+   },
+   {
+    "sym": "SNDK",
+    "score": 4,
+    "price": 1641.11,
+    "side": "up"
+   }
+  ]
  }
 ]
