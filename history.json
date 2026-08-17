@@ -8062,5 +8062,190 @@
     "side": "up"
    }
   ]
+ },
+ {
+  "date": "2026-08-17",
+  "picks": [
+   {
+    "sym": "YALA",
+    "score": 7,
+    "price": 5.34,
+    "side": "down"
+   },
+   {
+    "sym": "ADYEY",
+    "score": 6,
+    "price": 11.98,
+    "side": "down"
+   },
+   {
+    "sym": "DECK",
+    "score": 6,
+    "price": 90.11,
+    "side": "down"
+   },
+   {
+    "sym": "INCY",
+    "score": 6,
+    "price": 123.5,
+    "side": "up"
+   },
+   {
+    "sym": "ATAT",
+    "score": 5,
+    "price": 35.29,
+    "side": "up"
+   },
+   {
+    "sym": "DAKT",
+    "score": 5,
+    "price": 19.94,
+    "side": "down"
+   },
+   {
+    "sym": "ERIXF",
+    "score": 5,
+    "price": 10.43,
+    "side": "up"
+   },
+   {
+    "sym": "FIEE",
+    "score": 5,
+    "price": 5.63,
+    "side": "up"
+   },
+   {
+    "sym": "FIGR",
+    "score": 5,
+    "price": 35.755,
+    "side": "up"
+   },
+   {
+    "sym": "JKHY",
+    "score": 5,
+    "price": 149.87,
+    "side": "down"
+   },
+   {
+    "sym": "JRSH",
+    "score": 5,
+    "price": 5.64,
+    "side": "up"
+   },
+   {
+    "sym": "TSSI",
+    "score": 5,
+    "price": 9.48,
+    "side": "down"
+   },
+   {
+    "sym": "VOXR",
+    "score": 5,
+    "price": 5.32,
+    "side": "up"
+   },
+   {
+    "sym": "ACMR",
+    "score": 4,
+    "price": 85.64,
+    "side": "up"
+   },
+   {
+    "sym": "ARGX",
+    "score": 4,
+    "price": 987.84,
+    "side": "up"
+   },
+   {
+    "sym": "BDRFY",
+    "score": 4,
+    "price": 17.6588,
+    "side": "down"
+   },
+   {
+    "sym": "BHF",
+    "score": 4,
+    "price": 55.74,
+    "side": "down"
+   },
+   {
+    "sym": "CRDO",
+    "score": 4,
+    "price": 282.82,
+    "side": "up"
+   },
+   {
+    "sym": "DAVE",
+    "score": 4,
+    "price": 341.43,
+    "side": "up"
+   },
+   {
+    "sym": "ESTC",
+    "score": 4,
+    "price": 83.44,
+    "side": "down"
+   },
+   {
+    "sym": "FANUY",
+    "score": 4,
+    "price": 20.35,
+    "side": "up"
+   },
+   {
+    "sym": "FN",
+    "score": 4,
+    "price": 598.58,
+    "side": "up"
+   },
+   {
+    "sym": "HDSN",
+    "score": 4,
+    "price": 6.15,
+    "side": "up"
+   },
+   {
+    "sym": "IDEXY",
+    "score": 4,
+    "price": 16.27,
+    "side": "down"
+   },
+   {
+    "sym": "IESC",
+    "score": 4,
+    "price": 793.96,
+    "side": "up"
+   },
+   {
+    "sym": "IMPP",
+    "score": 4,
+    "price": 4.97,
+    "side": "up"
+   },
+   {
+    "sym": "IPGP",
+    "score": 4,
+    "price": 88.1,
+    "side": "up"
+   },
+   {
+    "sym": "RDDT",
+    "score": 4,
+    "price": 164.5,
+    "side": "down"
+   },
+   {
+    "sym": "ROST",
+    "score": 4,
+    "price": 235.28,
+    "side": "down"
+   },
+   {
+    "sym": "TK",
+    "score": 4,
+    "price": 12.85,
+    "side": "up"
+   }
+  ]
  }
 ]
