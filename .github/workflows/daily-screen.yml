@@ -15,10 +15,11 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
       - run: pip install tradingview-screener yfinance pandas numpy
-      - name: Apply dashboard upgrades
+            - name: Apply dashboard upgrades
         run: |
           python indy_upgrade.py screener.py
           python terminal_upgrade.py screener.py
+          python research_v2.py screener.py
           rm -f screener.py.bak
       - name: Run screener
         env:
