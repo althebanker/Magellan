@@ -46,9 +46,7 @@ CONFIG = dict(
                                       #   (the backtest score slider re-filters this 4..7 after the fact)
     DL_CHUNK       = 250,
     FUND_SLEEP     = 0.4,
-    WORKER_URL     = "",   # Cloudflare Worker base URL for live price + Magellan score of
-                           #   tickers not in today's screen (see worker.js). Leave blank to
-                           #   fall back to the legacy in-browser price fetch (price only).
+       WORKER_URL     = "https://magellan.z7yj4b6b4d.workers.dev",
 )
 
 # ----------------------------------------------------------------------------- MARKET window
