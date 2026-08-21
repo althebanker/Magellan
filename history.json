@@ -8946,5 +8946,16 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-08-21",
+  "picks": [
+   {
+    "sym": "ABUS",
+    "score": 4,
+    "price": 5.145,
+    "side": "up"
+   }
+  ]
  }
 ]
