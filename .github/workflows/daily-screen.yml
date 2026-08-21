@@ -15,6 +15,11 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
       - run: pip install tradingview-screener yfinance pandas numpy
+      - name: Apply dashboard upgrades
+        run: |
+          python indy_upgrade.py screener.py
+          python terminal_upgrade.py screener.py
+          rm -f screener.py.bak
       - name: Run screener
         env:
           FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
