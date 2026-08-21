@@ -8953,19 +8953,43 @@
    {
     "sym": "FUTU",
     "score": 6,
-    "price": 123.42,
+    "price": 123.435,
+    "side": "up"
+   },
+   {
+    "sym": "NKLR",
+    "score": 6,
+    "price": 6.13,
+    "side": "up"
+   },
+   {
+    "sym": "DRD",
+    "score": 5,
+    "price": 30.54,
+    "side": "up"
+   },
+   {
+    "sym": "ROST",
+    "score": 5,
+    "price": 240.76,
     "side": "up"
    },
    {
     "sym": "ABUS",
     "score": 4,
-    "price": 5.21,
+    "price": 5.201,
     "side": "up"
    },
    {
     "sym": "HOOD",
     "score": 4,
-    "price": 107.34,
+    "price": 107.505,
+    "side": "up"
+   },
+   {
+    "sym": "NEXN",
+    "score": 4,
+    "price": 10.15,
     "side": "up"
    }
   ]
