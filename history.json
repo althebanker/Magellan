@@ -8951,9 +8951,21 @@
   "date": "2026-08-21",
   "picks": [
    {
+    "sym": "FUTU",
+    "score": 6,
+    "price": 123.42,
+    "side": "up"
+   },
+   {
     "sym": "ABUS",
     "score": 4,
-    "price": 5.145,
+    "price": 5.21,
+    "side": "up"
+   },
+   {
+    "sym": "HOOD",
+    "score": 4,
+    "price": 107.34,
     "side": "up"
    }
   ]
