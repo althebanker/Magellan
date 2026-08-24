@@ -9149,5 +9149,160 @@
     "side": "up"
    }
   ]
+ },
+ {
+  "date": "2026-08-24",
+  "picks": [
+   {
+    "sym": "AMSC",
+    "score": 6,
+    "price": 28.92,
+    "side": "down"
+   },
+   {
+    "sym": "EVER",
+    "score": 6,
+    "price": 26.62,
+    "side": "up"
+   },
+   {
+    "sym": "FUTU",
+    "score": 6,
+    "price": 115.81,
+    "side": "down"
+   },
+   {
+    "sym": "QFIN",
+    "score": 6,
+    "price": 10.99,
+    "side": "down"
+   },
+   {
+    "sym": "SMERY",
+    "score": 6,
+    "price": 34.72,
+    "side": "down"
+   },
+   {
+    "sym": "AGX",
+    "score": 5,
+    "price": 468.98,
+    "side": "down"
+   },
+   {
+    "sym": "HMY",
+    "score": 5,
+    "price": 22.81,
+    "side": "down"
+   },
+   {
+    "sym": "MZTI",
+    "score": 5,
+    "price": 115.76,
+    "side": "up"
+   },
+   {
+    "sym": "QTTB",
+    "score": 5,
+    "price": 16.36,
+    "side": "up"
+   },
+   {
+    "sym": "SGHC",
+    "score": 5,
+    "price": 13.99,
+    "side": "up"
+   },
+   {
+    "sym": "TFPM",
+    "score": 5,
+    "price": 34.7,
+    "side": "up"
+   },
+   {
+    "sym": "UMC",
+    "score": 5,
+    "price": 19.05,
+    "side": "up"
+   },
+   {
+    "sym": "ZM",
+    "score": 5,
+    "price": 104.83,
+    "side": "down"
+   },
+   {
+    "sym": "AEIS",
+    "score": 4,
+    "price": 274.67,
+    "side": "down"
+   },
+   {
+    "sym": "BRC",
+    "score": 4,
+    "price": 94.38,
+    "side": "up"
+   },
+   {
+    "sym": "CALM",
+    "score": 4,
+    "price": 84.6,
+    "side": "up"
+   },
+   {
+    "sym": "COST",
+    "score": 4,
+    "price": 971.4,
+    "side": "up"
+   },
+   {
+    "sym": "CRON",
+    "score": 4,
+    "price": 3.41,
+    "side": "up"
+   },
+   {
+    "sym": "INOD",
+    "score": 4,
+    "price": 57.13,
+    "side": "down"
+   },
+   {
+    "sym": "IPGP",
+    "score": 4,
+    "price": 70.74,
+    "side": "down"
+   },
+   {
+    "sym": "KNSL",
+    "score": 4,
+    "price": 395.51,
+    "side": "up"
+   },
+   {
+    "sym": "MPWR",
+    "score": 4,
+    "price": 1285.03,
+    "side": "down"
+   },
+   {
+    "sym": "NVDA",
+    "score": 4,
+    "price": 208.48,
+    "side": "down"
+   },
+   {
+    "sym": "OR",
+    "score": 4,
+    "price": 37.49,
+    "side": "up"
+   },
+   {
+    "sym": "TOYO",
+    "score": 4,
+    "price": 4.38,
+    "side": "down"
+   }
+  ]
  }
 ]
