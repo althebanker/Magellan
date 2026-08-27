@@ -9423,5 +9423,112 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-08-27",
+  "picks": [
+   {
+    "sym": "CRE",
+    "score": 6,
+    "price": 6.81,
+    "side": "up"
+   },
+   {
+    "sym": "ORMP",
+    "score": 6,
+    "price": 5.34,
+    "side": "up"
+   },
+   {
+    "sym": "QFIN",
+    "score": 6,
+    "price": 9.35,
+    "side": "down"
+   },
+   {
+    "sym": "BZ",
+    "score": 5,
+    "price": 18.84,
+    "side": "up"
+   },
+   {
+    "sym": "ERIC",
+    "score": 5,
+    "price": 10.06,
+    "side": "down"
+   },
+   {
+    "sym": "FINV",
+    "score": 5,
+    "price": 4.21,
+    "side": "down"
+   },
+   {
+    "sym": "NEM",
+    "score": 5,
+    "price": 131.6,
+    "side": "down"
+   },
+   {
+    "sym": "PLAB",
+    "score": 5,
+    "price": 30.25,
+    "side": "up"
+   },
+   {
+    "sym": "SCHW",
+    "score": 5,
+    "price": 109.39,
+    "side": "down"
+   },
+   {
+    "sym": "ZM",
+    "score": 5,
+    "price": 93.83,
+    "side": "down"
+   },
+   {
+    "sym": "FXHO",
+    "score": 4,
+    "price": 9.65,
+    "side": "up"
+   },
+   {
+    "sym": "IMPP",
+    "score": 4,
+    "price": 4.85,
+    "side": "down"
+   },
+   {
+    "sym": "IPGP",
+    "score": 4,
+    "price": 74.21,
+    "side": "up"
+   },
+   {
+    "sym": "OKTA",
+    "score": 4,
+    "price": 134.42,
+    "side": "up"
+   },
+   {
+    "sym": "P",
+    "score": 4,
+    "price": 108.9,
+    "side": "up"
+   },
+   {
+    "sym": "RELL",
+    "score": 4,
+    "price": 17.78,
+    "side": "up"
+   },
+   {
+    "sym": "TK",
+    "score": 4,
+    "price": 12.25,
+    "side": "down"
+   }
+  ]
  }
 ]
