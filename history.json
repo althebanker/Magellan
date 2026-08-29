@@ -9733,5 +9733,166 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-08-29",
+  "picks": [
+   {
+    "sym": "CHA",
+    "score": 6,
+    "price": 10.8,
+    "side": "up"
+   },
+   {
+    "sym": "NKLR",
+    "score": 6,
+    "price": 5.64,
+    "side": "down"
+   },
+   {
+    "sym": "AGX",
+    "score": 5,
+    "price": 417.74,
+    "side": "down"
+   },
+   {
+    "sym": "AOS",
+    "score": 5,
+    "price": 60.38,
+    "side": "down"
+   },
+   {
+    "sym": "B",
+    "score": 5,
+    "price": 45.65,
+    "side": "down"
+   },
+   {
+    "sym": "FINV",
+    "score": 5,
+    "price": 3.4,
+    "side": "down"
+   },
+   {
+    "sym": "HMY",
+    "score": 5,
+    "price": 20.23,
+    "side": "down"
+   },
+   {
+    "sym": "PLAB",
+    "score": 5,
+    "price": 27.73,
+    "side": "down"
+   },
+   {
+    "sym": "PURR",
+    "score": 5,
+    "price": 11.61,
+    "side": "down"
+   },
+   {
+    "sym": "UMC",
+    "score": 5,
+    "price": 19.79,
+    "side": "up"
+   },
+   {
+    "sym": "ASM",
+    "score": 4,
+    "price": 7.47,
+    "side": "down"
+   },
+   {
+    "sym": "AYA",
+    "score": 4,
+    "price": 27.97,
+    "side": "down"
+   },
+   {
+    "sym": "CHKP",
+    "score": 4,
+    "price": 138.32,
+    "side": "up"
+   },
+   {
+    "sym": "CXM",
+    "score": 4,
+    "price": 8.16,
+    "side": "up"
+   },
+   {
+    "sym": "DSCSY",
+    "score": 4,
+    "price": 36.14,
+    "side": "down"
+   },
+   {
+    "sym": "ESTC",
+    "score": 4,
+    "price": 99.91,
+    "side": "up"
+   },
+   {
+    "sym": "GCT",
+    "score": 4,
+    "price": 52.95,
+    "side": "up"
+   },
+   {
+    "sym": "KOPN",
+    "score": 4,
+    "price": 4.48,
+    "side": "down"
+   },
+   {
+    "sym": "MYRG",
+    "score": 4,
+    "price": 294.42,
+    "side": "down"
+   },
+   {
+    "sym": "NICE",
+    "score": 4,
+    "price": 108.835,
+    "side": "up"
+   },
+   {
+    "sym": "NVDA",
+    "score": 4,
+    "price": 217.55,
+    "side": "down"
+   },
+   {
+    "sym": "OSS",
+    "score": 4,
+    "price": 10.41,
+    "side": "down"
+   },
+   {
+    "sym": "RELY",
+    "score": 4,
+    "price": 26.55,
+    "side": "up"
+   },
+   {
+    "sym": "RMBS",
+    "score": 4,
+    "price": 85.76,
+    "side": "down"
+   },
+   {
+    "sym": "SMCAY",
+    "score": 4,
+    "price": 21.79,
+    "side": "down"
+   },
+   {
+    "sym": "TOELY",
+    "score": 4,
+    "price": 171.3,
+    "side": "down"
+   }
+  ]
  }
 ]
