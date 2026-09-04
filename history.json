@@ -10503,5 +10503,136 @@
     "side": "up"
    }
   ]
+ },
+ {
+  "date": "2026-09-04",
+  "picks": [
+   {
+    "sym": "CHA",
+    "score": 7,
+    "price": 11.66,
+    "side": "up"
+   },
+   {
+    "sym": "HRTG",
+    "score": 6,
+    "price": 33.95,
+    "side": "down"
+   },
+   {
+    "sym": "QTTB",
+    "score": 6,
+    "price": 11.99,
+    "side": "down"
+   },
+   {
+    "sym": "YELP",
+    "score": 6,
+    "price": 21.66,
+    "side": "down"
+   },
+   {
+    "sym": "ALAB",
+    "score": 5,
+    "price": 310.4,
+    "side": "up"
+   },
+   {
+    "sym": "GOLD",
+    "score": 5,
+    "price": 46.13,
+    "side": "up"
+   },
+   {
+    "sym": "INFY",
+    "score": 5,
+    "price": 11.7,
+    "side": "down"
+   },
+   {
+    "sym": "KRYS",
+    "score": 5,
+    "price": 358.24,
+    "side": "down"
+   },
+   {
+    "sym": "LULU",
+    "score": 5,
+    "price": 100.61,
+    "side": "down"
+   },
+   {
+    "sym": "MOMO",
+    "score": 5,
+    "price": 5.37,
+    "side": "up"
+   },
+   {
+    "sym": "MRX",
+    "score": 5,
+    "price": 78.27,
+    "side": "up"
+   },
+   {
+    "sym": "PATH",
+    "score": 5,
+    "price": 15.19,
+    "side": "down"
+   },
+   {
+    "sym": "STNG",
+    "score": 5,
+    "price": 82.35,
+    "side": "up"
+   },
+   {
+    "sym": "TSM",
+    "score": 5,
+    "price": 428.91,
+    "side": "up"
+   },
+   {
+    "sym": "TTD",
+    "score": 5,
+    "price": 14.43,
+    "side": "down"
+   },
+   {
+    "sym": "CRDO",
+    "score": 4,
+    "price": 170.57,
+    "side": "up"
+   },
+   {
+    "sym": "DOCU",
+    "score": 4,
+    "price": 68.41,
+    "side": "up"
+   },
+   {
+    "sym": "IESC",
+    "score": 4,
+    "price": 322.57,
+    "side": "up"
+   },
+   {
+    "sym": "SMCI",
+    "score": 4,
+    "price": 39.59,
+    "side": "up"
+   },
+   {
+    "sym": "SNDK",
+    "score": 4,
+    "price": 1740.0,
+    "side": "up"
+   },
+   {
+    "sym": "WTS",
+    "score": 4,
+    "price": 363.13,
+    "side": "up"
+   }
+  ]
  }
 ]
