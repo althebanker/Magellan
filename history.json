@@ -11112,5 +11112,178 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-09-09",
+  "picks": [
+   {
+    "sym": "ANNA",
+    "score": 6,
+    "price": 3.285,
+    "side": "up"
+   },
+   {
+    "sym": "DECK",
+    "score": 6,
+    "price": 80.23,
+    "side": "down"
+   },
+   {
+    "sym": "EVER",
+    "score": 6,
+    "price": 23.36,
+    "side": "down"
+   },
+   {
+    "sym": "FSLR",
+    "score": 6,
+    "price": 203.1,
+    "side": "down"
+   },
+   {
+    "sym": "NTDOY",
+    "score": 6,
+    "price": 13.1,
+    "side": "down"
+   },
+   {
+    "sym": "TCOM",
+    "score": 6,
+    "price": 39.19,
+    "side": "down"
+   },
+   {
+    "sym": "XP",
+    "score": 6,
+    "price": 19.04,
+    "side": "down"
+   },
+   {
+    "sym": "AGX",
+    "score": 5,
+    "price": 402.13,
+    "side": "down"
+   },
+   {
+    "sym": "AMSC",
+    "score": 5,
+    "price": 29.31,
+    "side": "down"
+   },
+   {
+    "sym": "GME",
+    "score": 5,
+    "price": 19.89,
+    "side": "up"
+   },
+   {
+    "sym": "INSP",
+    "score": 5,
+    "price": 66.48,
+    "side": "up"
+   },
+   {
+    "sym": "PBYI",
+    "score": 5,
+    "price": 9.05,
+    "side": "down"
+   },
+   {
+    "sym": "RCRUY",
+    "score": 5,
+    "price": 19.86,
+    "side": "down"
+   },
+   {
+    "sym": "ROOT",
+    "score": 5,
+    "price": 52.08,
+    "side": "down"
+   },
+   {
+    "sym": "ARLO",
+    "score": 4,
+    "price": 13.13,
+    "side": "down"
+   },
+   {
+    "sym": "CART",
+    "score": 4,
+    "price": 46.64,
+    "side": "down"
+   },
+   {
+    "sym": "COCO",
+    "score": 4,
+    "price": 51.49,
+    "side": "down"
+   },
+   {
+    "sym": "FFIV",
+    "score": 4,
+    "price": 404.63,
+    "side": "up"
+   },
+   {
+    "sym": "GRAB",
+    "score": 4,
+    "price": 3.04,
+    "side": "down"
+   },
+   {
+    "sym": "IDEXY",
+    "score": 4,
+    "price": 15.83,
+    "side": "down"
+   },
+   {
+    "sym": "JD",
+    "score": 4,
+    "price": 27.0,
+    "side": "down"
+   },
+   {
+    "sym": "MC",
+    "score": 4,
+    "price": 65.39,
+    "side": "down"
+   },
+   {
+    "sym": "NICE",
+    "score": 4,
+    "price": 98.87,
+    "side": "down"
+   },
+   {
+    "sym": "NYT",
+    "score": 4,
+    "price": 66.6,
+    "side": "down"
+   },
+   {
+    "sym": "SHOP",
+    "score": 4,
+    "price": 126.79,
+    "side": "down"
+   },
+   {
+    "sym": "SMCIP",
+    "score": 4,
+    "price": 65.66,
+    "side": "down"
+   },
+   {
+    "sym": "TGOPY",
+    "score": 4,
+    "price": 9.15,
+    "side": "down"
+   },
+   {
+    "sym": "TOELY",
+    "score": 4,
+    "price": 170.14,
+    "side": "down"
+   }
+  ]
  }
 ]
