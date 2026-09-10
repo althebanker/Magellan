@@ -11285,5 +11285,166 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-09-10",
+  "picks": [
+   {
+    "sym": "ADYEY",
+    "score": 6,
+    "price": 10.63,
+    "side": "down"
+   },
+   {
+    "sym": "AGNC",
+    "score": 6,
+    "price": 10.19,
+    "side": "down"
+   },
+   {
+    "sym": "ANNA",
+    "score": 6,
+    "price": 3.47,
+    "side": "up"
+   },
+   {
+    "sym": "ARR",
+    "score": 6,
+    "price": 15.83,
+    "side": "down"
+   },
+   {
+    "sym": "DX",
+    "score": 6,
+    "price": 12.56,
+    "side": "down"
+   },
+   {
+    "sym": "ORC",
+    "score": 6,
+    "price": 6.35,
+    "side": "down"
+   },
+   {
+    "sym": "QTTB",
+    "score": 6,
+    "price": 10.72,
+    "side": "down"
+   },
+   {
+    "sym": "RYAAY",
+    "score": 6,
+    "price": 53.0,
+    "side": "down"
+   },
+   {
+    "sym": "YELP",
+    "score": 6,
+    "price": 20.95,
+    "side": "up"
+   },
+   {
+    "sym": "CPRT",
+    "score": 5,
+    "price": 30.75,
+    "side": "down"
+   },
+   {
+    "sym": "GME",
+    "score": 5,
+    "price": 20.39,
+    "side": "up"
+   },
+   {
+    "sym": "INSP",
+    "score": 5,
+    "price": 68.12,
+    "side": "up"
+   },
+   {
+    "sym": "IVR",
+    "score": 5,
+    "price": 6.91,
+    "side": "down"
+   },
+   {
+    "sym": "TSSI",
+    "score": 5,
+    "price": 8.92,
+    "side": "up"
+   },
+   {
+    "sym": "DOCS",
+    "score": 4,
+    "price": 24.71,
+    "side": "up"
+   },
+   {
+    "sym": "DUOT",
+    "score": 4,
+    "price": 8.1,
+    "side": "down"
+   },
+   {
+    "sym": "IMPP",
+    "score": 4,
+    "price": 5.605,
+    "side": "up"
+   },
+   {
+    "sym": "ISRG",
+    "score": 4,
+    "price": 360.46,
+    "side": "up"
+   },
+   {
+    "sym": "LRCX",
+    "score": 4,
+    "price": 298.01,
+    "side": "down"
+   },
+   {
+    "sym": "MNDY",
+    "score": 4,
+    "price": 85.17,
+    "side": "up"
+   },
+   {
+    "sym": "PAYP",
+    "score": 4,
+    "price": 18.24,
+    "side": "up"
+   },
+   {
+    "sym": "PHM",
+    "score": 4,
+    "price": 116.41,
+    "side": "down"
+   },
+   {
+    "sym": "QLYS",
+    "score": 4,
+    "price": 161.57,
+    "side": "down"
+   },
+   {
+    "sym": "RDDT",
+    "score": 4,
+    "price": 155.34,
+    "side": "up"
+   },
+   {
+    "sym": "RELY",
+    "score": 4,
+    "price": 21.93,
+    "side": "down"
+   },
+   {
+    "sym": "WST",
+    "score": 4,
+    "price": 344.25,
+    "side": "up"
+   }
+  ]
  }
 ]
