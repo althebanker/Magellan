@@ -11446,5 +11446,112 @@
     "side": "up"
    }
   ]
+ },
+ {
+  "date": "2026-09-11",
+  "picks": [
+   {
+    "sym": "LOGI",
+    "score": 6,
+    "price": 102.7,
+    "side": "up"
+   },
+   {
+    "sym": "QTTB",
+    "score": 6,
+    "price": 11.1,
+    "side": "up"
+   },
+   {
+    "sym": "CARG",
+    "score": 5,
+    "price": 34.425,
+    "side": "up"
+   },
+   {
+    "sym": "CPRT",
+    "score": 5,
+    "price": 29.95,
+    "side": "down"
+   },
+   {
+    "sym": "ERIC",
+    "score": 5,
+    "price": 10.31,
+    "side": "up"
+   },
+   {
+    "sym": "EXEL",
+    "score": 5,
+    "price": 56.12,
+    "side": "down"
+   },
+   {
+    "sym": "IMPP",
+    "score": 5,
+    "price": 5.79,
+    "side": "up"
+   },
+   {
+    "sym": "INSP",
+    "score": 5,
+    "price": 73.0,
+    "side": "up"
+   },
+   {
+    "sym": "TFPM",
+    "score": 5,
+    "price": 33.78,
+    "side": "up"
+   },
+   {
+    "sym": "ASM",
+    "score": 4,
+    "price": 6.49,
+    "side": "down"
+   },
+   {
+    "sym": "CNS",
+    "score": 4,
+    "price": 74.95,
+    "side": "down"
+   },
+   {
+    "sym": "HIMX",
+    "score": 4,
+    "price": 14.73,
+    "side": "up"
+   },
+   {
+    "sym": "ISRG",
+    "score": 4,
+    "price": 369.15,
+    "side": "up"
+   },
+   {
+    "sym": "MHVIY",
+    "score": 4,
+    "price": 12.2,
+    "side": "up"
+   },
+   {
+    "sym": "QLYS",
+    "score": 4,
+    "price": 150.28,
+    "side": "down"
+   },
+   {
+    "sym": "SMCI",
+    "score": 4,
+    "price": 40.1,
+    "side": "up"
+   },
+   {
+    "sym": "TOELY",
+    "score": 4,
+    "price": 169.71,
+    "side": "up"
+   }
+  ]
  }
 ]
