@@ -11558,333 +11558,177 @@
   "date": "2026-09-15",
   "picks": [
    {
-    "sym": "AMSC",
+    "sym": "SD",
+    "score": 7,
+    "price": 14.97,
+    "side": "up"
+   },
+   {
+    "sym": "ADYEY",
     "score": 6,
-    "price": 27.28,
+    "price": 10.67,
     "side": "down"
    },
    {
     "sym": "NKLR",
     "score": 6,
-    "price": 4.72,
+    "price": 4.59,
     "side": "down"
    },
    {
-    "sym": "OSPN",
+    "sym": "QFIN",
     "score": 6,
-    "price": 17.52,
-    "side": "up"
+    "price": 8.05,
+    "side": "down"
    },
    {
-    "sym": "SLDE",
+    "sym": "RYAAY",
     "score": 6,
-    "price": 26.23,
-    "side": "up"
-   },
-   {
-    "sym": "AMAT",
-    "score": 5,
-    "price": 424.21,
+    "price": 51.95,
     "side": "down"
    },
    {
-    "sym": "AMPY",
+    "sym": "ACMR",
     "score": 5,
-    "price": 4.81,
+    "price": 63.94,
     "side": "down"
    },
    {
-    "sym": "AVPT",
+    "sym": "ADMA",
     "score": 5,
-    "price": 13.6,
-    "side": "up"
-   },
-   {
-    "sym": "BZ",
-    "score": 5,
-    "price": 15.45,
+    "price": 8.61,
     "side": "down"
    },
    {
-    "sym": "DRD",
+    "sym": "ATAT",
     "score": 5,
-    "price": 25.59,
+    "price": 31.3,
     "side": "down"
    },
    {
-    "sym": "EPAM",
+    "sym": "CYATY",
     "score": 5,
-    "price": 123.61,
-    "side": "up"
-   },
-   {
-    "sym": "FVRR",
-    "score": 5,
-    "price": 9.28,
-    "side": "up"
-   },
-   {
-    "sym": "IIIN",
-    "score": 5,
-    "price": 29.72,
+    "price": 16.37,
     "side": "down"
    },
    {
-    "sym": "IMPP",
+    "sym": "GNW",
     "score": 5,
-    "price": 5.95,
-    "side": "up"
-   },
-   {
-    "sym": "INFY",
-    "score": 5,
-    "price": 11.6,
-    "side": "up"
-   },
-   {
-    "sym": "NTES",
-    "score": 5,
-    "price": 117.99,
-    "side": "up"
-   },
-   {
-    "sym": "OGC",
-    "score": 5,
-    "price": 29.38,
+    "price": 10.01,
     "side": "down"
    },
    {
     "sym": "RIGL",
     "score": 5,
-    "price": 45.35,
+    "price": 44.36,
     "side": "down"
    },
    {
-    "sym": "STRL",
+    "sym": "VC",
     "score": 5,
-    "price": 472.87,
-    "side": "down"
-   },
-   {
-    "sym": "THG",
-    "score": 5,
-    "price": 231.19,
-    "side": "up"
-   },
-   {
-    "sym": "TSM",
-    "score": 5,
-    "price": 418.01,
+    "price": 97.67,
     "side": "down"
    },
    {
     "sym": "WDC",
     "score": 5,
-    "price": 426.94,
+    "price": 411.96,
     "side": "down"
    },
    {
-    "sym": "AEIS",
-    "score": 4,
-    "price": 254.35,
+    "sym": "ZM",
+    "score": 5,
+    "price": 93.07,
     "side": "down"
    },
    {
-    "sym": "ALAB",
+    "sym": "ALHC",
     "score": 4,
-    "price": 257.04,
+    "price": 10.37,
     "side": "down"
    },
    {
-    "sym": "ANET",
+    "sym": "ASND",
     "score": 4,
-    "price": 187.81,
+    "price": 239.77,
     "side": "down"
    },
    {
-    "sym": "ASML",
+    "sym": "CART",
     "score": 4,
-    "price": 1575.15,
+    "price": 46.81,
     "side": "down"
    },
    {
-    "sym": "AYA",
+    "sym": "CNS",
     "score": 4,
-    "price": 26.91,
+    "price": 72.34,
     "side": "down"
    },
    {
-    "sym": "CHKP",
+    "sym": "EXPO",
     "score": 4,
-    "price": 138.495,
+    "price": 67.34,
+    "side": "down"
+   },
+   {
+    "sym": "FFIV",
+    "score": 4,
+    "price": 430.88,
     "side": "up"
    },
    {
-    "sym": "COCO",
+    "sym": "HIMX",
     "score": 4,
-    "price": 55.03,
-    "side": "up"
-   },
-   {
-    "sym": "DLB",
-    "score": 4,
-    "price": 61.91,
+    "price": 13.22,
     "side": "down"
    },
    {
-    "sym": "ERII",
+    "sym": "IDEXY",
     "score": 4,
-    "price": 7.09,
+    "price": 15.105,
     "side": "down"
    },
    {
-    "sym": "FJTSY",
+    "sym": "MEDP",
     "score": 4,
-    "price": 26.16,
+    "price": 620.48,
     "side": "up"
    },
    {
-    "sym": "FTNT",
+    "sym": "NBIX",
     "score": 4,
-    "price": 170.18,
-    "side": "up"
-   },
-   {
-    "sym": "GDYN",
-    "score": 4,
-    "price": 8.23,
-    "side": "up"
-   },
-   {
-    "sym": "GEV",
-    "score": 4,
-    "price": 874.76,
+    "price": 150.02,
     "side": "down"
    },
    {
-    "sym": "GMED",
+    "sym": "PRMRF",
     "score": 4,
-    "price": 75.77,
+    "price": 23.81,
     "side": "up"
-   },
-   {
-    "sym": "GRDN",
-    "score": 4,
-    "price": 46.49,
-    "side": "up"
-   },
-   {
-    "sym": "IDCC",
-    "score": 4,
-    "price": 340.38,
-    "side": "down"
-   },
-   {
-    "sym": "INOD",
-    "score": 4,
-    "price": 55.24,
-    "side": "up"
-   },
-   {
-    "sym": "LRCX",
-    "score": 4,
-    "price": 273.49,
-    "side": "down"
-   },
-   {
-    "sym": "MANH",
-    "score": 4,
-    "price": 211.54,
-    "side": "up"
-   },
-   {
-    "sym": "MNDY",
-    "score": 4,
-    "price": 96.105,
-    "side": "up"
-   },
-   {
-    "sym": "MPWR",
-    "score": 4,
-    "price": 1143.24,
-    "side": "down"
-   },
-   {
-    "sym": "NEXN",
-    "score": 4,
-    "price": 9.36,
-    "side": "up"
-   },
-   {
-    "sym": "NICE",
-    "score": 4,
-    "price": 106.69,
-    "side": "up"
-   },
-   {
-    "sym": "OLED",
-    "score": 4,
-    "price": 76.62,
-    "side": "down"
    },
    {
     "sym": "QLYS",
     "score": 4,
-    "price": 172.91,
+    "price": 185.37,
     "side": "up"
    },
    {
-    "sym": "RMBS",
+    "sym": "RMD",
     "score": 4,
-    "price": 80.39,
-    "side": "down"
+    "price": 229.44,
+    "side": "up"
    },
    {
-    "sym": "RYCEY",
+    "sym": "VCYT",
     "score": 4,
-    "price": 19.01,
-    "side": "down"
-   },
-   {
-    "sym": "SIMO",
-    "score": 4,
-    "price": 236.81,
-    "side": "down"
-   },
-   {
-    "sym": "TDW",
-    "score": 4,
-    "price": 88.58,
-    "side": "down"
-   },
-   {
-    "sym": "TER",
-    "score": 4,
-    "price": 329.2,
-    "side": "down"
-   },
-   {
-    "sym": "TS",
-    "score": 4,
-    "price": 55.14,
-    "side": "down"
-   },
-   {
-    "sym": "UMC",
-    "score": 4,
-    "price": 21.9,
+    "price": 40.14,
     "side": "down"
    },
    {
     "sym": "WST",
     "score": 4,
-    "price": 355.2,
-    "side": "up"
-   },
-   {
-    "sym": "XIACY",
-    "score": 4,
-    "price": 17.38,
+    "price": 365.0,
     "side": "up"
    }
   ]
