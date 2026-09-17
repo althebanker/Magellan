@@ -11737,195 +11737,129 @@
   "date": "2026-09-17",
   "picks": [
    {
-    "sym": "SD",
-    "score": 7,
-    "price": 14.36,
-    "side": "down"
-   },
-   {
-    "sym": "FHI",
-    "score": 6,
-    "price": 56.69,
-    "side": "down"
-   },
-   {
-    "sym": "FSLR",
-    "score": 6,
-    "price": 191.07,
-    "side": "down"
-   },
-   {
-    "sym": "HLNE",
-    "score": 6,
-    "price": 89.88,
-    "side": "down"
-   },
-   {
-    "sym": "NKLR",
-    "score": 6,
-    "price": 4.175,
-    "side": "down"
-   },
-   {
-    "sym": "SMERY",
-    "score": 6,
-    "price": 31.46,
-    "side": "up"
-   },
-   {
-    "sym": "TCOM",
-    "score": 6,
-    "price": 40.43,
-    "side": "up"
-   },
-   {
-    "sym": "AGI",
+    "sym": "AGX",
     "score": 5,
-    "price": 34.45,
+    "price": 383.0,
     "side": "down"
-   },
-   {
-    "sym": "ATAT",
-    "score": 5,
-    "price": 32.07,
-    "side": "up"
-   },
-   {
-    "sym": "AUPH",
-    "score": 5,
-    "price": 16.96,
-    "side": "up"
    },
    {
     "sym": "CYATY",
     "score": 5,
-    "price": 15.8,
-    "side": "down"
-   },
-   {
-    "sym": "EVR",
-    "score": 5,
-    "price": 261.83,
-    "side": "down"
-   },
-   {
-    "sym": "LGCL",
-    "score": 5,
-    "price": 3.28,
+    "price": 16.15,
     "side": "up"
    },
    {
-    "sym": "PAYS",
+    "sym": "DRD",
     "score": 5,
-    "price": 11.82,
-    "side": "down"
-   },
-   {
-    "sym": "SCHW",
-    "score": 5,
-    "price": 105.16,
-    "side": "down"
-   },
-   {
-    "sym": "STRL",
-    "score": 5,
-    "price": 482.67,
+    "price": 26.11,
     "side": "up"
    },
    {
-    "sym": "ALHC",
-    "score": 4,
-    "price": 8.71,
+    "sym": "MITK",
+    "score": 5,
+    "price": 17.3,
     "side": "down"
    },
    {
-    "sym": "ASND",
-    "score": 4,
-    "price": 247.69,
+    "sym": "NTDOY",
+    "score": 5,
+    "price": 13.4,
+    "side": "up"
+   },
+   {
+    "sym": "PURR",
+    "score": 5,
+    "price": 12.83,
+    "side": "up"
+   },
+   {
+    "sym": "QNST",
+    "score": 5,
+    "price": 17.67,
+    "side": "down"
+   },
+   {
+    "sym": "SGHC",
+    "score": 5,
+    "price": 12.8,
+    "side": "down"
+   },
+   {
+    "sym": "STNG",
+    "score": 5,
+    "price": 87.85,
+    "side": "up"
+   },
+   {
+    "sym": "VICR",
+    "score": 5,
+    "price": 216.39,
     "side": "up"
    },
    {
     "sym": "CDE",
     "score": 4,
-    "price": 18.98,
-    "side": "down"
-   },
-   {
-    "sym": "CRON",
-    "score": 4,
-    "price": 3.29,
+    "price": 19.98,
     "side": "up"
    },
    {
-    "sym": "DIDIY",
+    "sym": "CYPH",
     "score": 4,
-    "price": 3.62,
+    "price": 3.07,
     "side": "up"
    },
    {
-    "sym": "ELE",
+    "sym": "DSP",
     "score": 4,
-    "price": 20.02,
+    "price": 10.02,
     "side": "down"
    },
    {
-    "sym": "GEV",
+    "sym": "FJTSY",
     "score": 4,
-    "price": 925.09,
+    "price": 25.79,
     "side": "up"
    },
    {
-    "sym": "HOG",
+    "sym": "KOPN",
     "score": 4,
-    "price": 26.84,
-    "side": "down"
-   },
-   {
-    "sym": "HOOD",
-    "score": 4,
-    "price": 104.42,
-    "side": "down"
-   },
-   {
-    "sym": "MGY",
-    "score": 4,
-    "price": 26.1,
-    "side": "down"
-   },
-   {
-    "sym": "MIAX",
-    "score": 4,
-    "price": 38.04,
-    "side": "down"
-   },
-   {
-    "sym": "ODFL",
-    "score": 4,
-    "price": 174.36,
-    "side": "down"
-   },
-   {
-    "sym": "PTCT",
-    "score": 4,
-    "price": 67.59,
+    "price": 4.73,
     "side": "up"
    },
    {
-    "sym": "RES",
+    "sym": "MGTX",
     "score": 4,
-    "price": 5.98,
+    "price": 13.05,
+    "side": "up"
+   },
+   {
+    "sym": "NVO",
+    "score": 4,
+    "price": 43.19,
+    "side": "up"
+   },
+   {
+    "sym": "NYT",
+    "score": 4,
+    "price": 69.94,
     "side": "down"
    },
    {
-    "sym": "TPL",
+    "sym": "SMCI",
     "score": 4,
-    "price": 348.57,
-    "side": "down"
+    "price": 40.35,
+    "side": "up"
    },
    {
-    "sym": "VCYT",
+    "sym": "UMC",
     "score": 4,
-    "price": 38.5,
+    "price": 24.47,
+    "side": "up"
+   },
+   {
+    "sym": "WEGZY",
+    "score": 4,
+    "price": 9.86,
     "side": "down"
    }
   ]
