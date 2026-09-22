@@ -12342,5 +12342,160 @@
     "side": "up"
    }
   ]
+ },
+ {
+  "date": "2026-09-22",
+  "picks": [
+   {
+    "sym": "HG",
+    "score": 6,
+    "price": 33.87,
+    "side": "down"
+   },
+   {
+    "sym": "SITC",
+    "score": 6,
+    "price": 3.02,
+    "side": "up"
+   },
+   {
+    "sym": "ZTO",
+    "score": 6,
+    "price": 19.45,
+    "side": "down"
+   },
+   {
+    "sym": "ACN",
+    "score": 5,
+    "price": 186.11,
+    "side": "up"
+   },
+   {
+    "sym": "AGX",
+    "score": 5,
+    "price": 380.12,
+    "side": "down"
+   },
+   {
+    "sym": "ALAB",
+    "score": 5,
+    "price": 340.74,
+    "side": "up"
+   },
+   {
+    "sym": "EVR",
+    "score": 5,
+    "price": 269.01,
+    "side": "up"
+   },
+   {
+    "sym": "FVRR",
+    "score": 5,
+    "price": 8.72,
+    "side": "up"
+   },
+   {
+    "sym": "HMY",
+    "score": 5,
+    "price": 19.0,
+    "side": "down"
+   },
+   {
+    "sym": "RSI",
+    "score": 5,
+    "price": 21.57,
+    "side": "down"
+   },
+   {
+    "sym": "TME",
+    "score": 5,
+    "price": 8.17,
+    "side": "up"
+   },
+   {
+    "sym": "ACMR",
+    "score": 4,
+    "price": 72.77,
+    "side": "up"
+   },
+   {
+    "sym": "AMAT",
+    "score": 4,
+    "price": 464.24,
+    "side": "up"
+   },
+   {
+    "sym": "HIMX",
+    "score": 4,
+    "price": 14.61,
+    "side": "up"
+   },
+   {
+    "sym": "INOD",
+    "score": 4,
+    "price": 61.05,
+    "side": "up"
+   },
+   {
+    "sym": "ITRI",
+    "score": 4,
+    "price": 92.43,
+    "side": "up"
+   },
+   {
+    "sym": "MPWR",
+    "score": 4,
+    "price": 1277.68,
+    "side": "up"
+   },
+   {
+    "sym": "NICE",
+    "score": 4,
+    "price": 114.54,
+    "side": "up"
+   },
+   {
+    "sym": "NVO",
+    "score": 4,
+    "price": 39.8,
+    "side": "down"
+   },
+   {
+    "sym": "OSCR",
+    "score": 4,
+    "price": 31.29,
+    "side": "down"
+   },
+   {
+    "sym": "PURR",
+    "score": 4,
+    "price": 13.55,
+    "side": "down"
+   },
+   {
+    "sym": "RMBS",
+    "score": 4,
+    "price": 96.96,
+    "side": "up"
+   },
+   {
+    "sym": "SHOP",
+    "score": 4,
+    "price": 137.92,
+    "side": "up"
+   },
+   {
+    "sym": "TCEHY",
+    "score": 4,
+    "price": 55.85,
+    "side": "up"
+   },
+   {
+    "sym": "TPL",
+    "score": 4,
+    "price": 366.8,
+    "side": "up"
+   }
+  ]
  }
 ]
