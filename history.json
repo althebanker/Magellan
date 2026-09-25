@@ -12838,5 +12838,124 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-09-25",
+  "picks": [
+   {
+    "sym": "FSLR",
+    "score": 6,
+    "price": 172.16,
+    "side": "down"
+   },
+   {
+    "sym": "LOGI",
+    "score": 6,
+    "price": 99.56,
+    "side": "down"
+   },
+   {
+    "sym": "ORC",
+    "score": 6,
+    "price": 5.77,
+    "side": "down"
+   },
+   {
+    "sym": "PAY",
+    "score": 6,
+    "price": 30.95,
+    "side": "up"
+   },
+   {
+    "sym": "QTTB",
+    "score": 6,
+    "price": 9.22,
+    "side": "down"
+   },
+   {
+    "sym": "ACAD",
+    "score": 5,
+    "price": 22.18,
+    "side": "down"
+   },
+   {
+    "sym": "AMP",
+    "score": 5,
+    "price": 485.15,
+    "side": "down"
+   },
+   {
+    "sym": "BLBD",
+    "score": 5,
+    "price": 55.58,
+    "side": "down"
+   },
+   {
+    "sym": "CYATY",
+    "score": 5,
+    "price": 15.67,
+    "side": "down"
+   },
+   {
+    "sym": "KFY",
+    "score": 5,
+    "price": 72.0,
+    "side": "down"
+   },
+   {
+    "sym": "KGC",
+    "score": 5,
+    "price": 24.42,
+    "side": "down"
+   },
+   {
+    "sym": "PBYI",
+    "score": 5,
+    "price": 9.82,
+    "side": "up"
+   },
+   {
+    "sym": "RSI",
+    "score": 5,
+    "price": 19.54,
+    "side": "down"
+   },
+   {
+    "sym": "YMM",
+    "score": 5,
+    "price": 8.16,
+    "side": "down"
+   },
+   {
+    "sym": "ARLO",
+    "score": 4,
+    "price": 13.02,
+    "side": "down"
+   },
+   {
+    "sym": "MGTX",
+    "score": 4,
+    "price": 11.05,
+    "side": "down"
+   },
+   {
+    "sym": "SF",
+    "score": 4,
+    "price": 69.91,
+    "side": "down"
+   },
+   {
+    "sym": "TSSI",
+    "score": 4,
+    "price": 10.19,
+    "side": "up"
+   },
+   {
+    "sym": "VFF",
+    "score": 4,
+    "price": 3.12,
+    "side": "up"
+   }
+  ]
  }
 ]
