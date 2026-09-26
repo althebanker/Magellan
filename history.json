@@ -12957,5 +12957,52 @@
     "side": "up"
    }
   ]
+ },
+ {
+  "date": "2026-09-26",
+  "picks": [
+   {
+    "sym": "ACIC",
+    "score": 6,
+    "price": 9.4,
+    "side": "up"
+   },
+   {
+    "sym": "ACAD",
+    "score": 5,
+    "price": 20.68,
+    "side": "down"
+   },
+   {
+    "sym": "EVR",
+    "score": 5,
+    "price": 262.91,
+    "side": "up"
+   },
+   {
+    "sym": "GME",
+    "score": 5,
+    "price": 23.39,
+    "side": "down"
+   },
+   {
+    "sym": "TSSI",
+    "score": 5,
+    "price": 9.87,
+    "side": "down"
+   },
+   {
+    "sym": "COST",
+    "score": 4,
+    "price": 922.765,
+    "side": "up"
+   },
+   {
+    "sym": "CRDO",
+    "score": 4,
+    "price": 210.97,
+    "side": "up"
+   }
+  ]
  }
 ]
