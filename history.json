@@ -13004,5 +13004,112 @@
     "side": "up"
    }
   ]
+ },
+ {
+  "date": "2026-09-29",
+  "picks": [
+   {
+    "sym": "CRCT",
+    "score": 6,
+    "price": 6.33,
+    "side": "up"
+   },
+   {
+    "sym": "DUOL",
+    "score": 6,
+    "price": 134.3,
+    "side": "down"
+   },
+   {
+    "sym": "QTTB",
+    "score": 6,
+    "price": 9.23,
+    "side": "up"
+   },
+   {
+    "sym": "AEM",
+    "score": 5,
+    "price": 184.15,
+    "side": "down"
+   },
+   {
+    "sym": "AU",
+    "score": 5,
+    "price": 92.77,
+    "side": "down"
+   },
+   {
+    "sym": "AVPT",
+    "score": 5,
+    "price": 13.67,
+    "side": "up"
+   },
+   {
+    "sym": "MNTN",
+    "score": 5,
+    "price": 10.19,
+    "side": "down"
+   },
+   {
+    "sym": "NTES",
+    "score": 5,
+    "price": 121.04,
+    "side": "up"
+   },
+   {
+    "sym": "CRON",
+    "score": 4,
+    "price": 3.41,
+    "side": "up"
+   },
+   {
+    "sym": "FNV",
+    "score": 4,
+    "price": 245.81,
+    "side": "down"
+   },
+   {
+    "sym": "KYIV",
+    "score": 4,
+    "price": 12.76,
+    "side": "down"
+   },
+   {
+    "sym": "MNST",
+    "score": 4,
+    "price": 41.86,
+    "side": "down"
+   },
+   {
+    "sym": "PAYP",
+    "score": 4,
+    "price": 16.0,
+    "side": "down"
+   },
+   {
+    "sym": "REGN",
+    "score": 4,
+    "price": 752.25,
+    "side": "down"
+   },
+   {
+    "sym": "SCZM",
+    "score": 4,
+    "price": 9.02,
+    "side": "down"
+   },
+   {
+    "sym": "TOYO",
+    "score": 4,
+    "price": 4.21,
+    "side": "down"
+   },
+   {
+    "sym": "WPM",
+    "score": 4,
+    "price": 135.62,
+    "side": "down"
+   }
+  ]
  }
 ]
