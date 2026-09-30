@@ -13111,5 +13111,52 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-09-30",
+  "picks": [
+   {
+    "sym": "PIPR",
+    "score": 6,
+    "price": 64.72,
+    "side": "down"
+   },
+   {
+    "sym": "QTTB",
+    "score": 6,
+    "price": 9.53,
+    "side": "up"
+   },
+   {
+    "sym": "EDU",
+    "score": 5,
+    "price": 54.48,
+    "side": "down"
+   },
+   {
+    "sym": "JLHL",
+    "score": 5,
+    "price": 4.03,
+    "side": "down"
+   },
+   {
+    "sym": "ABUS",
+    "score": 4,
+    "price": 4.69,
+    "side": "down"
+   },
+   {
+    "sym": "MNDY",
+    "score": 4,
+    "price": 76.05,
+    "side": "down"
+   },
+   {
+    "sym": "TCEHY",
+    "score": 4,
+    "price": 54.51,
+    "side": "down"
+   }
+  ]
  }
 ]
