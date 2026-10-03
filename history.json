@@ -13558,5 +13558,112 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-10-03",
+  "picks": [
+   {
+    "sym": "FUTU",
+    "score": 6,
+    "price": 102.17,
+    "side": "down"
+   },
+   {
+    "sym": "ORC",
+    "score": 6,
+    "price": 5.11,
+    "side": "down"
+   },
+   {
+    "sym": "SITC",
+    "score": 6,
+    "price": 3.42,
+    "side": "down"
+   },
+   {
+    "sym": "AYI",
+    "score": 5,
+    "price": 308.76,
+    "side": "up"
+   },
+   {
+    "sym": "CRTO",
+    "score": 5,
+    "price": 14.73,
+    "side": "down"
+   },
+   {
+    "sym": "CTVA",
+    "score": 5,
+    "price": 11.92,
+    "side": "down"
+   },
+   {
+    "sym": "NTES",
+    "score": 5,
+    "price": 117.21,
+    "side": "down"
+   },
+   {
+    "sym": "PBYI",
+    "score": 5,
+    "price": 9.51,
+    "side": "down"
+   },
+   {
+    "sym": "SMCAY",
+    "score": 5,
+    "price": 23.58,
+    "side": "up"
+   },
+   {
+    "sym": "TIGR",
+    "score": 5,
+    "price": 4.16,
+    "side": "down"
+   },
+   {
+    "sym": "WDC",
+    "score": 5,
+    "price": 415.29,
+    "side": "down"
+   },
+   {
+    "sym": "HIMX",
+    "score": 4,
+    "price": 15.24,
+    "side": "up"
+   },
+   {
+    "sym": "JD",
+    "score": 4,
+    "price": 25.78,
+    "side": "down"
+   },
+   {
+    "sym": "OSS",
+    "score": 4,
+    "price": 8.66,
+    "side": "down"
+   },
+   {
+    "sym": "SPOT",
+    "score": 4,
+    "price": 472.89,
+    "side": "down"
+   },
+   {
+    "sym": "TER",
+    "score": 4,
+    "price": 449.04,
+    "side": "up"
+   },
+   {
+    "sym": "WEGZY",
+    "score": 4,
+    "price": 9.71,
+    "side": "up"
+   }
+  ]
  }
 ]
