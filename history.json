@@ -13808,5 +13808,160 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-10-07",
+  "picks": [
+   {
+    "sym": "XP",
+    "score": 7,
+    "price": 29.73,
+    "side": "up"
+   },
+   {
+    "sym": "AGX",
+    "score": 5,
+    "price": 419.64,
+    "side": "up"
+   },
+   {
+    "sym": "ALAB",
+    "score": 5,
+    "price": 389.8,
+    "side": "up"
+   },
+   {
+    "sym": "CARG",
+    "score": 5,
+    "price": 28.73,
+    "side": "down"
+   },
+   {
+    "sym": "FN",
+    "score": 5,
+    "price": 489.16,
+    "side": "up"
+   },
+   {
+    "sym": "FRSH",
+    "score": 5,
+    "price": 13.76,
+    "side": "up"
+   },
+   {
+    "sym": "KRYS",
+    "score": 5,
+    "price": 326.81,
+    "side": "down"
+   },
+   {
+    "sym": "LNC",
+    "score": 5,
+    "price": 42.08,
+    "side": "up"
+   },
+   {
+    "sym": "MOMO",
+    "score": 5,
+    "price": 4.77,
+    "side": "up"
+   },
+   {
+    "sym": "STRL",
+    "score": 5,
+    "price": 563.69,
+    "side": "up"
+   },
+   {
+    "sym": "WDC",
+    "score": 5,
+    "price": 411.04,
+    "side": "down"
+   },
+   {
+    "sym": "WYHG",
+    "score": 5,
+    "price": 3.8,
+    "side": "up"
+   },
+   {
+    "sym": "ANET",
+    "score": 4,
+    "price": 215.36,
+    "side": "up"
+   },
+   {
+    "sym": "DOCU",
+    "score": 4,
+    "price": 68.22,
+    "side": "down"
+   },
+   {
+    "sym": "DSVSF",
+    "score": 4,
+    "price": 8.33,
+    "side": "down"
+   },
+   {
+    "sym": "ERII",
+    "score": 4,
+    "price": 7.08,
+    "side": "up"
+   },
+   {
+    "sym": "FIX",
+    "score": 4,
+    "price": 1817.96,
+    "side": "up"
+   },
+   {
+    "sym": "FTNT",
+    "score": 4,
+    "price": 191.27,
+    "side": "up"
+   },
+   {
+    "sym": "GEV",
+    "score": 4,
+    "price": 1029.21,
+    "side": "up"
+   },
+   {
+    "sym": "MHVIY",
+    "score": 4,
+    "price": 12.04,
+    "side": "down"
+   },
+   {
+    "sym": "MIAX",
+    "score": 4,
+    "price": 30.79,
+    "side": "down"
+   },
+   {
+    "sym": "NXT",
+    "score": 4,
+    "price": 88.09,
+    "side": "up"
+   },
+   {
+    "sym": "PRMRF",
+    "score": 4,
+    "price": 22.0394,
+    "side": "up"
+   },
+   {
+    "sym": "TS",
+    "score": 4,
+    "price": 56.87,
+    "side": "down"
+   },
+   {
+    "sym": "UMC",
+    "score": 4,
+    "price": 23.19,
+    "side": "down"
+   }
+  ]
  }
 ]
