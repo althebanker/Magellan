@@ -13963,5 +13963,232 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-10-08",
+  "picks": [
+   {
+    "sym": "ABEV",
+    "score": 6,
+    "price": 3.15,
+    "side": "down"
+   },
+   {
+    "sym": "DX",
+    "score": 6,
+    "price": 10.57,
+    "side": "down"
+   },
+   {
+    "sym": "FSM",
+    "score": 6,
+    "price": 10.12,
+    "side": "down"
+   },
+   {
+    "sym": "ARLO",
+    "score": 5,
+    "price": 11.95,
+    "side": "down"
+   },
+   {
+    "sym": "DRD",
+    "score": 5,
+    "price": 23.7,
+    "side": "down"
+   },
+   {
+    "sym": "ERIE",
+    "score": 5,
+    "price": 217.77,
+    "side": "down"
+   },
+   {
+    "sym": "GNTX",
+    "score": 5,
+    "price": 21.08,
+    "side": "down"
+   },
+   {
+    "sym": "GOLD",
+    "score": 5,
+    "price": 40.68,
+    "side": "down"
+   },
+   {
+    "sym": "HMY",
+    "score": 5,
+    "price": 16.49,
+    "side": "down"
+   },
+   {
+    "sym": "LNC",
+    "score": 5,
+    "price": 41.0,
+    "side": "down"
+   },
+   {
+    "sym": "PGNY",
+    "score": 5,
+    "price": 27.55,
+    "side": "up"
+   },
+   {
+    "sym": "PKE",
+    "score": 5,
+    "price": 29.26,
+    "side": "down"
+   },
+   {
+    "sym": "SCZM",
+    "score": 5,
+    "price": 8.45,
+    "side": "down"
+   },
+   {
+    "sym": "SNA",
+    "score": 5,
+    "price": 359.89,
+    "side": "down"
+   },
+   {
+    "sym": "STRL",
+    "score": 5,
+    "price": 534.13,
+    "side": "down"
+   },
+   {
+    "sym": "UFPI",
+    "score": 5,
+    "price": 76.44,
+    "side": "down"
+   },
+   {
+    "sym": "VOXR",
+    "score": 5,
+    "price": 5.01,
+    "side": "down"
+   },
+   {
+    "sym": "APAM",
+    "score": 4,
+    "price": 33.75,
+    "side": "down"
+   },
+   {
+    "sym": "APPF",
+    "score": 4,
+    "price": 196.97,
+    "side": "down"
+   },
+   {
+    "sym": "BNC",
+    "score": 4,
+    "price": 5.55,
+    "side": "down"
+   },
+   {
+    "sym": "CDE",
+    "score": 4,
+    "price": 16.5,
+    "side": "down"
+   },
+   {
+    "sym": "COCO",
+    "score": 4,
+    "price": 50.65,
+    "side": "down"
+   },
+   {
+    "sym": "DIDIY",
+    "score": 4,
+    "price": 3.61,
+    "side": "down"
+   },
+   {
+    "sym": "DSP",
+    "score": 4,
+    "price": 12.78,
+    "side": "up"
+   },
+   {
+    "sym": "DSVSF",
+    "score": 4,
+    "price": 8.0,
+    "side": "down"
+   },
+   {
+    "sym": "DUOT",
+    "score": 4,
+    "price": 8.56,
+    "side": "down"
+   },
+   {
+    "sym": "GCT",
+    "score": 4,
+    "price": 55.96,
+    "side": "up"
+   },
+   {
+    "sym": "GMED",
+    "score": 4,
+    "price": 73.75,
+    "side": "down"
+   },
+   {
+    "sym": "HIMX",
+    "score": 4,
+    "price": 14.09,
+    "side": "down"
+   },
+   {
+    "sym": "IESC",
+    "score": 4,
+    "price": 308.83,
+    "side": "down"
+   },
+   {
+    "sym": "MGTX",
+    "score": 4,
+    "price": 10.82,
+    "side": "up"
+   },
+   {
+    "sym": "NSSC",
+    "score": 4,
+    "price": 35.19,
+    "side": "down"
+   },
+   {
+    "sym": "OLED",
+    "score": 4,
+    "price": 77.22,
+    "side": "down"
+   },
+   {
+    "sym": "OSS",
+    "score": 4,
+    "price": 7.95,
+    "side": "down"
+   },
+   {
+    "sym": "PHM",
+    "score": 4,
+    "price": 112.33,
+    "side": "down"
+   },
+   {
+    "sym": "SKY",
+    "score": 4,
+    "price": 81.03,
+    "side": "down"
+   },
+   {
+    "sym": "SPOT",
+    "score": 4,
+    "price": 512.92,
+    "side": "up"
+   }
+  ]
  }
 ]
