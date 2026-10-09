@@ -14190,5 +14190,280 @@
     "side": "up"
    }
   ]
+ },
+ {
+  "date": "2026-10-09",
+  "picks": [
+   {
+    "sym": "FIZZ",
+    "score": 6,
+    "price": 30.84,
+    "side": "up"
+   },
+   {
+    "sym": "NRDS",
+    "score": 6,
+    "price": 9.79,
+    "side": "up"
+   },
+   {
+    "sym": "RYAAY",
+    "score": 6,
+    "price": 54.04,
+    "side": "down"
+   },
+   {
+    "sym": "SD",
+    "score": 6,
+    "price": 14.07,
+    "side": "up"
+   },
+   {
+    "sym": "SMERY",
+    "score": 6,
+    "price": 31.6,
+    "side": "down"
+   },
+   {
+    "sym": "YELP",
+    "score": 6,
+    "price": 19.37,
+    "side": "up"
+   },
+   {
+    "sym": "ACN",
+    "score": 5,
+    "price": 208.36,
+    "side": "up"
+   },
+   {
+    "sym": "ALAB",
+    "score": 5,
+    "price": 347.05,
+    "side": "down"
+   },
+   {
+    "sym": "AMSC",
+    "score": 5,
+    "price": 30.95,
+    "side": "down"
+   },
+   {
+    "sym": "ARGX",
+    "score": 5,
+    "price": 818.63,
+    "side": "down"
+   },
+   {
+    "sym": "CPRT",
+    "score": 5,
+    "price": 27.48,
+    "side": "up"
+   },
+   {
+    "sym": "FINV",
+    "score": 5,
+    "price": 3.14,
+    "side": "up"
+   },
+   {
+    "sym": "FN",
+    "score": 5,
+    "price": 487.33,
+    "side": "down"
+   },
+   {
+    "sym": "MITK",
+    "score": 5,
+    "price": 17.07,
+    "side": "down"
+   },
+   {
+    "sym": "PLTR",
+    "score": 5,
+    "price": 198.78,
+    "side": "up"
+   },
+   {
+    "sym": "SKWD",
+    "score": 5,
+    "price": 59.31,
+    "side": "up"
+   },
+   {
+    "sym": "STNG",
+    "score": 5,
+    "price": 88.15,
+    "side": "up"
+   },
+   {
+    "sym": "STRA",
+    "score": 5,
+    "price": 82.39,
+    "side": "up"
+   },
+   {
+    "sym": "TSM",
+    "score": 5,
+    "price": 457.99,
+    "side": "down"
+   },
+   {
+    "sym": "VICR",
+    "score": 5,
+    "price": 262.32,
+    "side": "down"
+   },
+   {
+    "sym": "ALKS",
+    "score": 4,
+    "price": 40.11,
+    "side": "down"
+   },
+   {
+    "sym": "BNC",
+    "score": 4,
+    "price": 5.1,
+    "side": "down"
+   },
+   {
+    "sym": "CDE",
+    "score": 4,
+    "price": 16.87,
+    "side": "up"
+   },
+   {
+    "sym": "CHKP",
+    "score": 4,
+    "price": 134.74,
+    "side": "up"
+   },
+   {
+    "sym": "CME",
+    "score": 4,
+    "price": 276.44,
+    "side": "up"
+   },
+   {
+    "sym": "COCO",
+    "score": 4,
+    "price": 55.98,
+    "side": "up"
+   },
+   {
+    "sym": "CTSH",
+    "score": 4,
+    "price": 60.01,
+    "side": "up"
+   },
+   {
+    "sym": "DOCS",
+    "score": 4,
+    "price": 29.38,
+    "side": "up"
+   },
+   {
+    "sym": "DOCU",
+    "score": 4,
+    "price": 71.43,
+    "side": "up"
+   },
+   {
+    "sym": "DUOT",
+    "score": 4,
+    "price": 7.8,
+    "side": "down"
+   },
+   {
+    "sym": "ERIE",
+    "score": 4,
+    "price": 226.54,
+    "side": "up"
+   },
+   {
+    "sym": "GDYN",
+    "score": 4,
+    "price": 8.01,
+    "side": "up"
+   },
+   {
+    "sym": "HIMX",
+    "score": 4,
+    "price": 13.26,
+    "side": "down"
+   },
+   {
+    "sym": "IESC",
+    "score": 4,
+    "price": 300.43,
+    "side": "down"
+   },
+   {
+    "sym": "INTU",
+    "score": 4,
+    "price": 303.88,
+    "side": "up"
+   },
+   {
+    "sym": "MPWR",
+    "score": 4,
+    "price": 1369.8,
+    "side": "down"
+   },
+   {
+    "sym": "OLED",
+    "score": 4,
+    "price": 72.9,
+    "side": "down"
+   },
+   {
+    "sym": "POWL",
+    "score": 4,
+    "price": 189.27,
+    "side": "down"
+   },
+   {
+    "sym": "PRMRF",
+    "score": 4,
+    "price": 22.6,
+    "side": "up"
+   },
+   {
+    "sym": "RCRUY",
+    "score": 4,
+    "price": 21.91,
+    "side": "up"
+   },
+   {
+    "sym": "RYCEY",
+    "score": 4,
+    "price": 18.29,
+    "side": "down"
+   },
+   {
+    "sym": "SIMO",
+    "score": 4,
+    "price": 261.89,
+    "side": "down"
+   },
+   {
+    "sym": "SYF",
+    "score": 4,
+    "price": 73.72,
+    "side": "up"
+   },
+   {
+    "sym": "TDC",
+    "score": 4,
+    "price": 30.29,
+    "side": "up"
+   },
+   {
+    "sym": "TER",
+    "score": 4,
+    "price": 398.72,
+    "side": "down"
+   }
+  ]
  }
 ]
