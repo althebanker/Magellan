@@ -14465,5 +14465,142 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-10-10",
+  "picks": [
+   {
+    "sym": "LOGI",
+    "score": 7,
+    "price": 98.27,
+    "side": "down"
+   },
+   {
+    "sym": "CRUS",
+    "score": 6,
+    "price": 106.87,
+    "side": "down"
+   },
+   {
+    "sym": "NTDOY",
+    "score": 6,
+    "price": 13.1,
+    "side": "up"
+   },
+   {
+    "sym": "PDD",
+    "score": 6,
+    "price": 81.35,
+    "side": "up"
+   },
+   {
+    "sym": "CRTO",
+    "score": 5,
+    "price": 15.73,
+    "side": "up"
+   },
+   {
+    "sym": "FINV",
+    "score": 5,
+    "price": 3.06,
+    "side": "down"
+   },
+   {
+    "sym": "GME",
+    "score": 5,
+    "price": 26.56,
+    "side": "up"
+   },
+   {
+    "sym": "PLTR",
+    "score": 5,
+    "price": 209.05,
+    "side": "up"
+   },
+   {
+    "sym": "TME",
+    "score": 5,
+    "price": 8.38,
+    "side": "up"
+   },
+   {
+    "sym": "ALHC",
+    "score": 4,
+    "price": 7.545,
+    "side": "down"
+   },
+   {
+    "sym": "ATEX",
+    "score": 4,
+    "price": 84.53,
+    "side": "up"
+   },
+   {
+    "sym": "BMI",
+    "score": 4,
+    "price": 131.38,
+    "side": "up"
+   },
+   {
+    "sym": "DOCS",
+    "score": 4,
+    "price": 30.5,
+    "side": "up"
+   },
+   {
+    "sym": "DSCSY",
+    "score": 4,
+    "price": 38.66,
+    "side": "up"
+   },
+   {
+    "sym": "DUOT",
+    "score": 4,
+    "price": 7.2,
+    "side": "down"
+   },
+   {
+    "sym": "KOPN",
+    "score": 4,
+    "price": 4.46,
+    "side": "up"
+   },
+   {
+    "sym": "OPRA",
+    "score": 4,
+    "price": 17.58,
+    "side": "up"
+   },
+   {
+    "sym": "PKE",
+    "score": 4,
+    "price": 26.38,
+    "side": "down"
+   },
+   {
+    "sym": "RELL",
+    "score": 4,
+    "price": 20.79,
+    "side": "up"
+   },
+   {
+    "sym": "SAIQ",
+    "score": 4,
+    "price": 4.68,
+    "side": "down"
+   },
+   {
+    "sym": "SE",
+    "score": 4,
+    "price": 95.25,
+    "side": "up"
+   },
+   {
+    "sym": "XIACY",
+    "score": 4,
+    "price": 16.6,
+    "side": "up"
+   }
+  ]
  }
 ]
