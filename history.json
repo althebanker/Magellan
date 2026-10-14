@@ -14697,5 +14697,118 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-10-14",
+  "picks": [
+   {
+    "sym": "ACIC",
+    "score": 6,
+    "price": 10.63,
+    "side": "up"
+   },
+   {
+    "sym": "CGAU",
+    "score": 6,
+    "price": 21.87,
+    "side": "down"
+   },
+   {
+    "sym": "HRMY",
+    "score": 6,
+    "price": 37.03,
+    "side": "down"
+   },
+   {
+    "sym": "INCY",
+    "score": 6,
+    "price": 108.62,
+    "side": "down"
+   },
+   {
+    "sym": "LOGI",
+    "score": 6,
+    "price": 102.77,
+    "side": "up"
+   },
+   {
+    "sym": "ERIC",
+    "score": 5,
+    "price": 9.71,
+    "side": "up"
+   },
+   {
+    "sym": "FIZZ",
+    "score": 5,
+    "price": 32.99,
+    "side": "up"
+   },
+   {
+    "sym": "HLNE",
+    "score": 5,
+    "price": 82.92,
+    "side": "down"
+   },
+   {
+    "sym": "JLHL",
+    "score": 5,
+    "price": 5.15,
+    "side": "up"
+   },
+   {
+    "sym": "MC",
+    "score": 5,
+    "price": 56.39,
+    "side": "down"
+   },
+   {
+    "sym": "SSRM",
+    "score": 5,
+    "price": 33.1,
+    "side": "down"
+   },
+   {
+    "sym": "AMAT",
+    "score": 4,
+    "price": 464.24,
+    "side": "down"
+   },
+   {
+    "sym": "ANET",
+    "score": 4,
+    "price": 204.52,
+    "side": "down"
+   },
+   {
+    "sym": "DUOT",
+    "score": 4,
+    "price": 6.41,
+    "side": "down"
+   },
+   {
+    "sym": "RELL",
+    "score": 4,
+    "price": 21.28,
+    "side": "up"
+   },
+   {
+    "sym": "RMBS",
+    "score": 4,
+    "price": 98.17,
+    "side": "down"
+   },
+   {
+    "sym": "TELWY",
+    "score": 4,
+    "price": 36.52,
+    "side": "down"
+   },
+   {
+    "sym": "WSE",
+    "score": 4,
+    "price": 12.22,
+    "side": "up"
+   }
+  ]
  }
 ]
