@@ -15911,5 +15911,118 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-10-20",
+  "picks": [
+   {
+    "sym": "ARR",
+    "score": 6,
+    "price": 12.28,
+    "side": "down"
+   },
+   {
+    "sym": "RAMP",
+    "score": 6,
+    "price": 38.21,
+    "side": "up"
+   },
+   {
+    "sym": "SITC",
+    "score": 6,
+    "price": 3.56,
+    "side": "up"
+   },
+   {
+    "sym": "AMP",
+    "score": 5,
+    "price": 480.41,
+    "side": "down"
+   },
+   {
+    "sym": "BLBD",
+    "score": 5,
+    "price": 55.72,
+    "side": "down"
+   },
+   {
+    "sym": "EVR",
+    "score": 5,
+    "price": 247.96,
+    "side": "down"
+   },
+   {
+    "sym": "IVR",
+    "score": 5,
+    "price": 5.24,
+    "side": "down"
+   },
+   {
+    "sym": "LOGI",
+    "score": 5,
+    "price": 107.345,
+    "side": "up"
+   },
+   {
+    "sym": "PBYI",
+    "score": 5,
+    "price": 10.21,
+    "side": "up"
+   },
+   {
+    "sym": "SCHW",
+    "score": 5,
+    "price": 89.58,
+    "side": "down"
+   },
+   {
+    "sym": "ASND",
+    "score": 4,
+    "price": 229.95,
+    "side": "up"
+   },
+   {
+    "sym": "DIDIY",
+    "score": 4,
+    "price": 3.19,
+    "side": "down"
+   },
+   {
+    "sym": "DX",
+    "score": 4,
+    "price": 10.56,
+    "side": "down"
+   },
+   {
+    "sym": "FJIKY",
+    "score": 4,
+    "price": 13.89,
+    "side": "up"
+   },
+   {
+    "sym": "HSAI",
+    "score": 4,
+    "price": 12.92,
+    "side": "up"
+   },
+   {
+    "sym": "RCRUY",
+    "score": 4,
+    "price": 23.74,
+    "side": "up"
+   },
+   {
+    "sym": "RVLV",
+    "score": 4,
+    "price": 22.31,
+    "side": "down"
+   },
+   {
+    "sym": "SE",
+    "score": 4,
+    "price": 88.47,
+    "side": "down"
+   }
+  ]
  }
 ]
