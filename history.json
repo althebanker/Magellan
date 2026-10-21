@@ -16024,5 +16024,184 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-10-21",
+  "picks": [
+   {
+    "sym": "MLI",
+    "score": 7,
+    "price": 56.81,
+    "side": "down"
+   },
+   {
+    "sym": "CYATY",
+    "score": 6,
+    "price": 12.2,
+    "side": "down"
+   },
+   {
+    "sym": "LRN",
+    "score": 6,
+    "price": 78.95,
+    "side": "down"
+   },
+   {
+    "sym": "MCY",
+    "score": 6,
+    "price": 105.03,
+    "side": "up"
+   },
+   {
+    "sym": "PAY",
+    "score": 6,
+    "price": 32.96,
+    "side": "up"
+   },
+   {
+    "sym": "TAL",
+    "score": 6,
+    "price": 11.58,
+    "side": "down"
+   },
+   {
+    "sym": "DRD",
+    "score": 5,
+    "price": 25.3,
+    "side": "up"
+   },
+   {
+    "sym": "EPAM",
+    "score": 5,
+    "price": 130.68,
+    "side": "up"
+   },
+   {
+    "sym": "HAPN",
+    "score": 5,
+    "price": 14.58,
+    "side": "up"
+   },
+   {
+    "sym": "PAYC",
+    "score": 5,
+    "price": 262.32,
+    "side": "up"
+   },
+   {
+    "sym": "RIGL",
+    "score": 5,
+    "price": 48.11,
+    "side": "up"
+   },
+   {
+    "sym": "SE",
+    "score": 5,
+    "price": 80.43,
+    "side": "down"
+   },
+   {
+    "sym": "VICR",
+    "score": 5,
+    "price": 204.14,
+    "side": "up"
+   },
+   {
+    "sym": "CXM",
+    "score": 4,
+    "price": 6.45,
+    "side": "up"
+   },
+   {
+    "sym": "DOCS",
+    "score": 4,
+    "price": 33.35,
+    "side": "up"
+   },
+   {
+    "sym": "DRS",
+    "score": 4,
+    "price": 33.94,
+    "side": "down"
+   },
+   {
+    "sym": "FJIKY",
+    "score": 4,
+    "price": 13.39,
+    "side": "down"
+   },
+   {
+    "sym": "FLYW",
+    "score": 4,
+    "price": 18.64,
+    "side": "up"
+   },
+   {
+    "sym": "GRDN",
+    "score": 4,
+    "price": 41.87,
+    "side": "up"
+   },
+   {
+    "sym": "HDSN",
+    "score": 4,
+    "price": 5.305,
+    "side": "up"
+   },
+   {
+    "sym": "HSAI",
+    "score": 4,
+    "price": 13.99,
+    "side": "up"
+   },
+   {
+    "sym": "ITRI",
+    "score": 4,
+    "price": 84.62,
+    "side": "up"
+   },
+   {
+    "sym": "MANH",
+    "score": 4,
+    "price": 232.86,
+    "side": "up"
+   },
+   {
+    "sym": "MNDY",
+    "score": 4,
+    "price": 100.86,
+    "side": "up"
+   },
+   {
+    "sym": "NRIX",
+    "score": 4,
+    "price": 26.1,
+    "side": "up"
+   },
+   {
+    "sym": "PEGA",
+    "score": 4,
+    "price": 36.23,
+    "side": "up"
+   },
+   {
+    "sym": "RLI",
+    "score": 4,
+    "price": 62.71,
+    "side": "up"
+   },
+   {
+    "sym": "RVLV",
+    "score": 4,
+    "price": 23.2,
+    "side": "up"
+   },
+   {
+    "sym": "TW",
+    "score": 4,
+    "price": 119.37,
+    "side": "up"
+   }
+  ]
  }
 ]
