@@ -16203,5 +16203,184 @@
     "side": "up"
    }
   ]
+ },
+ {
+  "date": "2026-10-22",
+  "picks": [
+   {
+    "sym": "CHA",
+    "score": 7,
+    "price": 12.95,
+    "side": "up"
+   },
+   {
+    "sym": "CRCT",
+    "score": 6,
+    "price": 6.33,
+    "side": "down"
+   },
+   {
+    "sym": "CYATY",
+    "score": 6,
+    "price": 11.52,
+    "side": "down"
+   },
+   {
+    "sym": "EDU",
+    "score": 6,
+    "price": 59.5,
+    "side": "down"
+   },
+   {
+    "sym": "LRN",
+    "score": 6,
+    "price": 76.39,
+    "side": "down"
+   },
+   {
+    "sym": "TAL",
+    "score": 6,
+    "price": 10.55,
+    "side": "down"
+   },
+   {
+    "sym": "DRD",
+    "score": 5,
+    "price": 25.91,
+    "side": "up"
+   },
+   {
+    "sym": "EPAM",
+    "score": 5,
+    "price": 134.0,
+    "side": "up"
+   },
+   {
+    "sym": "RSI",
+    "score": 5,
+    "price": 16.85,
+    "side": "down"
+   },
+   {
+    "sym": "SE",
+    "score": 5,
+    "price": 77.94,
+    "side": "down"
+   },
+   {
+    "sym": "VC",
+    "score": 5,
+    "price": 84.83,
+    "side": "down"
+   },
+   {
+    "sym": "APPF",
+    "score": 4,
+    "price": 217.2,
+    "side": "down"
+   },
+   {
+    "sym": "BMI",
+    "score": 4,
+    "price": 131.86,
+    "side": "up"
+   },
+   {
+    "sym": "COCO",
+    "score": 4,
+    "price": 63.5,
+    "side": "up"
+   },
+   {
+    "sym": "CRON",
+    "score": 4,
+    "price": 3.39,
+    "side": "up"
+   },
+   {
+    "sym": "CYPH",
+    "score": 4,
+    "price": 3.33,
+    "side": "up"
+   },
+   {
+    "sym": "DUOT",
+    "score": 4,
+    "price": 6.29,
+    "side": "up"
+   },
+   {
+    "sym": "HSAI",
+    "score": 4,
+    "price": 13.19,
+    "side": "down"
+   },
+   {
+    "sym": "ISRG",
+    "score": 4,
+    "price": 428.12,
+    "side": "down"
+   },
+   {
+    "sym": "JD",
+    "score": 4,
+    "price": 25.79,
+    "side": "down"
+   },
+   {
+    "sym": "MDXG",
+    "score": 4,
+    "price": 3.74,
+    "side": "down"
+   },
+   {
+    "sym": "MEDP",
+    "score": 4,
+    "price": 662.48,
+    "side": "up"
+   },
+   {
+    "sym": "OPRA",
+    "score": 4,
+    "price": 18.0,
+    "side": "up"
+   },
+   {
+    "sym": "PEGA",
+    "score": 4,
+    "price": 35.18,
+    "side": "down"
+   },
+   {
+    "sym": "RELY",
+    "score": 4,
+    "price": 25.42,
+    "side": "up"
+   },
+   {
+    "sym": "SMCI",
+    "score": 4,
+    "price": 35.57,
+    "side": "up"
+   },
+   {
+    "sym": "SMCIP",
+    "score": 4,
+    "price": 60.66,
+    "side": "up"
+   },
+   {
+    "sym": "TCEHY",
+    "score": 4,
+    "price": 50.35,
+    "side": "down"
+   },
+   {
+    "sym": "WB",
+    "score": 4,
+    "price": 6.33,
+    "side": "down"
+   }
+  ]
  }
 ]
