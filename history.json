@@ -17034,5 +17034,154 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-10-27",
+  "picks": [
+   {
+    "sym": "DUOL",
+    "score": 6,
+    "price": 138.6,
+    "side": "down"
+   },
+   {
+    "sym": "INCY",
+    "score": 6,
+    "price": 113.31,
+    "side": "down"
+   },
+   {
+    "sym": "OSPN",
+    "score": 6,
+    "price": 20.6,
+    "side": "up"
+   },
+   {
+    "sym": "RSI",
+    "score": 6,
+    "price": 16.3,
+    "side": "up"
+   },
+   {
+    "sym": "XP",
+    "score": 6,
+    "price": 15.705,
+    "side": "down"
+   },
+   {
+    "sym": "ARLO",
+    "score": 5,
+    "price": 12.38,
+    "side": "down"
+   },
+   {
+    "sym": "DLO",
+    "score": 5,
+    "price": 14.44,
+    "side": "down"
+   },
+   {
+    "sym": "HAPN",
+    "score": 5,
+    "price": 13.77,
+    "side": "down"
+   },
+   {
+    "sym": "MNTN",
+    "score": 5,
+    "price": 9.4,
+    "side": "down"
+   },
+   {
+    "sym": "SMERY",
+    "score": 5,
+    "price": 27.5,
+    "side": "up"
+   },
+   {
+    "sym": "BMI",
+    "score": 4,
+    "price": 155.95,
+    "side": "up"
+   },
+   {
+    "sym": "CART",
+    "score": 4,
+    "price": 60.88,
+    "side": "up"
+   },
+   {
+    "sym": "DAVE",
+    "score": 4,
+    "price": 323.01,
+    "side": "down"
+   },
+   {
+    "sym": "FIX",
+    "score": 4,
+    "price": 1244.19,
+    "side": "up"
+   },
+   {
+    "sym": "MGNI",
+    "score": 4,
+    "price": 21.62,
+    "side": "down"
+   },
+   {
+    "sym": "MHVIY",
+    "score": 4,
+    "price": 11.22,
+    "side": "down"
+   },
+   {
+    "sym": "QLYS",
+    "score": 4,
+    "price": 225.15,
+    "side": "up"
+   },
+   {
+    "sym": "RDDT",
+    "score": 4,
+    "price": 138.45,
+    "side": "down"
+   },
+   {
+    "sym": "REPX",
+    "score": 4,
+    "price": 52.82,
+    "side": "down"
+   },
+   {
+    "sym": "RMBS",
+    "score": 4,
+    "price": 90.32,
+    "side": "up"
+   },
+   {
+    "sym": "RYCEY",
+    "score": 4,
+    "price": 16.42,
+    "side": "up"
+   },
+   {
+    "sym": "SRAD",
+    "score": 4,
+    "price": 12.6,
+    "side": "up"
+   },
+   {
+    "sym": "TGOPY",
+    "score": 4,
+    "price": 7.88,
+    "side": "up"
+   },
+   {
+    "sym": "WSO",
+    "score": 4,
+    "price": 305.33,
+    "side": "down"
+   }
+  ]
  }
 ]
