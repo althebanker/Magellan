@@ -21445,5 +21445,148 @@
     "side": "up"
    }
   ]
+ },
+ {
+  "date": "2026-11-11",
+  "picks": [
+   {
+    "sym": "ETOR",
+    "score": 6,
+    "price": 21.56,
+    "side": "down"
+   },
+   {
+    "sym": "HG",
+    "score": 6,
+    "price": 38.82,
+    "side": "up"
+   },
+   {
+    "sym": "SD",
+    "score": 6,
+    "price": 12.58,
+    "side": "up"
+   },
+   {
+    "sym": "ACAD",
+    "score": 5,
+    "price": 18.28,
+    "side": "up"
+   },
+   {
+    "sym": "AMPY",
+    "score": 5,
+    "price": 3.51,
+    "side": "up"
+   },
+   {
+    "sym": "CRTO",
+    "score": 5,
+    "price": 17.14,
+    "side": "up"
+   },
+   {
+    "sym": "GILT",
+    "score": 5,
+    "price": 6.03,
+    "side": "down"
+   },
+   {
+    "sym": "PAYS",
+    "score": 5,
+    "price": 10.14,
+    "side": "down"
+   },
+   {
+    "sym": "PLMR",
+    "score": 5,
+    "price": 161.08,
+    "side": "up"
+   },
+   {
+    "sym": "SMERY",
+    "score": 5,
+    "price": 27.21,
+    "side": "down"
+   },
+   {
+    "sym": "SPNT",
+    "score": 5,
+    "price": 27.38,
+    "side": "up"
+   },
+   {
+    "sym": "APEI",
+    "score": 4,
+    "price": 40.2,
+    "side": "up"
+   },
+   {
+    "sym": "DSP",
+    "score": 4,
+    "price": 12.33,
+    "side": "down"
+   },
+   {
+    "sym": "EXPE",
+    "score": 4,
+    "price": 253.77,
+    "side": "down"
+   },
+   {
+    "sym": "FJIKY",
+    "score": 4,
+    "price": 9.11,
+    "side": "down"
+   },
+   {
+    "sym": "GRDN",
+    "score": 4,
+    "price": 49.85,
+    "side": "up"
+   },
+   {
+    "sym": "NEXN",
+    "score": 4,
+    "price": 8.87,
+    "side": "down"
+   },
+   {
+    "sym": "NVDA",
+    "score": 4,
+    "price": 168.89,
+    "side": "down"
+   },
+   {
+    "sym": "QLYS",
+    "score": 4,
+    "price": 175.11,
+    "side": "down"
+   },
+   {
+    "sym": "SIGA",
+    "score": 4,
+    "price": 3.13,
+    "side": "down"
+   },
+   {
+    "sym": "SMCIP",
+    "score": 4,
+    "price": 48.71,
+    "side": "down"
+   },
+   {
+    "sym": "SYF",
+    "score": 4,
+    "price": 71.7,
+    "side": "down"
+   },
+   {
+    "sym": "TELWY",
+    "score": 4,
+    "price": 27.89,
+    "side": "down"
+   }
+  ]
  }
 ]
