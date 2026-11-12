@@ -21588,5 +21588,112 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-11-12",
+  "picks": [
+   {
+    "sym": "SD",
+    "score": 6,
+    "price": 12.99,
+    "side": "up"
+   },
+   {
+    "sym": "INMD",
+    "score": 5,
+    "price": 13.73,
+    "side": "up"
+   },
+   {
+    "sym": "NTES",
+    "score": 5,
+    "price": 122.13,
+    "side": "down"
+   },
+   {
+    "sym": "PAYS",
+    "score": 5,
+    "price": 9.48,
+    "side": "down"
+   },
+   {
+    "sym": "SMCAY",
+    "score": 5,
+    "price": 19.22,
+    "side": "up"
+   },
+   {
+    "sym": "ZM",
+    "score": 5,
+    "price": 98.08,
+    "side": "up"
+   },
+   {
+    "sym": "AGNC",
+    "score": 4,
+    "price": 8.48,
+    "side": "down"
+   },
+   {
+    "sym": "APAM",
+    "score": 4,
+    "price": 38.49,
+    "side": "down"
+   },
+   {
+    "sym": "APEI",
+    "score": 4,
+    "price": 42.28,
+    "side": "up"
+   },
+   {
+    "sym": "DUOT",
+    "score": 4,
+    "price": 5.48,
+    "side": "up"
+   },
+   {
+    "sym": "ELE",
+    "score": 4,
+    "price": 14.08,
+    "side": "down"
+   },
+   {
+    "sym": "FANUY",
+    "score": 4,
+    "price": 17.9,
+    "side": "up"
+   },
+   {
+    "sym": "GGG",
+    "score": 4,
+    "price": 72.98,
+    "side": "up"
+   },
+   {
+    "sym": "NVDA",
+    "score": 4,
+    "price": 173.73,
+    "side": "up"
+   },
+   {
+    "sym": "PLX",
+    "score": 4,
+    "price": 3.13,
+    "side": "up"
+   },
+   {
+    "sym": "QLYS",
+    "score": 4,
+    "price": 182.69,
+    "side": "up"
+   },
+   {
+    "sym": "SONO",
+    "score": 4,
+    "price": 19.06,
+    "side": "up"
+   }
+  ]
  }
 ]
