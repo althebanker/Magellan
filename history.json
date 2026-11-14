@@ -21850,5 +21850,70 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-11-14",
+  "picks": [
+   {
+    "sym": "CHA",
+    "score": 7,
+    "price": 14.37,
+    "side": "up"
+   },
+   {
+    "sym": "BZ",
+    "score": 6,
+    "price": 12.96,
+    "side": "up"
+   },
+   {
+    "sym": "QFIN",
+    "score": 6,
+    "price": 5.31,
+    "side": "up"
+   },
+   {
+    "sym": "ATAT",
+    "score": 5,
+    "price": 38.13,
+    "side": "up"
+   },
+   {
+    "sym": "CRTO",
+    "score": 5,
+    "price": 18.03,
+    "side": "up"
+   },
+   {
+    "sym": "LOPE",
+    "score": 5,
+    "price": 120.6,
+    "side": "up"
+   },
+   {
+    "sym": "RCRUY",
+    "score": 5,
+    "price": 22.0,
+    "side": "up"
+   },
+   {
+    "sym": "TELWY",
+    "score": 4,
+    "price": 28.7,
+    "side": "down"
+   },
+   {
+    "sym": "WSE",
+    "score": 4,
+    "price": 11.23,
+    "side": "up"
+   },
+   {
+    "sym": "YETI",
+    "score": 4,
+    "price": 39.42,
+    "side": "up"
+   }
+  ]
  }
 ]
