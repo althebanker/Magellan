@@ -21915,5 +21915,160 @@
     "side": "up"
    }
   ]
+ },
+ {
+  "date": "2026-11-17",
+  "picks": [
+   {
+    "sym": "ASM",
+    "score": 6,
+    "price": 4.03,
+    "side": "down"
+   },
+   {
+    "sym": "BZ",
+    "score": 6,
+    "price": 12.67,
+    "side": "down"
+   },
+   {
+    "sym": "PAYP",
+    "score": 6,
+    "price": 12.84,
+    "side": "down"
+   },
+   {
+    "sym": "BRC",
+    "score": 5,
+    "price": 79.66,
+    "side": "down"
+   },
+   {
+    "sym": "CRTO",
+    "score": 5,
+    "price": 19.57,
+    "side": "up"
+   },
+   {
+    "sym": "EEFT",
+    "score": 5,
+    "price": 69.58,
+    "side": "down"
+   },
+   {
+    "sym": "FJIKY",
+    "score": 5,
+    "price": 8.17,
+    "side": "down"
+   },
+   {
+    "sym": "HBM",
+    "score": 5,
+    "price": 19.55,
+    "side": "down"
+   },
+   {
+    "sym": "IDR",
+    "score": 5,
+    "price": 16.85,
+    "side": "down"
+   },
+   {
+    "sym": "PAAS",
+    "score": 5,
+    "price": 35.58,
+    "side": "down"
+   },
+   {
+    "sym": "SCZM",
+    "score": 5,
+    "price": 6.42,
+    "side": "down"
+   },
+   {
+    "sym": "TFPM",
+    "score": 5,
+    "price": 29.65,
+    "side": "down"
+   },
+   {
+    "sym": "TSSI",
+    "score": 5,
+    "price": 5.69,
+    "side": "down"
+   },
+   {
+    "sym": "VOXR",
+    "score": 5,
+    "price": 4.36,
+    "side": "down"
+   },
+   {
+    "sym": "AB",
+    "score": 4,
+    "price": 32.72,
+    "side": "down"
+   },
+   {
+    "sym": "AG",
+    "score": 4,
+    "price": 12.67,
+    "side": "down"
+   },
+   {
+    "sym": "AYA",
+    "score": 4,
+    "price": 21.27,
+    "side": "down"
+   },
+   {
+    "sym": "DLB",
+    "score": 4,
+    "price": 61.16,
+    "side": "down"
+   },
+   {
+    "sym": "HOOD",
+    "score": 4,
+    "price": 72.06,
+    "side": "down"
+   },
+   {
+    "sym": "NLST",
+    "score": 4,
+    "price": 4.51,
+    "side": "down"
+   },
+   {
+    "sym": "OR",
+    "score": 4,
+    "price": 33.58,
+    "side": "down"
+   },
+   {
+    "sym": "POWL",
+    "score": 4,
+    "price": 151.2,
+    "side": "up"
+   },
+   {
+    "sym": "SAIQ",
+    "score": 4,
+    "price": 3.55,
+    "side": "up"
+   },
+   {
+    "sym": "WB",
+    "score": 4,
+    "price": 6.0,
+    "side": "down"
+   },
+   {
+    "sym": "WEGZY",
+    "score": 4,
+    "price": 8.74,
+    "side": "down"
+   }
+  ]
  }
 ]
