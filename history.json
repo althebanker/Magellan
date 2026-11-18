@@ -22070,5 +22070,172 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-11-18",
+  "picks": [
+   {
+    "sym": "DECK",
+    "score": 7,
+    "price": 81.48,
+    "side": "down"
+   },
+   {
+    "sym": "DLO",
+    "score": 6,
+    "price": 12.46,
+    "side": "down"
+   },
+   {
+    "sym": "FRSH",
+    "score": 6,
+    "price": 12.95,
+    "side": "down"
+   },
+   {
+    "sym": "QFIN",
+    "score": 6,
+    "price": 4.88,
+    "side": "down"
+   },
+   {
+    "sym": "QTTB",
+    "score": 6,
+    "price": 8.63,
+    "side": "up"
+   },
+   {
+    "sym": "SLDE",
+    "score": 6,
+    "price": 26.58,
+    "side": "up"
+   },
+   {
+    "sym": "VIPS",
+    "score": 6,
+    "price": 12.87,
+    "side": "down"
+   },
+   {
+    "sym": "YALA",
+    "score": 6,
+    "price": 5.7,
+    "side": "up"
+   },
+   {
+    "sym": "BRC",
+    "score": 5,
+    "price": 76.9,
+    "side": "down"
+   },
+   {
+    "sym": "CRTO",
+    "score": 5,
+    "price": 18.54,
+    "side": "down"
+   },
+   {
+    "sym": "CTSH",
+    "score": 5,
+    "price": 60.0,
+    "side": "down"
+   },
+   {
+    "sym": "DUOT",
+    "score": 5,
+    "price": 3.39,
+    "side": "down"
+   },
+   {
+    "sym": "EEFT",
+    "score": 5,
+    "price": 68.12,
+    "side": "down"
+   },
+   {
+    "sym": "HAPN",
+    "score": 5,
+    "price": 14.88,
+    "side": "down"
+   },
+   {
+    "sym": "OPRA",
+    "score": 5,
+    "price": 14.17,
+    "side": "down"
+   },
+   {
+    "sym": "SCZM",
+    "score": 5,
+    "price": 7.41,
+    "side": "up"
+   },
+   {
+    "sym": "TME",
+    "score": 5,
+    "price": 9.47,
+    "side": "up"
+   },
+   {
+    "sym": "AGNC",
+    "score": 4,
+    "price": 7.89,
+    "side": "down"
+   },
+   {
+    "sym": "DLB",
+    "score": 4,
+    "price": 58.82,
+    "side": "down"
+   },
+   {
+    "sym": "DOCU",
+    "score": 4,
+    "price": 75.93,
+    "side": "down"
+   },
+   {
+    "sym": "EGAN",
+    "score": 4,
+    "price": 5.98,
+    "side": "down"
+   },
+   {
+    "sym": "ESTC",
+    "score": 4,
+    "price": 80.39,
+    "side": "down"
+   },
+   {
+    "sym": "GLBE",
+    "score": 4,
+    "price": 39.81,
+    "side": "down"
+   },
+   {
+    "sym": "JD",
+    "score": 4,
+    "price": 25.43,
+    "side": "down"
+   },
+   {
+    "sym": "PLGO",
+    "score": 4,
+    "price": 27.85,
+    "side": "down"
+   },
+   {
+    "sym": "TSM",
+    "score": 4,
+    "price": 359.69,
+    "side": "down"
+   },
+   {
+    "sym": "WB",
+    "score": 4,
+    "price": 5.76,
+    "side": "down"
+   }
+  ]
  }
 ]
