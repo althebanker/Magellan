@@ -22793,5 +22793,742 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-11-21",
+  "picks": [
+   {
+    "sym": "CHA",
+    "score": 7,
+    "price": 13.13,
+    "side": "down"
+   },
+   {
+    "sym": "PUK",
+    "score": 7,
+    "price": 24.19,
+    "side": "down"
+   },
+   {
+    "sym": "ASM",
+    "score": 6,
+    "price": 3.44,
+    "side": "down"
+   },
+   {
+    "sym": "CGAU",
+    "score": 6,
+    "price": 16.74,
+    "side": "down"
+   },
+   {
+    "sym": "CYATY",
+    "score": 6,
+    "price": 10.51,
+    "side": "down"
+   },
+   {
+    "sym": "DAKT",
+    "score": 6,
+    "price": 18.12,
+    "side": "down"
+   },
+   {
+    "sym": "FSM",
+    "score": 6,
+    "price": 7.33,
+    "side": "down"
+   },
+   {
+    "sym": "FUTU",
+    "score": 6,
+    "price": 83.02,
+    "side": "down"
+   },
+   {
+    "sym": "GNTX",
+    "score": 6,
+    "price": 18.75,
+    "side": "down"
+   },
+   {
+    "sym": "KLIC",
+    "score": 6,
+    "price": 54.71,
+    "side": "down"
+   },
+   {
+    "sym": "LQDT",
+    "score": 6,
+    "price": 31.87,
+    "side": "down"
+   },
+   {
+    "sym": "NTES",
+    "score": 6,
+    "price": 99.85,
+    "side": "down"
+   },
+   {
+    "sym": "NXT",
+    "score": 6,
+    "price": 67.13,
+    "side": "down"
+   },
+   {
+    "sym": "PAY",
+    "score": 6,
+    "price": 31.3,
+    "side": "down"
+   },
+   {
+    "sym": "PDD",
+    "score": 6,
+    "price": 83.68,
+    "side": "down"
+   },
+   {
+    "sym": "RSI",
+    "score": 6,
+    "price": 11.23,
+    "side": "down"
+   },
+   {
+    "sym": "TROW",
+    "score": 6,
+    "price": 100.99,
+    "side": "down"
+   },
+   {
+    "sym": "UPWK",
+    "score": 6,
+    "price": 8.55,
+    "side": "down"
+   },
+   {
+    "sym": "YALA",
+    "score": 6,
+    "price": 5.54,
+    "side": "down"
+   },
+   {
+    "sym": "AEM",
+    "score": 5,
+    "price": 151.3,
+    "side": "down"
+   },
+   {
+    "sym": "AGI",
+    "score": 5,
+    "price": 24.87,
+    "side": "down"
+   },
+   {
+    "sym": "ALAB",
+    "score": 5,
+    "price": 180.35,
+    "side": "down"
+   },
+   {
+    "sym": "AMAT",
+    "score": 5,
+    "price": 302.63,
+    "side": "down"
+   },
+   {
+    "sym": "ASML",
+    "score": 5,
+    "price": 1266.22,
+    "side": "down"
+   },
+   {
+    "sym": "AU",
+    "score": 5,
+    "price": 72.43,
+    "side": "down"
+   },
+   {
+    "sym": "AVPT",
+    "score": 5,
+    "price": 16.49,
+    "side": "down"
+   },
+   {
+    "sym": "AYA",
+    "score": 5,
+    "price": 17.38,
+    "side": "down"
+   },
+   {
+    "sym": "B",
+    "score": 5,
+    "price": 31.54,
+    "side": "down"
+   },
+   {
+    "sym": "CTSH",
+    "score": 5,
+    "price": 58.06,
+    "side": "up"
+   },
+   {
+    "sym": "DAVE",
+    "score": 5,
+    "price": 228.39,
+    "side": "down"
+   },
+   {
+    "sym": "DRD",
+    "score": 5,
+    "price": 20.02,
+    "side": "down"
+   },
+   {
+    "sym": "DSVSF",
+    "score": 5,
+    "price": 5.67,
+    "side": "down"
+   },
+   {
+    "sym": "EDU",
+    "score": 5,
+    "price": 51.03,
+    "side": "down"
+   },
+   {
+    "sym": "ESTC",
+    "score": 5,
+    "price": 74.79,
+    "side": "down"
+   },
+   {
+    "sym": "FJIKY",
+    "score": 5,
+    "price": 6.34,
+    "side": "down"
+   },
+   {
+    "sym": "GEV",
+    "score": 5,
+    "price": 699.33,
+    "side": "down"
+   },
+   {
+    "sym": "HMY",
+    "score": 5,
+    "price": 12.82,
+    "side": "down"
+   },
+   {
+    "sym": "IBKR",
+    "score": 5,
+    "price": 71.19,
+    "side": "down"
+   },
+   {
+    "sym": "IDR",
+    "score": 5,
+    "price": 13.85,
+    "side": "down"
+   },
+   {
+    "sym": "IESC",
+    "score": 5,
+    "price": 156.06,
+    "side": "down"
+   },
+   {
+    "sym": "INFY",
+    "score": 5,
+    "price": 12.03,
+    "side": "up"
+   },
+   {
+    "sym": "IPGP",
+    "score": 5,
+    "price": 58.64,
+    "side": "down"
+   },
+   {
+    "sym": "LRCX",
+    "score": 5,
+    "price": 183.27,
+    "side": "down"
+   },
+   {
+    "sym": "LULU",
+    "score": 5,
+    "price": 102.62,
+    "side": "down"
+   },
+   {
+    "sym": "MITK",
+    "score": 5,
+    "price": 15.31,
+    "side": "down"
+   },
+   {
+    "sym": "MOMO",
+    "score": 5,
+    "price": 4.075,
+    "side": "down"
+   },
+   {
+    "sym": "MRX",
+    "score": 5,
+    "price": 58.73,
+    "side": "down"
+   },
+   {
+    "sym": "MU",
+    "score": 5,
+    "price": 594.51,
+    "side": "down"
+   },
+   {
+    "sym": "NEM",
+    "score": 5,
+    "price": 94.68,
+    "side": "down"
+   },
+   {
+    "sym": "NOAH",
+    "score": 5,
+    "price": 6.11,
+    "side": "down"
+   },
+   {
+    "sym": "NTCT",
+    "score": 5,
+    "price": 30.65,
+    "side": "down"
+   },
+   {
+    "sym": "NVDA",
+    "score": 5,
+    "price": 125.53,
+    "side": "down"
+   },
+   {
+    "sym": "OPRA",
+    "score": 5,
+    "price": 12.86,
+    "side": "down"
+   },
+   {
+    "sym": "PLMR",
+    "score": 5,
+    "price": 163.59,
+    "side": "up"
+   },
+   {
+    "sym": "PRDO",
+    "score": 5,
+    "price": 27.47,
+    "side": "down"
+   },
+   {
+    "sym": "PURR",
+    "score": 5,
+    "price": 7.48,
+    "side": "down"
+   },
+   {
+    "sym": "RDDT",
+    "score": 5,
+    "price": 85.33,
+    "side": "down"
+   },
+   {
+    "sym": "RERE",
+    "score": 5,
+    "price": 3.92,
+    "side": "down"
+   },
+   {
+    "sym": "ROST",
+    "score": 5,
+    "price": 213.46,
+    "side": "down"
+   },
+   {
+    "sym": "SCZM",
+    "score": 5,
+    "price": 6.16,
+    "side": "down"
+   },
+   {
+    "sym": "SEIC",
+    "score": 5,
+    "price": 100.75,
+    "side": "down"
+   },
+   {
+    "sym": "SIMO",
+    "score": 5,
+    "price": 130.01,
+    "side": "down"
+   },
+   {
+    "sym": "SNA",
+    "score": 5,
+    "price": 348.88,
+    "side": "down"
+   },
+   {
+    "sym": "SNEX",
+    "score": 5,
+    "price": 36.625,
+    "side": "down"
+   },
+   {
+    "sym": "SSRM",
+    "score": 5,
+    "price": 21.59,
+    "side": "down"
+   },
+   {
+    "sym": "TFPM",
+    "score": 5,
+    "price": 26.96,
+    "side": "down"
+   },
+   {
+    "sym": "TIGR",
+    "score": 5,
+    "price": 3.67,
+    "side": "down"
+   },
+   {
+    "sym": "TSSI",
+    "score": 5,
+    "price": 4.56,
+    "side": "down"
+   },
+   {
+    "sym": "UMC",
+    "score": 5,
+    "price": 12.04,
+    "side": "down"
+   },
+   {
+    "sym": "VOXR",
+    "score": 5,
+    "price": 3.77,
+    "side": "down"
+   },
+   {
+    "sym": "WDC",
+    "score": 5,
+    "price": 261.11,
+    "side": "down"
+   },
+   {
+    "sym": "WTS",
+    "score": 5,
+    "price": 345.78,
+    "side": "down"
+   },
+   {
+    "sym": "YMM",
+    "score": 5,
+    "price": 8.82,
+    "side": "down"
+   },
+   {
+    "sym": "AB",
+    "score": 4,
+    "price": 30.92,
+    "side": "down"
+   },
+   {
+    "sym": "ACMR",
+    "score": 4,
+    "price": 39.8,
+    "side": "down"
+   },
+   {
+    "sym": "AG",
+    "score": 4,
+    "price": 10.91,
+    "side": "down"
+   },
+   {
+    "sym": "AGX",
+    "score": 4,
+    "price": 268.94,
+    "side": "down"
+   },
+   {
+    "sym": "AGYS",
+    "score": 4,
+    "price": 110.54,
+    "side": "down"
+   },
+   {
+    "sym": "AMD",
+    "score": 4,
+    "price": 424.39,
+    "side": "down"
+   },
+   {
+    "sym": "ANET",
+    "score": 4,
+    "price": 167.66,
+    "side": "down"
+   },
+   {
+    "sym": "CGNX",
+    "score": 4,
+    "price": 44.36,
+    "side": "down"
+   },
+   {
+    "sym": "CRDO",
+    "score": 4,
+    "price": 99.86,
+    "side": "down"
+   },
+   {
+    "sym": "CXDO",
+    "score": 4,
+    "price": 4.3,
+    "side": "down"
+   },
+   {
+    "sym": "DRS",
+    "score": 4,
+    "price": 31.27,
+    "side": "down"
+   },
+   {
+    "sym": "EQH",
+    "score": 4,
+    "price": 50.32,
+    "side": "down"
+   },
+   {
+    "sym": "ERII",
+    "score": 4,
+    "price": 6.47,
+    "side": "down"
+   },
+   {
+    "sym": "FIX",
+    "score": 4,
+    "price": 1042.47,
+    "side": "down"
+   },
+   {
+    "sym": "FNV",
+    "score": 4,
+    "price": 223.21,
+    "side": "down"
+   },
+   {
+    "sym": "FORM",
+    "score": 4,
+    "price": 73.02,
+    "side": "down"
+   },
+   {
+    "sym": "HBM",
+    "score": 4,
+    "price": 16.195,
+    "side": "down"
+   },
+   {
+    "sym": "HIMX",
+    "score": 4,
+    "price": 6.86,
+    "side": "down"
+   },
+   {
+    "sym": "HOOD",
+    "score": 4,
+    "price": 62.17,
+    "side": "down"
+   },
+   {
+    "sym": "INTU",
+    "score": 4,
+    "price": 270.44,
+    "side": "down"
+   },
+   {
+    "sym": "ISRG",
+    "score": 4,
+    "price": 399.05,
+    "side": "down"
+   },
+   {
+    "sym": "KEYS",
+    "score": 4,
+    "price": 261.51,
+    "side": "down"
+   },
+   {
+    "sym": "KRYS",
+    "score": 4,
+    "price": 308.89,
+    "side": "down"
+   },
+   {
+    "sym": "KYIV",
+    "score": 4,
+    "price": 10.83,
+    "side": "down"
+   },
+   {
+    "sym": "MEDP",
+    "score": 4,
+    "price": 610.54,
+    "side": "down"
+   },
+   {
+    "sym": "META",
+    "score": 4,
+    "price": 560.84,
+    "side": "down"
+   },
+   {
+    "sym": "MPWR",
+    "score": 4,
+    "price": 1142.05,
+    "side": "down"
+   },
+   {
+    "sym": "MTSI",
+    "score": 4,
+    "price": 194.91,
+    "side": "down"
+   },
+   {
+    "sym": "MYRG",
+    "score": 4,
+    "price": 247.71,
+    "side": "down"
+   },
+   {
+    "sym": "NEXN",
+    "score": 4,
+    "price": 8.11,
+    "side": "down"
+   },
+   {
+    "sym": "NLST",
+    "score": 4,
+    "price": 3.84,
+    "side": "down"
+   },
+   {
+    "sym": "ODFL",
+    "score": 4,
+    "price": 168.09,
+    "side": "down"
+   },
+   {
+    "sym": "OLED",
+    "score": 4,
+    "price": 77.62,
+    "side": "down"
+   },
+   {
+    "sym": "OR",
+    "score": 4,
+    "price": 30.4,
+    "side": "down"
+   },
+   {
+    "sym": "OSS",
+    "score": 4,
+    "price": 4.01,
+    "side": "down"
+   },
+   {
+    "sym": "PFG",
+    "score": 4,
+    "price": 104.58,
+    "side": "down"
+   },
+   {
+    "sym": "PKE",
+    "score": 4,
+    "price": 22.43,
+    "side": "down"
+   },
+   {
+    "sym": "PLTR",
+    "score": 4,
+    "price": 143.49,
+    "side": "down"
+   },
+   {
+    "sym": "RMBS",
+    "score": 4,
+    "price": 66.35,
+    "side": "down"
+   },
+   {
+    "sym": "SAP",
+    "score": 4,
+    "price": 198.93,
+    "side": "down"
+   },
+   {
+    "sym": "SHOP",
+    "score": 4,
+    "price": 123.72,
+    "side": "down"
+   },
+   {
+    "sym": "TCEHY",
+    "score": 4,
+    "price": 42.5,
+    "side": "down"
+   },
+   {
+    "sym": "TER",
+    "score": 4,
+    "price": 204.775,
+    "side": "down"
+   },
+   {
+    "sym": "TSM",
+    "score": 4,
+    "price": 319.145,
+    "side": "down"
+   },
+   {
+    "sym": "VGNT",
+    "score": 4,
+    "price": 41.74,
+    "side": "down"
+   },
+   {
+    "sym": "VOR",
+    "score": 4,
+    "price": 19.19,
+    "side": "up"
+   },
+   {
+    "sym": "VSNT",
+    "score": 4,
+    "price": 33.7,
+    "side": "down"
+   },
+   {
+    "sym": "WB",
+    "score": 4,
+    "price": 5.19,
+    "side": "down"
+   },
+   {
+    "sym": "XIACY",
+    "score": 4,
+    "price": 17.01,
+    "side": "down"
+   }
+  ]
  }
 ]
