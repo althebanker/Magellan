@@ -24594,5 +24594,46 @@
     "side": "down"
    }
   ]
+ },
+ {
+  "date": "2026-11-28",
+  "picks": [
+   {
+    "sym": "XP",
+    "score": 6,
+    "price": 16.99,
+    "side": "up"
+   },
+   {
+    "sym": "B",
+    "score": 5,
+    "price": 36.54,
+    "side": "up"
+   },
+   {
+    "sym": "QFIN",
+    "score": 5,
+    "price": 4.815,
+    "side": "up"
+   },
+   {
+    "sym": "ABNB",
+    "score": 4,
+    "price": 179.16,
+    "side": "up"
+   },
+   {
+    "sym": "ATAT",
+    "score": 4,
+    "price": 40.92,
+    "side": "up"
+   },
+   {
+    "sym": "VRTX",
+    "score": 4,
+    "price": 534.57,
+    "side": "down"
+   }
+  ]
  }
 ]
